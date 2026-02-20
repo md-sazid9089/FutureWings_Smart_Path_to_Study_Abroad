@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import logo from '../asset/logo.png';
 import {
   HiOutlineBars3,
   HiOutlineXMark,
@@ -55,7 +56,7 @@ export default function GlassNavbar() {
       <nav className="glass-nav rounded-full px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-primary font-extrabold text-lg tracking-tight select-none">
-          <span className="text-2xl">✈</span> FutureWings
+          <img src={logo} alt="FutureWings Logo" className="w-8 h-8" /> FutureWings
         </Link>
 
         {/* Desktop links */}

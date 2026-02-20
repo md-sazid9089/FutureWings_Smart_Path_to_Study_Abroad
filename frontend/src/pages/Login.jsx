@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
+import logo from '../asset/logo.png';
 import GlassPanel from '../components/ui/GlassPanel';
 import TextField from '../components/ui/TextField';
 import PrimaryButton from '../components/ui/PrimaryButton';
@@ -33,7 +34,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <GlassPanel className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-4xl">✈</span>
+          <img src={logo} alt="FutureWings Logo" className="w-12 h-12 mx-auto" />
           <h1 className="text-2xl font-extrabold text-text mt-2">Welcome Back</h1>
           <p className="text-text-muted text-sm mt-1">Sign in to FutureWings</p>
         </div>

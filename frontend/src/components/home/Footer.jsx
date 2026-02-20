@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HiOutlineHeart } from 'react-icons/hi2';
+import logo from '../../asset/logo.png';
 
 const quickLinks = [
   { label: 'Home', to: '/' },
@@ -23,7 +24,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center gap-2 text-primary font-extrabold text-lg mb-3">
-              <span className="text-2xl">✈</span> FutureWings
+              <img src={logo} alt="FutureWings Logo" className="w-8 h-8" /> FutureWings
             </Link>
             <p className="text-sm text-text-muted leading-relaxed">
               Your smart path to studying abroad. Discover, apply, and track — all in one place.

@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import logo from '../asset/logo.png';
 import {
   HiOutlineGlobeAlt,
   HiOutlineBuildingLibrary,
@@ -37,9 +38,9 @@ export default function GlassSidebar() {
     <aside className="glass-sidebar w-64 min-h-screen flex flex-col py-6 px-4">
       {/* Logo */}
       <div className="px-3 mb-8">
-        <span className="text-primary font-extrabold text-lg tracking-tight select-none">
-          <span className="text-2xl mr-1">✈</span>Admin
-        </span>
+        <div className="flex items-center gap-2 text-primary font-extrabold text-lg tracking-tight select-none">
+          <img src={logo} alt="FutureWings Logo" className="w-8 h-8" />Admin
+        </div>
       </div>
 
       {/* Links */}
