@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Allow API routes to handle file uploads
-  api: {
-    bodyParser: false,
-  },
   // CORS headers for frontend
   async headers() {
     return [
