@@ -70,7 +70,7 @@ export default function Contact() {
                     required
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
-                    placeholder="John Doe"
+                    placeholder="irfan Zahir"
                     className="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-white/50 text-sm text-text placeholder:text-text-light focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
                   />
                 </div>
