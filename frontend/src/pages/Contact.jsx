@@ -36,7 +36,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-bold text-text text-sm">Email</h4>
-                <p className="text-sm text-text-muted">hello@futurewings.com</p>
+                <p className="text-sm text-text-muted">futurewingshelp@gmail.com</p>
               </div>
             </div>
             <div className="glass rounded-2xl p-5 flex items-start gap-4">
@@ -45,7 +45,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-bold text-text text-sm">Phone</h4>
-                <p className="text-sm text-text-muted">+1 (555) 123-4567</p>
+                <p className="text-sm text-text-muted">01973685515</p>
               </div>
             </div>
             <div className="glass rounded-2xl p-5 flex items-start gap-4">

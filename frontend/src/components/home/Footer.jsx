@@ -62,8 +62,8 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-text mb-3">Contact</h4>
             <ul className="space-y-2 text-sm text-text-muted">
-              <li>hello@futurewings.com</li>
-              <li>+1 (555) 123-4567</li>
+              <li>futurewingshelp@gmail.com</li>
+              <li>01973685515</li>
               <li className="flex gap-3 pt-2">
                 <a href="#" className="hover:text-primary transition-colors">Twitter</a>
                 <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
