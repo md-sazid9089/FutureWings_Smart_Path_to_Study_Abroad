@@ -1,9 +1,16 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import PublicLayout from './layouts/PublicLayout';
 import AppLayout from './layouts/AppLayout';
 import AdminLayout from './layouts/AdminLayout';
+
+// ─── Public pages ────────────────────────────────────────
+import HomePage from './pages/HomePage';
+import About from './pages/About';
+import Blog from './pages/Blog';
+import Contact from './pages/Contact';
 
 // ─── User pages ──────────────────────────────────────────
 import Signup from './pages/Signup';
@@ -31,6 +38,13 @@ import ManageApplications from './pages/admin/ManageApplications';
 import AdminVisaOutcome from './pages/admin/AdminVisaOutcome';
 import ManageRatings from './pages/admin/ManageRatings';
 
+/* Redirect logged-in users away from auth pages */
+function GuestOnly({ children }) {
+  const token = localStorage.getItem('token');
+  if (token) return <Navigate to="/recommendations" replace />;
+  return children;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -49,9 +63,17 @@ export default function App() {
         }}
       />
       <Routes>
-        {/* ── Public auth ───────────────────────── */}
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        {/* ── Public routes with navbar ────────── */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/contact" element={<Contact />} />
+        </Route>
+
+        {/* ── Auth routes (guest only) ────────── */}
+        <Route path="/signup" element={<GuestOnly><Signup /></GuestOnly>} />
+        <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
         <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* ── Protected user routes (with navbar layout) ── */}
@@ -82,7 +104,6 @@ export default function App() {
         </Route>
 
         {/* ── Fallback ──────────────────────────── */}
-        <Route path="/" element={<Login />} />
         <Route path="*" element={
           <div className="min-h-screen flex items-center justify-center">
             <div className="glass-strong rounded-3xl p-12 text-center">

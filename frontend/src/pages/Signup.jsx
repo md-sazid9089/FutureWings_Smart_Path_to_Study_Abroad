@@ -21,7 +21,7 @@ export default function Signup() {
       localStorage.setItem('token', res.data.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.data.user));
       toast.success('Account created!');
-      navigate('/profile');
+      navigate('/recommendations');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Signup failed');
     } finally {
@@ -52,6 +52,9 @@ export default function Signup() {
           <Link to="/login" className="text-primary font-semibold hover:underline">
             Sign In
           </Link>
+        </p>
+        <p className="text-center text-xs text-text-light mt-3">
+          <Link to="/" className="hover:text-primary transition-colors">← Back to Home</Link>
         </p>
       </GlassPanel>
     </div>

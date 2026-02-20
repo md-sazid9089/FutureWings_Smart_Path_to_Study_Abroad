@@ -1,8 +1,12 @@
 import { NextRequest } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { signToken } from "@/lib/auth";
 import { success, error, handleError } from "@/lib/response";
+
+// ─── Dummy users (no DB required) ────────────────────────
+const DUMMY_USERS = [
+  { id: 1, email: "demo@futurewings.com", password: "demo123", role: "USER" as const, fullname: "Demo User" },
+  { id: 2, email: "admin@futurewings.com", password: "admin123", role: "ADMIN" as const, fullname: "Admin User" },
+];
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,13 +19,8 @@ export async function POST(req: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-    if (!user) {
-      return error("Invalid email or password", 401);
-    }
-
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
+    const user = DUMMY_USERS.find(u => u.email === normalizedEmail);
+    if (!user || user.password !== password) {
       return error("Invalid email or password", 401);
     }
 
