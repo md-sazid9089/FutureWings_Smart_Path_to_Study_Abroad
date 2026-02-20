@@ -81,7 +81,7 @@ export default function Contact() {
                     required
                     value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
-                    placeholder="john@email.com"
+                    placeholder="futurewingshelp@gmail.com"
                     className="w-full px-4 py-2.5 rounded-xl bg-white/60 border border-white/50 text-sm text-text placeholder:text-text-light focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
                   />
                 </div>
