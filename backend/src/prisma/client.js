@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 
 /** Singleton — avoid spawning multiple clients in dev (nodemon restarts) */
