@@ -6,6 +6,12 @@
     "dev": "node server.js",
     "start": "node server.js",
     "seed": "node prisma/seed.js",
+    "test": "cross-env NODE_ENV=test jest --runInBand",
+    "test:auth": "cross-env NODE_ENV=test jest --runInBand -- auth.test",
+    "test:admin": "cross-env NODE_ENV=test jest --runInBand -- admin.test",
+    "test:middleware": "cross-env NODE_ENV=test jest --runInBand -- middleware",
+    "test:protected": "cross-env NODE_ENV=test jest --runInBand -- protected.test",
+    "test:verbose": "cross-env NODE_ENV=test jest --runInBand --verbose",
     "vercel-build": "echo done"
   },
   "prisma": {
@@ -17,7 +23,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^4.21.0",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "prisma": "^5.22.0"
   }
 }

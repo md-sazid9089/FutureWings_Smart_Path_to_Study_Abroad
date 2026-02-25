@@ -36,7 +36,7 @@ export default function HowItWorks() {
         <div className="hidden lg:block">
           <div className="relative">
             {/* Connector line */}
-            <div className="absolute top-8 left-[8%] right-[8%] h-0.5 bg-linear-to-r from-primary/30 via-accent/30 to-primary/30" />
+            <div className="absolute top-8 left-[8%] right-[8%] h-0.5 bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30" />
             <div className="grid grid-cols-6 gap-4">
               {steps.map((s, i) => (
                 <div key={i} className="flex flex-col items-center text-center relative">
@@ -67,7 +67,7 @@ export default function HowItWorks() {
                   </span>
                 </div>
                 {i < steps.length - 1 && (
-                  <div className="w-0.5 h-full min-h-10 bg-linear-to-b from-primary/30 to-accent/20 my-1" />
+                  <div className="w-0.5 h-full min-h-[40px] bg-gradient-to-b from-primary/30 to-accent/20 my-1" />
                 )}
               </div>
               {/* Right: text */}

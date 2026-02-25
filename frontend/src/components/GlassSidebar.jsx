@@ -57,7 +57,7 @@ export default function GlassSidebar() {
               }`
             }
           >
-            <l.icon className="w-5 h-5 shrink-0" />
+            <l.icon className="w-5 h-5 flex-shrink-0" />
             {l.label}
           </NavLink>
         ))}
