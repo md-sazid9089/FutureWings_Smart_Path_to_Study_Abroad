@@ -1,0 +1,5 @@
+# ─── Database ────────────────────────────────────────────
+DATABASE_URL="sqlserver://localhost:1433;database=FutureWings_Smart_Path_to_Study_Abroad;integratedSecurity=true;trustServerCertificate=true;encrypt=false"
+
+# ─── Auth ────────────────────────────────────────────────
+JWT_SECRET="futurewings_jwt_secret_2026"
