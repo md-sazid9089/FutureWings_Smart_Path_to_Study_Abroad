@@ -19,9 +19,9 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden pt-8 pb-20 md:pt-16 md:pb-32">
       {/* Decorative blurred shapes */}
-      <div className="absolute top-[-120px] left-[-80px] w-[400px] h-[400px] rounded-full bg-primary/15 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-100px] right-[-60px] w-[350px] h-[350px] rounded-full bg-accent/10 blur-[90px] pointer-events-none" />
-      <div className="absolute top-[40%] left-[55%] w-[250px] h-[250px] rounded-full bg-primary-light/10 blur-[80px] pointer-events-none" />
+      <div className="absolute -top-30 -left-20 w-100 h-100 rounded-full bg-primary/15 blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-25 -right-15 w-87.5 h-87.5 rounded-full bg-accent/10 blur-[90px] pointer-events-none" />
+      <div className="absolute top-[40%] left-[55%] w-62.5 h-62.5 rounded-full bg-primary-light/10 blur-[80px] pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-4">
         {/* Top badge */}
@@ -35,7 +35,7 @@ export default function HeroSection() {
         {/* Headline */}
         <h1 className="text-4xl md:text-6xl font-extrabold text-center text-text leading-tight tracking-tight">
           Plan Your{' '}
-          <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-primary to-primary-light bg-clip-text text-transparent">
             Study Abroad
           </span>{' '}
           Journey
