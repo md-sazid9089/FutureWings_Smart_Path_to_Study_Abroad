@@ -1,102 +1,189 @@
-import { useState, useEffect } from 'react';
-import API from '../../api/axios';
+import { useState, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
+import { getPrograms, createProgram, updateProgram, deleteProgram, getUniversities } from '../../api/adminService';
 import { PageHeader } from '../../components/ui/PageHeader';
-import GlassPanel from '../../components/ui/GlassPanel';
 import GlassTable, { Td } from '../../components/ui/GlassTable';
-import TextField from '../../components/ui/TextField';
-import SelectField from '../../components/ui/SelectField';
 import PrimaryButton from '../../components/ui/PrimaryButton';
 import SecondaryButton from '../../components/ui/SecondaryButton';
+import TextField from '../../components/ui/TextField';
+import SelectField from '../../components/ui/SelectField';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton';
-import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
-import toast from 'react-hot-toast';
+import EmptyState from '../../components/ui/EmptyState';
+import Modal from '../../components/ui/Modal';
+import ConfirmModal from '../../components/ui/ConfirmModal';
+import { HiOutlinePencilSquare, HiOutlineTrash, HiOutlinePlus, HiOutlineAcademicCap } from 'react-icons/hi2';
+
+const emptyForm = { programName: '', universityId: '', level: '', tuitionPerYear: '' };
 
 export default function ManagePrograms() {
   const [items, setItems] = useState([]);
   const [universities, setUniversities] = useState([]);
-  const [form, setForm] = useState({ name: '', universityId: '', degreeLevel: '', duration: '', tuitionFee: '', description: '' });
-  const [editing, setEditing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [uniFilter, setUniFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('');
 
-  useEffect(() => {
-    fetchAll();
-    API.get('/api/admin/universities').then(r => setUniversities(r.data.data)).catch(() => {});
-  }, []);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
 
-  const fetchAll = async () => {
-    try { const res = await API.get('/api/admin/programs'); setItems(res.data.data); }
-    catch { toast.error('Failed to load'); }
-    finally { setLoading(false); }
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const [pRes, uRes] = await Promise.all([getPrograms(), getUniversities()]);
+      setItems(pRes.data.data);
+      setUniversities(uRes.data.data);
+    } catch {
+      toast.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => { load(); }, []);
+
+  const levels = useMemo(() => {
+    const set = new Set(items.map((p) => p.level).filter(Boolean));
+    return [...set].sort();
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    return items.filter((p) => {
+      const matchSearch = p.programName.toLowerCase().includes(search.toLowerCase());
+      const matchUni = !uniFilter || p.university?.id === Number(uniFilter);
+      const matchLevel = !levelFilter || p.level === levelFilter;
+      return matchSearch && matchUni && matchLevel;
+    });
+  }, [items, search, uniFilter, levelFilter]);
+
+  const openCreate = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
+
+  const openEdit = (p) => {
+    setEditing(p);
+    setForm({
+      programName: p.programName,
+      universityId: p.university?.id || '',
+      level: p.level || '',
+      tuitionPerYear: p.tuitionPerYear ?? '',
+    });
+    setModalOpen(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.programName.trim()) return toast.error('Program name is required');
+    if (!form.universityId) return toast.error('Please select a university');
+    setSaving(true);
     try {
-      if (editing) { await API.put(`/api/admin/programs/${editing}`, form); toast.success('Updated'); }
-      else { await API.post('/api/admin/programs', form); toast.success('Created'); }
-      setForm({ name: '', universityId: '', degreeLevel: '', duration: '', tuitionFee: '', description: '' });
-      setEditing(null);
-      fetchAll();
-    } catch (err) { toast.error(err.response?.data?.error || 'Failed'); }
+      const payload = {
+        programName: form.programName.trim(),
+        universityId: Number(form.universityId),
+        level: form.level.trim() || null,
+        tuitionPerYear: form.tuitionPerYear !== '' ? Number(form.tuitionPerYear) : null,
+      };
+      if (editing) {
+        await updateProgram(editing.id, payload);
+        toast.success('Program updated');
+      } else {
+        await createProgram(payload);
+        toast.success('Program created');
+      }
+      setModalOpen(false);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Save failed');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const startEdit = (p) => {
-    setEditing(p.id);
-    setForm({
-      name: p.name, universityId: String(p.universityId), degreeLevel: p.degreeLevel,
-      duration: p.duration || '', tuitionFee: p.tuitionFee ? String(p.tuitionFee) : '', description: p.description || '',
-    });
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteProgram(deleteTarget.id);
+      toast.success('Program deleted');
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Delete failed');
+    } finally {
+      setDeleting(false);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete?')) return;
-    try { await API.delete(`/api/admin/programs/${id}`); toast.success('Deleted'); fetchAll(); }
-    catch { toast.error('Delete failed'); }
-  };
+  const fmtCurrency = (v) => v != null ? `$${Number(v).toLocaleString()}` : '—';
+
+  if (loading) return <LoadingSkeleton rows={5} />;
 
   return (
     <>
-      <PageHeader title="Manage Programs" />
+      <PageHeader title="Manage Programs" subtitle={`${items.length} programs total`}>
+        <PrimaryButton onClick={openCreate}><HiOutlinePlus className="w-4 h-4" /> Add Program</PrimaryButton>
+      </PageHeader>
 
-      <GlassPanel className="mb-8">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-          <TextField label="Name" id="progName" name="name" value={form.name} onChange={handleChange} required />
-          <SelectField label="University" id="universityId" name="universityId" value={form.universityId} onChange={handleChange} required>
-            <option value="">Select</option>
-            {universities.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-          </SelectField>
-          <TextField label="Degree Level" id="degreeLevel" name="degreeLevel" value={form.degreeLevel} onChange={handleChange} required placeholder="Bachelors / Masters" />
-          <TextField label="Duration" id="duration" name="duration" value={form.duration} onChange={handleChange} />
-          <TextField label="Tuition Fee" id="tuitionFee" name="tuitionFee" type="number" value={form.tuitionFee} onChange={handleChange} />
-          <TextField label="Description" id="progDesc" name="description" value={form.description} onChange={handleChange} />
-          <div className="flex gap-2 sm:col-span-2 lg:col-span-3">
-            <PrimaryButton type="submit">{editing ? 'Update' : 'Create'}</PrimaryButton>
-            {editing && <SecondaryButton type="button" onClick={() => { setEditing(null); setForm({ name: '', universityId: '', degreeLevel: '', duration: '', tuitionFee: '', description: '' }); }}>Cancel</SecondaryButton>}
-          </div>
-        </form>
-      </GlassPanel>
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <TextField placeholder="Search by program name…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <SelectField value={uniFilter} onChange={(e) => setUniFilter(e.target.value)} className="w-52">
+          <option value="">All Universities</option>
+          {universities.map((u) => <option key={u.id} value={u.id}>{u.universityName}</option>)}
+        </SelectField>
+        <SelectField value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)} className="w-40">
+          <option value="">All Levels</option>
+          {levels.map((l) => <option key={l} value={l}>{l}</option>)}
+        </SelectField>
+      </div>
 
-      {loading ? <LoadingSkeleton rows={4} /> : (
-        <GlassTable headers={['ID', 'Name', 'University', 'Degree', 'Tuition', 'Actions']}>
-          {items.map((p) => (
-            <tr key={p.id} className="hover:bg-white/20 transition-colors">
+      {filtered.length === 0 ? (
+        <EmptyState icon={HiOutlineAcademicCap} title="No programs found" />
+      ) : (
+        <GlassTable headers={['ID', 'Program Name', 'University', 'Level', 'Tuition/Year', 'Actions']}>
+          {filtered.map((p) => (
+            <tr key={p.id} className="hover:bg-white/30 transition-colors">
               <Td>{p.id}</Td>
-              <Td className="font-medium">{p.name}</Td>
-              <Td>{p.university?.name}</Td>
-              <Td>{p.degreeLevel}</Td>
-              <Td>{p.tuitionFee ? `$${p.tuitionFee.toLocaleString()}` : '—'}</Td>
+              <Td className="font-semibold">{p.programName}</Td>
+              <Td>{p.university?.universityName || '—'}</Td>
+              <Td>{p.level || '—'}</Td>
+              <Td>{fmtCurrency(p.tuitionPerYear)}</Td>
               <Td>
                 <div className="flex gap-2">
-                  <button onClick={() => startEdit(p)} className="p-1.5 rounded-lg hover:bg-white/40 text-secondary transition-colors"><HiOutlinePencilSquare className="w-4 h-4" /></button>
-                  <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-danger transition-colors"><HiOutlineTrash className="w-4 h-4" /></button>
+                  <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg hover:bg-white/50 text-secondary transition-colors" title="Edit"><HiOutlinePencilSquare className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteTarget(p)} className="p-1.5 rounded-lg hover:bg-red-50 text-danger transition-colors" title="Delete"><HiOutlineTrash className="w-4 h-4" /></button>
                 </div>
               </Td>
             </tr>
           ))}
         </GlassTable>
       )}
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Program' : 'Add Program'}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <TextField label="Program Name *" value={form.programName} onChange={(e) => setForm({ ...form, programName: e.target.value })} />
+          <SelectField label="University *" value={form.universityId} onChange={(e) => setForm({ ...form, universityId: e.target.value })}>
+            <option value="">Select university…</option>
+            {universities.map((u) => <option key={u.id} value={u.id}>{u.universityName}</option>)}
+          </SelectField>
+          <TextField label="Level" value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} placeholder="e.g. Masters, Bachelors, PhD" />
+          <TextField label="Tuition Per Year ($)" type="number" value={form.tuitionPerYear} onChange={(e) => setForm({ ...form, tuitionPerYear: e.target.value })} placeholder="e.g. 35000" />
+          <div className="flex justify-end gap-3 pt-2">
+            <SecondaryButton type="button" onClick={() => setModalOpen(false)}>Cancel</SecondaryButton>
+            <PrimaryButton type="submit" loading={saving}>{editing ? 'Update' : 'Create'}</PrimaryButton>
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Program"
+        message={`Are you sure you want to delete "${deleteTarget?.programName}"?`}
+        loading={deleting}
+        danger
+      />
     </>
   );
 }

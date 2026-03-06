@@ -1,98 +1,181 @@
-import { useState, useEffect } from 'react';
-import API from '../../api/axios';
+import { useState, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
+import { getUniversities, createUniversity, updateUniversity, deleteUniversity, getCountries } from '../../api/adminService';
 import { PageHeader } from '../../components/ui/PageHeader';
-import GlassPanel from '../../components/ui/GlassPanel';
 import GlassTable, { Td } from '../../components/ui/GlassTable';
-import TextField from '../../components/ui/TextField';
-import SelectField from '../../components/ui/SelectField';
 import PrimaryButton from '../../components/ui/PrimaryButton';
 import SecondaryButton from '../../components/ui/SecondaryButton';
+import TextField from '../../components/ui/TextField';
+import SelectField from '../../components/ui/SelectField';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton';
-import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
-import toast from 'react-hot-toast';
+import EmptyState from '../../components/ui/EmptyState';
+import Modal from '../../components/ui/Modal';
+import ConfirmModal from '../../components/ui/ConfirmModal';
+import { HiOutlinePencilSquare, HiOutlineTrash, HiOutlinePlus, HiOutlineBuildingLibrary } from 'react-icons/hi2';
+
+const emptyForm = { universityName: '', countryId: '', type: '', city: '' };
 
 export default function ManageUniversities() {
   const [items, setItems] = useState([]);
   const [countries, setCountries] = useState([]);
-  const [form, setForm] = useState({ name: '', countryId: '', location: '', ranking: '', website: '' });
-  const [editing, setEditing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [countryFilter, setCountryFilter] = useState('');
 
-  useEffect(() => {
-    fetchAll();
-    API.get('/api/admin/countries').then(r => setCountries(r.data.data)).catch(() => {});
-  }, []);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
 
-  const fetchAll = async () => {
-    try { const res = await API.get('/api/admin/universities'); setItems(res.data.data); }
-    catch { toast.error('Failed to load'); }
-    finally { setLoading(false); }
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const [uRes, cRes] = await Promise.all([getUniversities(), getCountries()]);
+      setItems(uRes.data.data);
+      setCountries(cRes.data.data);
+    } catch {
+      toast.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => { load(); }, []);
+
+  const filtered = useMemo(() => {
+    return items.filter((u) => {
+      const matchSearch = u.universityName.toLowerCase().includes(search.toLowerCase()) ||
+        (u.city || '').toLowerCase().includes(search.toLowerCase());
+      const matchCountry = !countryFilter || u.country?.id === Number(countryFilter);
+      return matchSearch && matchCountry;
+    });
+  }, [items, search, countryFilter]);
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm(emptyForm);
+    setModalOpen(true);
+  };
+
+  const openEdit = (u) => {
+    setEditing(u);
+    setForm({
+      universityName: u.universityName,
+      countryId: u.country?.id || '',
+      type: u.type || '',
+      city: u.city || '',
+    });
+    setModalOpen(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.universityName.trim()) return toast.error('University name is required');
+    if (!form.countryId) return toast.error('Please select a country');
+    setSaving(true);
     try {
-      if (editing) { await API.put(`/api/admin/universities/${editing}`, form); toast.success('Updated'); }
-      else { await API.post('/api/admin/universities', form); toast.success('Created'); }
-      setForm({ name: '', countryId: '', location: '', ranking: '', website: '' });
-      setEditing(null);
-      fetchAll();
-    } catch (err) { toast.error(err.response?.data?.error || 'Failed'); }
+      const payload = {
+        universityName: form.universityName.trim(),
+        countryId: Number(form.countryId),
+        type: form.type.trim() || null,
+        city: form.city.trim() || null,
+      };
+      if (editing) {
+        await updateUniversity(editing.id, payload);
+        toast.success('University updated');
+      } else {
+        await createUniversity(payload);
+        toast.success('University created');
+      }
+      setModalOpen(false);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Save failed');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const startEdit = (u) => {
-    setEditing(u.id);
-    setForm({ name: u.name, countryId: String(u.countryId), location: u.location || '', ranking: u.ranking ? String(u.ranking) : '', website: u.website || '' });
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteUniversity(deleteTarget.id);
+      toast.success('University deleted');
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Delete failed');
+    } finally {
+      setDeleting(false);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete?')) return;
-    try { await API.delete(`/api/admin/universities/${id}`); toast.success('Deleted'); fetchAll(); }
-    catch { toast.error('Delete failed'); }
-  };
+  if (loading) return <LoadingSkeleton rows={5} />;
 
   return (
     <>
-      <PageHeader title="Manage Universities" />
+      <PageHeader title="Manage Universities" subtitle={`${items.length} universities total`}>
+        <PrimaryButton onClick={openCreate}><HiOutlinePlus className="w-4 h-4" /> Add University</PrimaryButton>
+      </PageHeader>
 
-      <GlassPanel className="mb-8">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-          <TextField label="Name" id="uniName" name="name" value={form.name} onChange={handleChange} required />
-          <SelectField label="Country" id="countryId" name="countryId" value={form.countryId} onChange={handleChange} required>
-            <option value="">Select</option>
-            {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </SelectField>
-          <TextField label="Location" id="location" name="location" value={form.location} onChange={handleChange} />
-          <TextField label="Ranking" id="ranking" name="ranking" type="number" value={form.ranking} onChange={handleChange} />
-          <TextField label="Website" id="website" name="website" value={form.website} onChange={handleChange} />
-          <div className="flex gap-2">
-            <PrimaryButton type="submit">{editing ? 'Update' : 'Create'}</PrimaryButton>
-            {editing && <SecondaryButton type="button" onClick={() => { setEditing(null); setForm({ name: '', countryId: '', location: '', ranking: '', website: '' }); }}>Cancel</SecondaryButton>}
-          </div>
-        </form>
-      </GlassPanel>
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <TextField placeholder="Search by name or city…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <SelectField value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="w-48">
+          <option value="">All Countries</option>
+          {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
+        </SelectField>
+      </div>
 
-      {loading ? <LoadingSkeleton rows={4} /> : (
-        <GlassTable headers={['ID', 'Name', 'Country', 'Location', 'Ranking', 'Actions']}>
-          {items.map((u) => (
-            <tr key={u.id} className="hover:bg-white/20 transition-colors">
+      {filtered.length === 0 ? (
+        <EmptyState icon={HiOutlineBuildingLibrary} title="No universities found" />
+      ) : (
+        <GlassTable headers={['ID', 'University Name', 'Country', 'Type', 'City', 'Actions']}>
+          {filtered.map((u) => (
+            <tr key={u.id} className="hover:bg-white/30 transition-colors">
               <Td>{u.id}</Td>
-              <Td className="font-medium">{u.name}</Td>
-              <Td>{u.country?.name}</Td>
-              <Td>{u.location || '—'}</Td>
-              <Td>{u.ranking || '—'}</Td>
+              <Td className="font-semibold">{u.universityName}</Td>
+              <Td>{u.country?.countryName || '—'}</Td>
+              <Td>{u.type || '—'}</Td>
+              <Td>{u.city || '—'}</Td>
               <Td>
                 <div className="flex gap-2">
-                  <button onClick={() => startEdit(u)} className="p-1.5 rounded-lg hover:bg-white/40 text-secondary transition-colors"><HiOutlinePencilSquare className="w-4 h-4" /></button>
-                  <button onClick={() => handleDelete(u.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-danger transition-colors"><HiOutlineTrash className="w-4 h-4" /></button>
+                  <button onClick={() => openEdit(u)} className="p-1.5 rounded-lg hover:bg-white/50 text-secondary transition-colors" title="Edit"><HiOutlinePencilSquare className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteTarget(u)} className="p-1.5 rounded-lg hover:bg-red-50 text-danger transition-colors" title="Delete"><HiOutlineTrash className="w-4 h-4" /></button>
                 </div>
               </Td>
             </tr>
           ))}
         </GlassTable>
       )}
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit University' : 'Add University'}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <TextField label="University Name *" value={form.universityName} onChange={(e) => setForm({ ...form, universityName: e.target.value })} />
+          <SelectField label="Country *" value={form.countryId} onChange={(e) => setForm({ ...form, countryId: e.target.value })}>
+            <option value="">Select country…</option>
+            {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
+          </SelectField>
+          <TextField label="Type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} placeholder="e.g. Public, Private" />
+          <TextField label="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="e.g. Cambridge" />
+          <div className="flex justify-end gap-3 pt-2">
+            <SecondaryButton type="button" onClick={() => setModalOpen(false)}>Cancel</SecondaryButton>
+            <PrimaryButton type="submit" loading={saving}>{editing ? 'Update' : 'Create'}</PrimaryButton>
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete University"
+        message={`Are you sure you want to delete "${deleteTarget?.universityName}"?`}
+        loading={deleting}
+        danger
+      />
     </>
   );
 }

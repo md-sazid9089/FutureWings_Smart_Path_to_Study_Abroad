@@ -816,4 +816,160 @@ router.get("/ratings", requireAdmin, async (req, res) => {
   }
 });
 
+// ───────────────────────────────────────────────────────────
+// DASHBOARD STATS
+// ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/admin/stats
+ * Dashboard statistics
+ */
+router.get("/stats", requireAdmin, async (req, res) => {
+  try {
+    const [
+      totalUsers,
+      totalCountries,
+      totalUniversities,
+      totalPrograms,
+      totalScholarships,
+      totalApplications,
+      pendingDocuments,
+      totalVisaOutcomes,
+      recentApplications,
+      recentDocuments,
+      statusBreakdown,
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.country.count(),
+      prisma.university.count(),
+      prisma.program.count(),
+      prisma.scholarship.count(),
+      prisma.application.count(),
+      prisma.userDocument.count({ where: { verificationStatus: "PENDING" } }),
+      prisma.visaOutcome.count(),
+      prisma.application.findMany({
+        take: 5,
+        orderBy: { appliedDate: "desc" },
+        include: {
+          user: { select: { id: true, email: true, fullName: true } },
+          country: { select: { id: true, countryName: true } },
+          program: { select: { id: true, programName: true } },
+          status: { select: { id: true, statusName: true } },
+          visaOutcome: { select: { id: true, decision: true } },
+        },
+      }),
+      prisma.userDocument.findMany({
+        take: 5,
+        where: { verificationStatus: "PENDING" },
+        orderBy: { uploadedAt: "desc" },
+        include: {
+          user: { select: { id: true, email: true, fullName: true } },
+        },
+      }),
+      prisma.applicationStatus.findMany({
+        include: { _count: { select: { applications: true } } },
+      }),
+    ]);
+
+    return successResponse(res, {
+      counts: {
+        totalUsers,
+        totalCountries,
+        totalUniversities,
+        totalPrograms,
+        totalScholarships,
+        totalApplications,
+        pendingDocuments,
+        totalVisaOutcomes,
+      },
+      recentApplications,
+      recentDocuments,
+      statusBreakdown: statusBreakdown.map((s) => ({
+        status: s.statusName,
+        count: s._count.applications,
+      })),
+    });
+  } catch (error) {
+    console.error("Get stats error:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+});
+
+// ───────────────────────────────────────────────────────────
+// APPLICATIONS LIST
+// ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/admin/applications
+ * List all applications with filters
+ */
+router.get("/applications", requireAdmin, async (req, res) => {
+  try {
+    const { status, countryId } = req.query;
+
+    const where = {};
+    if (status) {
+      const statusRow = await prisma.applicationStatus.findUnique({
+        where: { statusName: status },
+      });
+      if (statusRow) where.statusId = statusRow.id;
+    }
+    if (countryId) where.countryId = parseInt(countryId, 10);
+
+    const applications = await prisma.application.findMany({
+      where,
+      include: {
+        user: { select: { id: true, email: true, fullName: true } },
+        country: { select: { id: true, countryName: true } },
+        program: {
+          select: {
+            id: true,
+            programName: true,
+            university: { select: { id: true, universityName: true } },
+          },
+        },
+        status: { select: { id: true, statusName: true } },
+        visaOutcome: { select: { id: true, decision: true } },
+      },
+      orderBy: { appliedDate: "desc" },
+    });
+
+    return successResponse(res, applications);
+  } catch (error) {
+    console.error("Get applications error:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+});
+
+// ───────────────────────────────────────────────────────────
+// VISA OUTCOMES LIST
+// ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/admin/visa-outcomes
+ * List all visa outcomes
+ */
+router.get("/visa-outcomes", requireAdmin, async (req, res) => {
+  try {
+    const outcomes = await prisma.visaOutcome.findMany({
+      include: {
+        application: {
+          select: {
+            id: true,
+            user: { select: { id: true, email: true, fullName: true } },
+            country: { select: { id: true, countryName: true } },
+            program: { select: { id: true, programName: true } },
+          },
+        },
+      },
+      orderBy: { id: "desc" },
+    });
+
+    return successResponse(res, outcomes);
+  } catch (error) {
+    console.error("Get visa outcomes error:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+});
+
 module.exports = router;

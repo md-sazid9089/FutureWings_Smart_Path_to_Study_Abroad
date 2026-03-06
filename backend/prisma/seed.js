@@ -18,21 +18,32 @@ async function main() {
   }
   console.log("✔  ApplicationStatuses seeded:", statusNames.join(", "));
 
-  // ─── 2. Default Admin User ────────────────────────────────
-  const adminEmail = "admin@futurewings.com";
-  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
-  if (!existingAdmin) {
-    await prisma.user.create({
-      data: {
-        email: adminEmail,
-        passwordHash: await bcrypt.hash("admin123", 10),
-        role: "ADMIN",
-        fullName: "System Admin",
-      },
-    });
-    console.log("✔  Admin user created:", adminEmail, "/ admin123");
-  } else {
-    console.log("⏭  Admin user already exists");
+  // ─── 2. Admin Users ────────────────────────────────────────
+  const admins = [
+    { email: "sazidcse@gmail.com", fullName: "Sazid Admin" },
+    { email: "irfancse@gmail.com", fullName: "Irfan Admin" },
+  ];
+  const adminPassword = await bcrypt.hash("admin124", 10);
+  for (const admin of admins) {
+    const existing = await prisma.user.findUnique({ where: { email: admin.email } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email: admin.email,
+          passwordHash: adminPassword,
+          role: "ADMIN",
+          fullName: admin.fullName,
+        },
+      });
+      console.log("✔  Admin user created:", admin.email, "/ admin124");
+    } else {
+      // Update password and role in case they already exist as regular users
+      await prisma.user.update({
+        where: { email: admin.email },
+        data: { passwordHash: adminPassword, role: "ADMIN", fullName: admin.fullName },
+      });
+      console.log("✔  Admin user updated:", admin.email, "/ admin124");
+    }
   }
 
   // ─── 3. Demo User ────────────────────────────────────────

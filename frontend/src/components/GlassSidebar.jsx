@@ -21,7 +21,7 @@ const links = [
   { to: '/admin/scholarships', label: 'Scholarships', icon: HiOutlineBanknotes },
   { to: '/admin/documents', label: 'Documents', icon: HiOutlineDocumentText },
   { to: '/admin/applications', label: 'Applications', icon: HiOutlineClipboardDocumentList },
-  { to: '/admin/visa-outcome', label: 'Visa Outcomes', icon: HiOutlineShieldCheck },
+  { to: '/admin/visa-outcomes', label: 'Visa Outcomes', icon: HiOutlineShieldCheck },
   { to: '/admin/ratings', label: 'Ratings', icon: HiOutlineStar },
 ];
 

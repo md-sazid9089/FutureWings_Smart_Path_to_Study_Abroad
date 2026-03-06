@@ -37,6 +37,7 @@ import ManageDocuments from './pages/admin/ManageDocuments';
 import ManageApplications from './pages/admin/ManageApplications';
 import AdminVisaOutcome from './pages/admin/AdminVisaOutcome';
 import ManageRatings from './pages/admin/ManageRatings';
+import VisaOutcomesList from './pages/admin/VisaOutcomesList';
 
 /* Redirect logged-in users away from auth pages */
 function GuestOnly({ children }) {
@@ -99,6 +100,7 @@ export default function App() {
           <Route path="/admin/scholarships" element={<ManageScholarships />} />
           <Route path="/admin/documents" element={<ManageDocuments />} />
           <Route path="/admin/applications" element={<ManageApplications />} />
+          <Route path="/admin/visa-outcomes" element={<VisaOutcomesList />} />
           <Route path="/admin/applications/:id/visa-outcome" element={<AdminVisaOutcome />} />
           <Route path="/admin/ratings" element={<ManageRatings />} />
         </Route>

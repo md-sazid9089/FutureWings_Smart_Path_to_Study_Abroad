@@ -1,74 +1,177 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import API from '../../api/axios';
+import { useState, useEffect, useMemo } from 'react';
+import toast from 'react-hot-toast';
+import { getApplications, updateApplicationStatus, getCountries } from '../../api/adminService';
 import { PageHeader } from '../../components/ui/PageHeader';
 import GlassTable, { Td } from '../../components/ui/GlassTable';
-import StatusPill from '../../components/ui/StatusPill';
+import SecondaryButton from '../../components/ui/SecondaryButton';
 import PrimaryButton from '../../components/ui/PrimaryButton';
+import TextField from '../../components/ui/TextField';
+import SelectField from '../../components/ui/SelectField';
+import StatusPill from '../../components/ui/StatusPill';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton';
-import toast from 'react-hot-toast';
+import EmptyState from '../../components/ui/EmptyState';
+import Modal from '../../components/ui/Modal';
+import { useNavigate } from 'react-router-dom';
+import { HiOutlineClipboardDocumentList, HiOutlineEye } from 'react-icons/hi2';
+
+const STATUS_NAMES = ['Pending', 'Processing', 'Accepted', 'Rejected'];
+
+const statusColor = (s) => {
+  const n = s?.toLowerCase();
+  if (n === 'accepted') return 'green';
+  if (n === 'rejected') return 'red';
+  if (n === 'processing') return 'blue';
+  return 'yellow';
+};
 
 export default function ManageApplications() {
-  const [apps, setApps] = useState([]);
+  const navigate = useNavigate();
+  const [items, setItems] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [countryFilter, setCountryFilter] = useState('');
 
-  useEffect(() => { fetchAll(); }, []);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [newStatus, setNewStatus] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const fetchAll = async () => {
+  const load = async () => {
+    setLoading(true);
     try {
-      const res = await API.get('/api/admin/applications');
-      setApps(res.data.data);
-    } catch { toast.error('Failed to load'); }
-    finally { setLoading(false); }
+      const params = {};
+      if (statusFilter) params.status = statusFilter;
+      if (countryFilter) params.countryId = countryFilter;
+      const [aRes, cRes] = await Promise.all([getApplications(params), getCountries()]);
+      setItems(aRes.data.data);
+      setCountries(cRes.data.data);
+    } catch {
+      toast.error('Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleStatusChange = async (appId, statusName) => {
-    try {
-      await API.put(`/api/admin/applications/${appId}/status`, { statusName });
-      toast.success('Status updated');
-      fetchAll();
-    } catch (err) { toast.error(err.response?.data?.error || 'Failed'); }
+  useEffect(() => { load(); }, [statusFilter, countryFilter]);
+
+  const filtered = useMemo(() => {
+    if (!search) return items;
+    const q = search.toLowerCase();
+    return items.filter((a) =>
+      (a.user?.fullName || '').toLowerCase().includes(q) ||
+      (a.user?.email || '').toLowerCase().includes(q) ||
+      (a.program?.programName || '').toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
+  const openStatus = (app) => {
+    setSelected(app);
+    setNewStatus(app.status?.statusName || '');
+    setModalOpen(true);
   };
+
+  const handleUpdateStatus = async (e) => {
+    e.preventDefault();
+    if (!newStatus) return toast.error('Select a status');
+    setSaving(true);
+    try {
+      await updateApplicationStatus(selected.id, newStatus);
+      toast.success(`Status changed to ${newStatus}`);
+      setModalOpen(false);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || 'Update failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+
+  if (loading) return <LoadingSkeleton rows={5} />;
 
   return (
     <>
-      <PageHeader title="Manage Applications" />
+      <PageHeader title="Manage Applications" subtitle={`${items.length} applications`} />
 
-      {loading ? <LoadingSkeleton rows={5} /> : (
-        <GlassTable headers={['ID', 'User', 'Country', 'Program', 'Intake', 'Status', 'Visa', 'Actions']}>
-          {apps.map((a) => (
-            <tr key={a.id} className="hover:bg-white/20 transition-colors">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <TextField placeholder="Search by user, email, or program…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <SelectField value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-40">
+          <option value="">All Status</option>
+          {STATUS_NAMES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </SelectField>
+        <SelectField value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="w-52">
+          <option value="">All Countries</option>
+          {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
+        </SelectField>
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyState icon={HiOutlineClipboardDocumentList} title="No applications found" />
+      ) : (
+        <GlassTable headers={['ID', 'User', 'Country', 'Program', 'Applied', 'Status', 'Visa', 'Actions']}>
+          {filtered.map((a) => (
+            <tr key={a.id} className="hover:bg-white/30 transition-colors">
               <Td>{a.id}</Td>
-              <Td>{a.user?.fullname || a.user?.email}</Td>
-              <Td>{a.country?.name}</Td>
-              <Td className="font-medium">{a.program?.name}</Td>
-              <Td>{a.intakeApplied}</Td>
-              <Td><StatusPill status={a.status?.name} /></Td>
-              <Td>{a.visaOutcome ? <StatusPill status={a.visaOutcome.outcome} /> : <span className="text-text-light">—</span>}</Td>
               <Td>
-                <div className="flex items-center gap-2">
-                  <select
-                    defaultValue=""
-                    onChange={(e) => { if (e.target.value) handleStatusChange(a.id, e.target.value); }}
-                    className="px-2 py-1 rounded-lg text-xs bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  >
-                    <option value="" disabled>Change</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                  {!a.visaOutcome && (
-                    <Link to={`/admin/applications/${a.id}/visa-outcome`}>
-                      <PrimaryButton className="text-xs px-3 py-1">+ Visa</PrimaryButton>
-                    </Link>
-                  )}
+                <div>
+                  <div className="font-semibold">{a.user?.fullName || '—'}</div>
+                  <div className="text-xs text-gray-500">{a.user?.email}</div>
+                </div>
+              </Td>
+              <Td>{a.country?.countryName || '—'}</Td>
+              <Td>{a.program?.programName || '—'}</Td>
+              <Td>{fmtDate(a.appliedDate)}</Td>
+              <Td><StatusPill status={a.status?.statusName || 'Unknown'} color={statusColor(a.status?.statusName)} /></Td>
+              <Td>
+                {a.visaOutcome ? (
+                  <StatusPill
+                    status={a.visaOutcome.decision}
+                    color={a.visaOutcome.decision === 'APPROVED' ? 'green' : 'red'}
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">—</span>
+                )}
+              </Td>
+              <Td>
+                <div className="flex gap-2">
+                  <button onClick={() => openStatus(a)} className="p-1.5 rounded-lg hover:bg-white/50 text-secondary transition-colors" title="Update Status">
+                    <HiOutlineClipboardDocumentList className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => navigate(`/admin/applications/${a.id}/visa-outcome`)} className="p-1.5 rounded-lg hover:bg-white/50 text-primary transition-colors" title="Visa Outcome">
+                    <HiOutlineEye className="w-4 h-4" />
+                  </button>
                 </div>
               </Td>
             </tr>
           ))}
         </GlassTable>
       )}
+
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Update Application Status">
+        {selected && (
+          <form onSubmit={handleUpdateStatus} className="space-y-4">
+            <div className="p-3 bg-white/30 rounded-xl space-y-1 text-sm">
+              <p><span className="font-medium">Applicant:</span> {selected.user?.fullName}</p>
+              <p><span className="font-medium">Program:</span> {selected.program?.programName}</p>
+              <p><span className="font-medium">Country:</span> {selected.country?.countryName}</p>
+              <p><span className="font-medium">Current Status:</span>{' '}
+                <StatusPill status={selected.status?.statusName} color={statusColor(selected.status?.statusName)} />
+              </p>
+            </div>
+            <SelectField label="New Status *" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+              <option value="">Select…</option>
+              {STATUS_NAMES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </SelectField>
+            <div className="flex justify-end gap-3 pt-2">
+              <SecondaryButton type="button" onClick={() => setModalOpen(false)}>Cancel</SecondaryButton>
+              <PrimaryButton type="submit" loading={saving}>Update Status</PrimaryButton>
+            </div>
+          </form>
+        )}
+      </Modal>
     </>
   );
 }
