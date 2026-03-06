@@ -1,38 +1,16 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 const { PrismaClient } = require("@prisma/client");
-const { PrismaMssql } = require("@prisma/adapter-mssql");
-const mssql = require("mssql");
 
 /** Singleton — avoid spawning multiple clients in dev (nodemon restarts) */
 const globalForPrisma = globalThis;
 
-async function initializePrisma() {
-  const pool = new mssql.ConnectionPool({
-    server: "DESKTOP-1SSOPMM",
-    instanceName: "SQLEXPRESS",
-    database: "FutureWings_Smart_Path_to_Study_Abroad",
-    authentication: {
-      type: "default",
-    },
-    options: {
-      encrypt: false,
-      trustServerCertificate: true,
-      enableArithAbort: true,
-    },
-  });
-
-  const adapter = new PrismaMssql(pool);
-
-  return new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  });
-}
-
 let prisma = globalForPrisma.__prisma;
 
 if (!prisma) {
-  prisma = global.prismaPromise = initializePrisma();
+  prisma = new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  });
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.__prisma = prisma;
   }

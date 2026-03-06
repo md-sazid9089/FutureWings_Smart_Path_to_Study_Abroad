@@ -178,8 +178,3 @@ model CountryRating {
   @@map("CountryRatings")
 }
 
-model TestSample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-}
