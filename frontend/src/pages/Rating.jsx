@@ -47,7 +47,7 @@ export default function Rating() {
       });
       toast.success('Rating submitted!');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to submit rating');
+      toast.error(err.response?.data?.error?.message || 'Failed to submit rating');
     } finally {
       setSubmitting(false);
     }

@@ -1,5 +1,3 @@
-// ─── Prisma Schema — FutureWings Study Abroad ─────────────────
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,75 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── Notes ──────────────────────────────────────────────────────
-// SQL Server does not support native enums.
-// Enum-like columns use String with the following allowed values:
-//   Role:               "USER" | "ADMIN"
-//   VerificationStatus: "PENDING" | "VERIFIED" | "REJECTED"
-//   VisaDecision:       "APPROVED" | "DENIED"
-//   RatingType:         "POST"
-// Validation is enforced at the application layer.
-
-// ─── Models ─────────────────────────────────────────────────────
-
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique @db.NVarChar(255)
-  passwordHash String   @db.NVarChar(255)
-  role         String   @default("USER") @db.NVarChar(10)
-  fullName     String?  @db.NVarChar(150)
-  cgpa         Float?
-  degreeLevel  String?  @db.NVarChar(50)
-  major        String?  @db.NVarChar(100)
-  fundScore    Int?
-  createdAt    DateTime @default(now())
-
-  applications  Application[]
-  documents     UserDocument[]
+  id             Int             @id @default(autoincrement())
+  email          String          @unique @db.NVarChar(255)
+  passwordHash   String          @db.NVarChar(255)
+  role           String          @default("USER") @db.NVarChar(10)
+  fullName       String?         @db.NVarChar(150)
+  cgpa           Float?
+  degreeLevel    String?         @db.NVarChar(50)
+  major          String?         @db.NVarChar(100)
+  fundScore      Int?
+  createdAt      DateTime        @default(now())
+  applications   Application[]
   countryRatings CountryRating[]
+  documents      UserDocument[]
 
   @@map("Users")
 }
 
 model Country {
-  id          Int     @id @default(autoincrement())
-  countryName String  @db.NVarChar(100)
-  region      String? @db.NVarChar(100)
-  currency    String? @db.NVarChar(20)
-  tierLevel   Int     @default(3)
-  isActive    Boolean @default(true)
-
-  universities   University[]
-  scholarships   Scholarship[]
+  id             Int             @id @default(autoincrement())
+  countryName    String          @db.NVarChar(100)
+  region         String?         @db.NVarChar(100)
+  currency       String?         @db.NVarChar(20)
+  tierLevel      Int             @default(3)
+  isActive       Boolean         @default(true)
   applications   Application[]
   countryRatings CountryRating[]
+  scholarships   Scholarship[]
+  universities   University[]
 
   @@map("Countries")
 }
 
 model University {
-  id             Int     @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   countryId      Int
-  universityName String  @db.NVarChar(200)
-  type           String? @db.NVarChar(50)
-  city           String? @db.NVarChar(100)
-
-  country  Country   @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  programs Program[]
+  universityName String    @db.NVarChar(200)
+  type           String?   @db.NVarChar(50)
+  city           String?   @db.NVarChar(100)
+  programs       Program[]
+  country        Country   @relation(fields: [countryId], references: [id], onUpdate: NoAction)
 
   @@index([countryId])
   @@map("Universities")
 }
 
 model Program {
-  id              Int     @id @default(autoincrement())
-  universityId    Int
-  programName     String  @db.NVarChar(200)
-  level           String? @db.NVarChar(50)
-  tuitionPerYear  Float?
-
-  university   University    @relation(fields: [universityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  applications Application[]
+  id             Int           @id @default(autoincrement())
+  universityId   Int
+  programName    String        @db.NVarChar(200)
+  level          String?       @db.NVarChar(50)
+  tuitionPerYear Float?
+  applications   Application[]
+  university     University    @relation(fields: [universityId], references: [id], onUpdate: NoAction)
 
   @@index([universityId])
   @@map("Programs")
@@ -91,53 +74,48 @@ model Scholarship {
   applyLink           String?   @db.NVarChar(500)
   deadline            DateTime?
   amount              Float?
-
-  country Country @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  country             Country   @relation(fields: [countryId], references: [id], onUpdate: NoAction)
 
   @@index([countryId])
   @@map("Scholarships")
 }
 
 model UserDocument {
-  id                 Int                @id @default(autoincrement())
+  id                 Int      @id @default(autoincrement())
   userId             Int
-  filePath           String             @db.NVarChar(500)
-  fileType           String?            @db.NVarChar(50)
-  verificationStatus String             @default("PENDING") @db.NVarChar(20)
-  adminNote          String?            @db.NVarChar(500)
-  uploadedAt         DateTime           @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  filePath           String   @db.NVarChar(500)
+  fileType           String?  @db.NVarChar(50)
+  verificationStatus String   @default("PENDING") @db.NVarChar(20)
+  adminNote          String?  @db.NVarChar(500)
+  uploadedAt         DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id], onUpdate: NoAction)
 
   @@index([userId])
   @@map("UserDocuments")
 }
 
 model ApplicationStatus {
-  id         Int    @id @default(autoincrement())
-  statusName String @unique @db.NVarChar(50)
-
+  id           Int           @id @default(autoincrement())
+  statusName   String        @unique @db.NVarChar(50)
   applications Application[]
 
   @@map("ApplicationStatuses")
 }
 
 model Application {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  countryId     Int
-  programId     Int
-  statusId      Int
-  appliedDate   DateTime @default(now())
-  intakeApplied String?  @db.NVarChar(50)
-
-  user    User              @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  country Country           @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  program Program           @relation(fields: [programId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  status  ApplicationStatus @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  visaOutcome   VisaOutcome?
+  id             Int               @id @default(autoincrement())
+  userId         Int
+  countryId      Int
+  programId      Int
+  statusId       Int
+  appliedDate    DateTime          @default(now())
+  intakeApplied  String?           @db.NVarChar(50)
+  country        Country           @relation(fields: [countryId], references: [id], onUpdate: NoAction)
+  program        Program           @relation(fields: [programId], references: [id], onUpdate: NoAction)
+  status         ApplicationStatus @relation(fields: [statusId], references: [id], onUpdate: NoAction)
+  user           User              @relation(fields: [userId], references: [id], onUpdate: NoAction)
   countryRatings CountryRating[]
+  visaOutcome    VisaOutcome?
 
   @@index([userId])
   @@index([countryId])
@@ -147,34 +125,31 @@ model Application {
 }
 
 model VisaOutcome {
-  id              Int          @id @default(autoincrement())
-  applicationId   Int          @unique
-  decision        String       @db.NVarChar(20)
-  reasonTitle     String?      @db.NVarChar(200)
-  notes           String?      @db.NVarChar(1000)
+  id              Int         @id @default(autoincrement())
+  applicationId   Int         @unique
+  decision        String      @db.NVarChar(20)
+  reasonTitle     String?     @db.NVarChar(200)
+  notes           String?
   destinationDate DateTime?
-
-  application Application @relation(fields: [applicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  application     Application @relation(fields: [applicationId], references: [id], onUpdate: NoAction)
 
   @@map("VisaOutcomes")
 }
 
 model CountryRating {
-  id            Int        @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   userId        Int
   countryId     Int
   applicationId Int
   ratingValue   Int
-  comments      String?    @db.NVarChar(1000)
-  ratingType    String     @default("POST") @db.NVarChar(10)
-  createdAt     DateTime   @default(now())
-
-  user        User        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  country     Country     @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  application Application @relation(fields: [applicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comments      String?
+  ratingType    String      @default("POST") @db.NVarChar(10)
+  createdAt     DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onUpdate: NoAction)
+  country       Country     @relation(fields: [countryId], references: [id], onUpdate: NoAction)
+  user          User        @relation(fields: [userId], references: [id], onUpdate: NoAction)
 
   @@unique([userId, countryId, ratingType])
   @@index([countryId])
   @@map("CountryRatings")
 }
-

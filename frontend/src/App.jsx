@@ -38,6 +38,7 @@ import ManageApplications from './pages/admin/ManageApplications';
 import AdminVisaOutcome from './pages/admin/AdminVisaOutcome';
 import ManageRatings from './pages/admin/ManageRatings';
 import VisaOutcomesList from './pages/admin/VisaOutcomesList';
+import ManageUsers from './pages/admin/ManageUsers';
 
 /* Redirect logged-in users away from auth pages */
 function GuestOnly({ children }) {
@@ -94,6 +95,7 @@ export default function App() {
         {/* ── Admin routes (with sidebar layout) ──── */}
         <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="/admin/countries" element={<ManageCountries />} />
           <Route path="/admin/universities" element={<ManageUniversities />} />
           <Route path="/admin/programs" element={<ManagePrograms />} />

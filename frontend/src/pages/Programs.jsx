@@ -38,7 +38,7 @@ export default function Programs() {
       });
       toast.success(`Applied to ${program.name}!`);
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Application failed');
+      toast.error(err.response?.data?.error?.message || 'Application failed');
     } finally {
       setApplying(null);
     }

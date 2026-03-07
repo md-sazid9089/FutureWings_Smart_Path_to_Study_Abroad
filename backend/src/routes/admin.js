@@ -972,4 +972,46 @@ router.get("/visa-outcomes", requireAdmin, async (req, res) => {
   }
 });
 
+// ───────────────────────────────────────────────────────────
+// USERS MANAGEMENT
+// ───────────────────────────────────────────────────────────
+
+/**
+ * GET /api/admin/users
+ * Get all users with optional role filter
+ */
+router.get("/users", requireAdmin, async (req, res) => {
+  try {
+    const { role } = req.query;
+    const where = role ? { role } : {};
+
+    const users = await prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
+        cgpa: true,
+        degreeLevel: true,
+        major: true,
+        fundScore: true,
+        createdAt: true,
+        _count: {
+          select: {
+            applications: true,
+            documents: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return successResponse(res, users);
+  } catch (error) {
+    console.error("Get users error:", error);
+    return errorResponse(res, "Internal server error", 500);
+  }
+});
+
 module.exports = router;

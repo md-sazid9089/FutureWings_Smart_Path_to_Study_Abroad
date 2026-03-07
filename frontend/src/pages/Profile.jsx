@@ -9,7 +9,7 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const [form, setForm] = useState({ fullname: '', cgpa: '', degreeLevel: '', major: '', fundScore: '' });
+  const [form, setForm] = useState({ fullName: '', cgpa: '', degreeLevel: '', major: '', fundScore: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -20,7 +20,7 @@ export default function Profile() {
       const res = await API.get('/api/user/me');
       const u = res.data.data;
       setForm({
-        fullname: u.fullname || '',
+        fullName: u.fullName || '',
         cgpa: u.cgpa?.toString() || '',
         degreeLevel: u.degreeLevel || '',
         major: u.major || '',
@@ -42,7 +42,7 @@ export default function Profile() {
       await API.put('/api/user/me', form);
       toast.success('Profile updated!');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Update failed');
+      toast.error(err.response?.data?.error?.message || 'Update failed');
     } finally {
       setSaving(false);
     }
@@ -56,7 +56,7 @@ export default function Profile() {
 
       <GlassPanel className="max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-5">
-          <TextField label="Full Name" id="fullname" name="fullname" value={form.fullname} onChange={handleChange} placeholder="John Doe" />
+          <TextField label="Full Name" id="fullName" name="fullName" value={form.fullName} onChange={handleChange} placeholder="John Doe" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <TextField label="CGPA" id="cgpa" name="cgpa" type="number" step="0.01" value={form.cgpa} onChange={handleChange} placeholder="e.g. 3.50" />

@@ -21,7 +21,7 @@ export default function ApplicationDetails() {
         const res = await API.get(`/api/applications/${id}`);
         setApp(res.data.data);
       } catch (err) {
-        toast.error(err.response?.data?.error || 'Failed to load application');
+        toast.error(err.response?.data?.error?.message || 'Failed to load application');
       } finally {
         setLoading(false);
       }

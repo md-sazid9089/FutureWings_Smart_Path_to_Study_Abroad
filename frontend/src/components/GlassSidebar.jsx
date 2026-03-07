@@ -11,10 +11,12 @@ import {
   HiOutlineStar,
   HiOutlineArrowRightOnRectangle,
   HiOutlineSquares2X2,
+  HiOutlineUsers,
 } from 'react-icons/hi2';
 
 const links = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: HiOutlineSquares2X2 },
+  { to: '/admin/users', label: 'Users', icon: HiOutlineUsers },
   { to: '/admin/countries', label: 'Countries', icon: HiOutlineGlobeAlt },
   { to: '/admin/universities', label: 'Universities', icon: HiOutlineBuildingLibrary },
   { to: '/admin/programs', label: 'Programs', icon: HiOutlineAcademicCap },

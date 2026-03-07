@@ -41,7 +41,7 @@ export default function Documents() {
       toast.success('Document uploaded!');
       fetchDocs();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Upload failed');
+      toast.error(err.response?.data?.error?.message || 'Upload failed');
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';

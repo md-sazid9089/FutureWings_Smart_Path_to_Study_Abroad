@@ -19,7 +19,7 @@ export default function Recommendations() {
         const res = await API.get('/api/recommendations/countries');
         setData(res.data.data);
       } catch (err) {
-        toast.error(err.response?.data?.error || 'Failed to load recommendations');
+        toast.error(err.response?.data?.error?.message || 'Failed to load recommendations');
       } finally {
         setLoading(false);
       }

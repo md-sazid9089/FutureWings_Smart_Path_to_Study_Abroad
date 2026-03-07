@@ -55,13 +55,13 @@ router.put("/me", requireAuth, async (req, res) => {
     const { userId } = req.auth;
     const { fullName, degreeLevel, major, cgpa, fundScore } = req.body;
 
-    // Build update data (only include provided fields)
+    // Build update data (only include provided fields, coerce types)
     const updateData = {};
     if (fullName !== undefined) updateData.fullName = fullName;
     if (degreeLevel !== undefined) updateData.degreeLevel = degreeLevel;
     if (major !== undefined) updateData.major = major;
-    if (cgpa !== undefined) updateData.cgpa = cgpa;
-    if (fundScore !== undefined) updateData.fundScore = fundScore;
+    if (cgpa !== undefined) updateData.cgpa = cgpa !== '' && cgpa !== null ? parseFloat(cgpa) : null;
+    if (fundScore !== undefined) updateData.fundScore = fundScore !== '' && fundScore !== null ? parseInt(fundScore, 10) : null;
 
     const user = await prisma.user.update({
       where: { id: userId },

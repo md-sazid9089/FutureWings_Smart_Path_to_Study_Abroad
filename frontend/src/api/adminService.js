@@ -7,6 +7,10 @@ import API from './axios';
 // ─── Dashboard ───────────────────────────────────────────
 export const getStats = () => API.get('/api/admin/stats');
 
+// ─── Users ───────────────────────────────────────────────
+export const getUsers = (params) =>
+  API.get('/api/admin/users', { params });
+
 // ─── Countries ───────────────────────────────────────────
 export const getCountries = () => API.get('/api/admin/countries');
 export const createCountry = (data) => API.post('/api/admin/countries', data);

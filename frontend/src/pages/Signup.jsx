@@ -24,7 +24,7 @@ export default function Signup() {
       toast.success('Account created!');
       navigate('/recommendations');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Signup failed');
+      toast.error(err.response?.data?.error?.message || 'Signup failed');
     } finally {
       setLoading(false);
     }

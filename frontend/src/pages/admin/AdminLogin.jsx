@@ -28,7 +28,7 @@ export default function AdminLogin() {
       toast.success('Welcome, Admin!');
       navigate('/admin/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Login failed');
+      toast.error(err.response?.data?.error?.message || 'Login failed');
     } finally {
       setLoading(false);
     }

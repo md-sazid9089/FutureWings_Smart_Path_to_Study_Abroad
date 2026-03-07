@@ -24,7 +24,7 @@ export default function VisaOutcome() {
         if (err.response?.status === 404) {
           setNotFound(true);
         } else {
-          toast.error(err.response?.data?.error || 'Failed to load visa outcome');
+          toast.error(err.response?.data?.error?.message || 'Failed to load visa outcome');
         }
       } finally {
         setLoading(false);

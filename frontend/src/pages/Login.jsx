@@ -24,7 +24,7 @@ export default function Login() {
       toast.success('Welcome back!');
       navigate('/recommendations');
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Login failed');
+      toast.error(err.response?.data?.error?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
