@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...\n");
+  console.log(" Seeding database...\n");
 
   // ─── 1. Application Statuses ──────────────────────────────
   const statusNames = ["Pending", "Processing", "Accepted", "Rejected"];

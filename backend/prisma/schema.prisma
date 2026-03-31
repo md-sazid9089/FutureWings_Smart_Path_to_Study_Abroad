@@ -12,7 +12,7 @@ model User {
   email          String          @unique @db.NVarChar(255)
   passwordHash   String          @db.NVarChar(255)
   role           String          @default("USER") @db.NVarChar(10)
-  fullName       String?         @db.NVarChar(150)
+  fullName       String?         @db.NVarChar(200)
   cgpa           Float?
   degreeLevel    String?         @db.NVarChar(50)
   major          String?         @db.NVarChar(100)
