@@ -23,6 +23,7 @@ app.use("/api/recommendations", require("./src/routes/recommendations"));
 app.use("/api/documents", require("./src/routes/documents"));
 app.use("/api/scholarships", require("./src/routes/scholarships"));
 app.use("/api/universities", require("./src/routes/universities"));
+app.use("/api/ai-assistant", require("./src/routes/ai-assistant"));
 app.use("/api/admin", require("./src/routes/admin"));
 
 // ─── Special route for visa outcomes ─────────────────────

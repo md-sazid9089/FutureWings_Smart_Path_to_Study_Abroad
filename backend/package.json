@@ -21,6 +21,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
+    "@google/genai": "^1.48.0",
     "@prisma/adapter-mssql": "^7.4.2",
     "@prisma/client": "^5.22.0",
     "bcrypt": "^6.0.0",
