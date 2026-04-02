@@ -4,16 +4,23 @@ import API from '../api/axios';
 import { PageHeader } from '../components/ui/PageHeader';
 import GlassCard from '../components/ui/GlassCard';
 import PrimaryButton from '../components/ui/PrimaryButton';
+import SecondaryButton from '../components/ui/SecondaryButton';
+import SelectField from '../components/ui/SelectField';
+import Modal from '../components/ui/Modal';
 import EmptyState from '../components/ui/EmptyState';
 import { CardSkeleton } from '../components/ui/LoadingSkeleton';
 import { HiOutlineAcademicCap, HiOutlineBanknotes, HiOutlineBuildingLibrary, HiOutlineSparkles } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
 export default function Programs() {
+  const latestYear = new Date().getFullYear();
   const { universityId } = useParams();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(null);
+  const [intakeModalOpen, setIntakeModalOpen] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [intakeSeason, setIntakeSeason] = useState('Spring');
 
   useEffect(() => {
     const fetchProgs = async () => {
@@ -26,9 +33,26 @@ export default function Programs() {
     fetchProgs();
   }, [universityId]);
 
-  const handleApply = async (program) => {
-    const intake = prompt('Enter intake period (e.g. Fall 2026):');
-    if (!intake) return;
+  const openApplyModal = (program) => {
+    setSelectedProgram(program);
+    setIntakeSeason('Spring');
+    setIntakeModalOpen(true);
+  };
+
+  const closeApplyModal = () => {
+    if (applying) return;
+    setIntakeModalOpen(false);
+    setSelectedProgram(null);
+    setIntakeSeason('Spring');
+  };
+
+  const handleApplySubmit = async (e) => {
+    e.preventDefault();
+
+    if (!selectedProgram) return;
+    const intake = `${intakeSeason} ${latestYear}`;
+
+    const program = selectedProgram;
     setApplying(program.id);
     try {
       await API.post('/api/applications', {
@@ -37,6 +61,7 @@ export default function Programs() {
         intakeApplied: intake,
       });
       toast.success(`Applied to ${program.programName}!`);
+      closeApplyModal();
     } catch (err) {
       toast.error(err.response?.data?.error?.message || 'Application failed');
     } finally {
@@ -143,11 +168,23 @@ export default function Programs() {
                     <HiOutlineBuildingLibrary className="w-4 h-4 text-primary" />
                     <span><span className="font-medium text-secondary">University:</span> {p.universityName || 'N/A'}</span>
                   </p>
+                  <p className="text-sm text-text-muted">
+                    <span className="font-medium text-secondary">Duration:</span> {p.durationMonths ? `${p.durationMonths} months` : 'N/A'}
+                  </p>
+                  <p className="text-sm text-text-muted">
+                    <span className="font-medium text-secondary">Intake:</span> {p.intakeSeasons || 'N/A'}
+                  </p>
                 </div>
+
+                {p.programOverview && (
+                  <p className="text-sm text-text-muted leading-6 mb-5 line-clamp-3">
+                    {p.programOverview}
+                  </p>
+                )}
 
                 <div className="mt-auto">
                 <PrimaryButton
-                  onClick={() => handleApply(p)}
+                  onClick={() => openApplyModal(p)}
                   disabled={!p.countryId}
                   loading={applying === p.id}
                   className="w-full text-xs px-4 py-2"
@@ -163,6 +200,29 @@ export default function Programs() {
           ))}
         </div>
       )}
+
+      <Modal open={intakeModalOpen} onClose={closeApplyModal} title="Apply With Intake Period">
+        <form onSubmit={handleApplySubmit} className="space-y-4">
+          <p className="text-sm text-text-muted">
+            Program: <span className="font-semibold text-text">{selectedProgram?.programName}</span>
+          </p>
+          <SelectField
+            label={`Intake Period (${latestYear})`}
+            value={intakeSeason}
+            onChange={(e) => setIntakeSeason(e.target.value)}
+          >
+            <option value="Spring">Spring</option>
+            <option value="Fall">Fall</option>
+          </SelectField>
+          <p className="text-xs text-text-muted">
+            Selected intake: <span className="font-semibold text-text">{`${intakeSeason} ${latestYear}`}</span>
+          </p>
+          <div className="flex justify-end gap-3 pt-2">
+            <SecondaryButton type="button" onClick={closeApplyModal}>Cancel</SecondaryButton>
+            <PrimaryButton type="submit" loading={applying === selectedProgram?.id}>Submit Application</PrimaryButton>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }
