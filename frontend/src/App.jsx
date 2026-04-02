@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import About from './pages/About';
 import Blog from './pages/Blog';
 import News from './pages/News';
+import NewsArticle from './pages/NewsArticle';
 import Contact from './pages/Contact';
 
 // ─── User pages ──────────────────────────────────────────
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/news" element={<News />} />
+          <Route path="/news/:id" element={<NewsArticle />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
 
