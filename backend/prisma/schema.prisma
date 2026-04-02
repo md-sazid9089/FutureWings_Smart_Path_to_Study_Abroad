@@ -32,6 +32,7 @@ model Country {
   currency       String?         @db.NVarChar(20)
   tierLevel      Int             @default(3)
   isActive       Boolean         @default(true)
+  visaFeeNote    String?         @db.NVarChar(100)
   applications   Application[]
   countryRatings CountryRating[]
   scholarships   Scholarship[]
