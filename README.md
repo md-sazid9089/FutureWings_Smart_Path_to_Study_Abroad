@@ -1,4 +1,4 @@
-# 🌍 FutureWings - Smart Path to Study Abroad
+# FutureWings - Smart Path to Study Abroad
 
 > **Your AI-powered companion for navigating international education. Discover universities, track applications, get visa insights, and connect with a global community of aspiring scholars.**
 
@@ -11,7 +11,7 @@
 
 ---
 
-## 🎯 Problem → Solution
+## Problem → Solution
 
 **Problem:** Thousands of aspiring international students struggle to navigate the study abroad process - scattered information, complex application procedures, visa uncertainties, and information overload.
 
@@ -19,31 +19,31 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🎓 **For Students**
-- 🔍 **Smart University Discovery** - Browse 10,000+ universities across 150+ countries with intelligent filtering
-- 📊 **Personalized Recommendations** - AI-powered program matching based on CGPA, major, and budget
-- 📝 **Application Tracking** - Centralized dashboard to manage multiple applications and deadlines
-- 📄 **Document Management** - Upload and share documents via Google Drive/OneDrive links with verification status
-- 🎫 **Visa Outcome Tracking** - Record visa decisions and outcomes for reference
-- ⭐ **Country Ratings** - Rate universities and countries based on real student experiences
-- 💬 **AI Assistant** - Chat with our AI for personalized advice on applications, visas, and programs
-- 📰 **Study Abroad News** - Stay updated on policy changes, scholarships, and international education trends
-- 🏆 **Scholarship Database** - Discover and apply for scholarships from leading institutions
+### **For Students**
+- **Smart University Discovery** - Browse 10,000+ universities across 150+ countries with intelligent filtering
+- **Personalized Recommendations** - AI-powered program matching based on CGPA, major, and budget
+- **Application Tracking** - Centralized dashboard to manage multiple applications and deadlines
+- **Document Management** - Upload and share documents via Google Drive/OneDrive links with verification status
+- **Visa Outcome Tracking** - Record visa decisions and outcomes for reference
+- **Country Ratings** - Rate universities and countries based on real student experiences
+- **AI Assistant** - Chat with our AI for personalized advice on applications, visas, and programs
+- **Study Abroad News** - Stay updated on policy changes, scholarships, and international education trends
+- **Scholarship Database** - Discover and apply for scholarships from leading institutions
 
-### 👨‍💼 **For Administrators**
-- 📊 **Dashboard Analytics** - Overview of users, applications, and platform metrics
-- 🏫 **University Management** - Add/edit/delete universities and programs
-- 👥 **User Management** - Monitor and manage user accounts
-- 📋 **Application Management** - Review and process applications
-- 📰 **Content Moderation** - Manage news articles and announcements
-- ✅ **Document Verification** - Verify submitted user documents
-- 💰 **Scholarship Management** - Update scholarship opportunities
+### **For Administrators**
+- **Dashboard Analytics** - Overview of users, applications, and platform metrics
+- **University Management** - Add/edit/delete universities and programs
+- **User Management** - Monitor and manage user accounts
+- **Application Management** - Review and process applications
+- **Content Moderation** - Manage news articles and announcements
+- **Document Verification** - Verify submitted user documents
+- **Scholarship Management** - Update scholarship opportunities
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 ### **Frontend**
 - **Framework** - React 18 with Vite
@@ -72,7 +72,7 @@
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 FutureWings_Smart_Path_to_Study_Abroad/
@@ -137,7 +137,7 @@ FutureWings_Smart_Path_to_Study_Abroad/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### **Prerequisites**
 - Node.js v18+ 
@@ -183,9 +183,9 @@ npm run dev
 
 ---
 
-## 📋 Recent Updates (April 2026)
+## Recent Updates (April 2026)
 
-### ✨ Feature Highlights
+### Feature Highlights
 
 #### **Document Upload with Drive Links** (Latest)
 - Users can now add documents via **Google Drive** or **OneDrive** links
@@ -203,13 +203,13 @@ npm run dev
 - Date-based sorting
 
 #### **Removed Features**
-- ❌ Emoji usage (now using standard text/symbols)
-- ❌ Unused icon imports
-- ❌ Em-dash decorations (replaced with hyphens)
+- Emoji usage (now using standard text/symbols)
+- Unused icon imports
+- Em-dash decorations (replaced with hyphens)
 
 ---
 
-## 🔄 API Endpoints
+## API Endpoints
 
 ### **Documents**
 ```
@@ -266,7 +266,7 @@ GET    /api/applications/:id       # Get application details
 
 ---
 
-## 🎨 Design System
+## Design System
 
 ### **Color Palette**
 - **Primary** - #ff6b3d (Warm Orange)
@@ -291,19 +291,19 @@ GET    /api/applications/:id       # Get application details
 
 ---
 
-## 🔐 Security Features
+## Security Features
 
-- ✅ JWT-based authentication
-- ✅ Bcrypt password hashing
-- ✅ Role-based access control (USER/ADMIN)
-- ✅ Protected routes on frontend
-- ✅ Environment variable management
-- ✅ CORS enabled for trusted origins
-- ✅ Input validation on backend
+- JWT-based authentication
+- Bcrypt password hashing
+- Role-based access control (USER/ADMIN)
+- Protected routes on frontend
+- Environment variable management
+- CORS enabled for trusted origins
+- Input validation on backend
 
 ---
 
-## 📊 Database Schema
+## Database Schema
 
 ### **Core Models**
 - **User** - Student profiles with CGPA and academic details
@@ -319,7 +319,7 @@ GET    /api/applications/:id       # Get application details
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please follow these steps:
 
@@ -355,7 +355,7 @@ git push origin feature/your-feature-name
 
 ---
 
-## 📝 Environment Variables
+## Environment Variables
 
 ### **Backend (.env)**
 ```env
@@ -378,7 +378,7 @@ VITE_APP_NAME=FutureWings
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### **Database Connection Issues**
 ```bash
@@ -408,7 +408,7 @@ npm run dev -- --port 5173
 
 ---
 
-## 📬 Contact & Support
+## Contact & Support
 
 - **GitHub** - [@md-sazid9089](https://github.com/md-sazid9089)
 - **Email** - irfanzahit184@gmail.com
@@ -416,13 +416,13 @@ npm run dev -- --port 5173
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **UI Inspiration** - urann.netlify.app glassmorphism design
 - **Tailwind CSS** - For the amazing utility-first CSS framework
@@ -431,7 +431,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🎯 Roadmap
+## Roadmap
 
 ### **Q2 2026**
 - [ ] Mobile app (React Native)
@@ -455,10 +455,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### Made with 💙 for global education access
+### Made with love for global education access
 
 **FutureWings - Your smart path to studying abroad**
 
-⭐ If this project helped you, please star the repository!
+If this project helped you, please star the repository!
 
 </div>
