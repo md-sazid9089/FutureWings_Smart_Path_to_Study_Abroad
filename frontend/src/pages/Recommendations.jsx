@@ -9,6 +9,28 @@ import { CardSkeleton } from '../components/ui/LoadingSkeleton';
 import { HiOutlineGlobeAlt, HiOutlineArrowRight } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
+const TIER_THEME = {
+  1: {
+    badge: 'bg-primary/15 text-primary border-primary/25',
+    bar: 'bg-primary',
+    glow: 'bg-primary/15 group-hover:bg-primary/25',
+  },
+  2: {
+    badge: 'bg-accent/15 text-accent border-accent/25',
+    bar: 'bg-accent',
+    glow: 'bg-accent/15 group-hover:bg-accent/25',
+  },
+  3: {
+    badge: 'bg-secondary/15 text-secondary border-secondary/25',
+    bar: 'bg-secondary',
+    glow: 'bg-secondary/15 group-hover:bg-secondary/25',
+  },
+};
+
+function getTierTheme(tierLevel) {
+  return TIER_THEME[tierLevel] || TIER_THEME[3];
+}
+
 export default function Recommendations() {
   const [data, setData] = useState({ tier: null, countries: [] });
   const [loading, setLoading] = useState(true);
@@ -51,9 +73,12 @@ export default function Recommendations() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {data.countries.map((country, index) => (
+            (() => {
+              const tierTheme = getTierTheme(country.tierLevel);
+              return (
             <Link key={country.id} to={`/countries/${country.id}`}>
               <GlassCard className="h-full group relative overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1">
-                <div className="absolute -top-12 -right-12 h-28 w-28 rounded-full bg-primary/15 blur-2xl group-hover:bg-primary/25 transition-colors" />
+                <div className={`absolute -top-12 -right-12 h-28 w-28 rounded-full blur-2xl transition-colors ${tierTheme.glow}`} />
 
                 <div className="relative flex h-full flex-col gap-4">
                   <div className="flex items-start justify-between">
@@ -63,7 +88,7 @@ export default function Recommendations() {
                       </span>
                       <span className="text-[11px] uppercase tracking-wider text-text-muted">Recommended</span>
                     </div>
-                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary/15 text-primary border border-primary/25">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full border ${tierTheme.badge}`}>
                       Required Tier {country.tierLevel}
                     </span>
                   </div>
@@ -87,7 +112,7 @@ export default function Recommendations() {
                     </div>
                     <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-primary transition-all duration-500"
+                        className={`h-full rounded-full transition-all duration-500 ${tierTheme.bar}`}
                         style={{ width: `${(country.tierLevel / 3) * 100}%` }}
                       />
                     </div>
@@ -99,6 +124,8 @@ export default function Recommendations() {
                 </div>
               </GlassCard>
             </Link>
+              );
+            })()
           ))}
         </div>
       )}
