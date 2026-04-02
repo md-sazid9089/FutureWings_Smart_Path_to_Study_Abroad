@@ -39,6 +39,9 @@ router.get("/:id/programs", async (req, res) => {
         programName: true,
         level: true,
         tuitionPerYear: true,
+        durationMonths: true,
+        intakeSeasons: true,
+        programOverview: true,
       },
       orderBy: { programName: "asc" },
     });

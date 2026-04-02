@@ -143,7 +143,19 @@ export default function Programs() {
                     <HiOutlineBuildingLibrary className="w-4 h-4 text-primary" />
                     <span><span className="font-medium text-secondary">University:</span> {p.universityName || 'N/A'}</span>
                   </p>
+                  <p className="text-sm text-text-muted">
+                    <span className="font-medium text-secondary">Duration:</span> {p.durationMonths ? `${p.durationMonths} months` : 'N/A'}
+                  </p>
+                  <p className="text-sm text-text-muted">
+                    <span className="font-medium text-secondary">Intake:</span> {p.intakeSeasons || 'N/A'}
+                  </p>
                 </div>
+
+                {p.programOverview && (
+                  <p className="text-sm text-text-muted leading-6 mb-5 line-clamp-3">
+                    {p.programOverview}
+                  </p>
+                )}
 
                 <div className="mt-auto">
                 <PrimaryButton

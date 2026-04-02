@@ -303,7 +303,15 @@ router.get("/programs", requireAdmin, async (req, res) => {
  */
 router.post("/programs", requireAdmin, async (req, res) => {
   try {
-    const { universityId, programName, level, tuitionPerYear } = req.body;
+    const {
+      universityId,
+      programName,
+      level,
+      tuitionPerYear,
+      durationMonths,
+      intakeSeasons,
+      programOverview,
+    } = req.body;
 
     if (!universityId || !programName) {
       return errorResponse(
@@ -330,6 +338,9 @@ router.post("/programs", requireAdmin, async (req, res) => {
         programName,
         level: level || null,
         tuitionPerYear: tuitionPerYear || null,
+        durationMonths: durationMonths || null,
+        intakeSeasons: intakeSeasons || null,
+        programOverview: programOverview || null,
       },
       include: {
         university: {
@@ -358,12 +369,22 @@ router.put("/programs/:id", requireAdmin, async (req, res) => {
       return errorResponse(res, "Invalid program ID", 400);
     }
 
-    const { programName, level, tuitionPerYear } = req.body;
+    const {
+      programName,
+      level,
+      tuitionPerYear,
+      durationMonths,
+      intakeSeasons,
+      programOverview,
+    } = req.body;
 
     const updateData = {};
     if (programName !== undefined) updateData.programName = programName;
     if (level !== undefined) updateData.level = level;
     if (tuitionPerYear !== undefined) updateData.tuitionPerYear = tuitionPerYear;
+    if (durationMonths !== undefined) updateData.durationMonths = durationMonths;
+    if (intakeSeasons !== undefined) updateData.intakeSeasons = intakeSeasons;
+    if (programOverview !== undefined) updateData.programOverview = programOverview;
 
     const program = await prisma.program.update({
       where: { id: programId },

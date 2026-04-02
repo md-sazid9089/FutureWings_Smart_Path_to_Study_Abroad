@@ -13,7 +13,15 @@ import Modal from '../../components/ui/Modal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import { HiOutlinePencilSquare, HiOutlineTrash, HiOutlinePlus, HiOutlineAcademicCap } from 'react-icons/hi2';
 
-const emptyForm = { programName: '', universityId: '', level: '', tuitionPerYear: '' };
+const emptyForm = {
+  programName: '',
+  universityId: '',
+  level: '',
+  tuitionPerYear: '',
+  durationMonths: '',
+  intakeSeasons: '',
+  programOverview: '',
+};
 
 export default function ManagePrograms() {
   const [items, setItems] = useState([]);
@@ -69,6 +77,9 @@ export default function ManagePrograms() {
       universityId: p.university?.id || '',
       level: p.level || '',
       tuitionPerYear: p.tuitionPerYear ?? '',
+      durationMonths: p.durationMonths ?? '',
+      intakeSeasons: p.intakeSeasons || '',
+      programOverview: p.programOverview || '',
     });
     setModalOpen(true);
   };
@@ -84,6 +95,9 @@ export default function ManagePrograms() {
         universityId: Number(form.universityId),
         level: form.level.trim() || null,
         tuitionPerYear: form.tuitionPerYear !== '' ? Number(form.tuitionPerYear) : null,
+        durationMonths: form.durationMonths !== '' ? Number(form.durationMonths) : null,
+        intakeSeasons: form.intakeSeasons.trim() || null,
+        programOverview: form.programOverview.trim() || null,
       };
       if (editing) {
         await updateProgram(editing.id, payload);
@@ -140,13 +154,15 @@ export default function ManagePrograms() {
       {filtered.length === 0 ? (
         <EmptyState icon={HiOutlineAcademicCap} title="No programs found" />
       ) : (
-        <GlassTable headers={['ID', 'Program Name', 'University', 'Level', 'Tuition/Year', 'Actions']}>
+        <GlassTable headers={['ID', 'Program Name', 'University', 'Level', 'Duration', 'Intake', 'Tuition/Year', 'Actions']}>
           {filtered.map((p) => (
             <tr key={p.id} className="hover:bg-white/30 transition-colors">
               <Td>{p.id}</Td>
               <Td className="font-semibold">{p.programName}</Td>
               <Td>{p.university?.universityName || '-'}</Td>
               <Td>{p.level || '—'}</Td>
+              <Td>{p.durationMonths ? `${p.durationMonths} mo` : '—'}</Td>
+              <Td>{p.intakeSeasons || '—'}</Td>
               <Td>{fmtCurrency(p.tuitionPerYear)}</Td>
               <Td>
                 <div className="flex gap-2">
@@ -167,7 +183,10 @@ export default function ManagePrograms() {
             {universities.map((u) => <option key={u.id} value={u.id}>{u.universityName}</option>)}
           </SelectField>
           <TextField label="Level" value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} placeholder="e.g. Masters, Bachelors, PhD" />
+          <TextField label="Duration (Months)" type="number" value={form.durationMonths} onChange={(e) => setForm({ ...form, durationMonths: e.target.value })} placeholder="e.g. 24" />
+          <TextField label="Intake Seasons" value={form.intakeSeasons} onChange={(e) => setForm({ ...form, intakeSeasons: e.target.value })} placeholder="e.g. Fall, Spring" />
           <TextField label="Tuition Per Year ($)" type="number" value={form.tuitionPerYear} onChange={(e) => setForm({ ...form, tuitionPerYear: e.target.value })} placeholder="e.g. 35000" />
+          <TextField label="Program Overview" value={form.programOverview} onChange={(e) => setForm({ ...form, programOverview: e.target.value })} placeholder="Short summary of the program" />
           <div className="flex justify-end gap-3 pt-2">
             <SecondaryButton type="button" onClick={() => setModalOpen(false)}>Cancel</SecondaryButton>
             <PrimaryButton type="submit" loading={saving}>{editing ? 'Update' : 'Create'}</PrimaryButton>
