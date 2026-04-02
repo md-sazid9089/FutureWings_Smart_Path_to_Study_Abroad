@@ -13,6 +13,7 @@ import {
 const publicLinks = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
+  { to: '/news', label: 'News' },
   { to: '/contact', label: 'Contact' },
 ];
 

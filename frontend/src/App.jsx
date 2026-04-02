@@ -10,6 +10,7 @@ import AdminLayout from './layouts/AdminLayout';
 import HomePage from './pages/HomePage';
 import About from './pages/About';
 import Blog from './pages/Blog';
+import News from './pages/News';
 import Contact from './pages/Contact';
 
 // ─── User pages ──────────────────────────────────────────
@@ -71,6 +72,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/news" element={<News />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
 
