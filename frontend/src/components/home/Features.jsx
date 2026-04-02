@@ -32,7 +32,7 @@ const features = [
   {
     icon: HiOutlineDocumentCheck,
     title: 'Document Verification',
-    description: 'Upload and get your documents verified — transcripts, recommendation letters, SOPs.',
+    description: 'Upload and get your documents verified - transcripts, recommendation letters, SOPs.',
     color: 'text-purple-500',
     bg: 'bg-purple-50',
   },
@@ -64,7 +64,7 @@ export default function Features() {
             Everything You Need
           </h2>
           <p className="text-text-muted mt-3 max-w-lg mx-auto">
-            One platform to manage your entire study abroad journey — from discovery to departure.
+            One platform to manage your entire study abroad journey - from discovery to departure.
           </p>
         </div>
 

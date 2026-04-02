@@ -2,7 +2,7 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 const { PrismaClient } = require("@prisma/client");
 
-/** Singleton — avoid spawning multiple clients in dev (nodemon restarts) */
+/** Singleton - avoid spawning multiple clients in dev (nodemon restarts) */
 const globalForPrisma = globalThis;
 
 let prisma = globalForPrisma.__prisma;

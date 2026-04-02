@@ -1,7 +1,7 @@
 import Footer from '../components/home/Footer';
 
 const posts = [
-  { title: 'How to Choose the Right Country for Your Masters', date: 'Jan 15, 2026', tag: 'Guide', excerpt: 'Picking the right country is the first and most important step. We break down what to consider — from tuition to culture.' },
+  { title: 'How to Choose the Right Country for Your Masters', date: 'Jan 15, 2026', tag: 'Guide', excerpt: 'Picking the right country is the first and most important step. We break down what to consider - from tuition to culture.' },
   { title: 'Top 5 Scholarships for International Students in 2026', date: 'Feb 1, 2026', tag: 'Scholarships', excerpt: 'Fully funded and partial scholarships that you should be applying to this year.' },
   { title: 'CGPA vs. Work Experience: What Matters More?', date: 'Feb 10, 2026', tag: 'Advice', excerpt: 'Universities weigh different factors. Here\'s how to present your strongest profile.' },
 ];

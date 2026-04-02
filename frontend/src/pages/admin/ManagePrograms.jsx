@@ -115,7 +115,7 @@ export default function ManagePrograms() {
     }
   };
 
-  const fmtCurrency = (v) => v != null ? `$${Number(v).toLocaleString()}` : '—';
+  const fmtCurrency = (v) => v != null ? `$${Number(v).toLocaleString()}` : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
@@ -145,7 +145,7 @@ export default function ManagePrograms() {
             <tr key={p.id} className="hover:bg-white/30 transition-colors">
               <Td>{p.id}</Td>
               <Td className="font-semibold">{p.programName}</Td>
-              <Td>{p.university?.universityName || '—'}</Td>
+              <Td>{p.university?.universityName || '-'}</Td>
               <Td>{p.level || '—'}</Td>
               <Td>{fmtCurrency(p.tuitionPerYear)}</Td>
               <Td>

@@ -109,7 +109,7 @@ export default function Dashboard() {
               >
                 <Td>{doc.user?.fullName || doc.user?.email}</Td>
                 <Td className="max-w-50 truncate">{doc.filePath}</Td>
-                <Td>{doc.fileType || '—'}</Td>
+                <Td>{doc.fileType || '-'}</Td>
                 <Td>{new Date(doc.uploadedAt).toLocaleDateString()}</Td>
               </tr>
             ))}

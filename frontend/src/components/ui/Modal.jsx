@@ -26,7 +26,7 @@ export default function Modal({ open, onClose, title, wide = false, children }) 
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition-colors text-secondary"
           >
-            ✕
+            ×
           </button>
         </div>
 

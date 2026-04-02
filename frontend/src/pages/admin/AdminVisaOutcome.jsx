@@ -87,11 +87,11 @@ export default function AdminVisaOutcome() {
         <GlassCard className="p-6 space-y-3">
           <h3 className="text-lg font-semibold mb-3">Application Details</h3>
           <div className="space-y-2 text-sm">
-            <p><span className="font-medium text-gray-600">Applicant:</span> {app.user?.fullName || '—'}</p>
-            <p><span className="font-medium text-gray-600">Email:</span> {app.user?.email || '—'}</p>
-            <p><span className="font-medium text-gray-600">Country:</span> {app.country?.countryName || '—'}</p>
-            <p><span className="font-medium text-gray-600">Program:</span> {app.program?.programName || '—'}</p>
-            <p><span className="font-medium text-gray-600">Applied:</span> {app.appliedDate ? new Date(app.appliedDate).toLocaleDateString() : '—'}</p>
+            <p><span className="font-medium text-gray-600">Applicant:</span> {app.user?.fullName || '-'}</p>
+            <p><span className="font-medium text-gray-600">Email:</span> {app.user?.email || '-'}</p>
+            <p><span className="font-medium text-gray-600">Country:</span> {app.country?.countryName || '-'}</p>
+            <p><span className="font-medium text-gray-600">Program:</span> {app.program?.programName || '-'}</p>
+            <p><span className="font-medium text-gray-600">Applied:</span> {app.appliedDate ? new Date(app.appliedDate).toLocaleDateString() : '-'}</p>
             <p className="flex items-center gap-2">
               <span className="font-medium text-gray-600">Status:</span>
               <StatusPill status={app.status?.statusName || 'Unknown'} />

@@ -88,7 +88,7 @@ export default function ManageApplications() {
     }
   };
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
@@ -117,12 +117,12 @@ export default function ManageApplications() {
               <Td>{a.id}</Td>
               <Td>
                 <div>
-                  <div className="font-semibold">{a.user?.fullName || '—'}</div>
+                  <div className="font-semibold">{a.user?.fullName || '-'}</div>
                   <div className="text-xs text-gray-500">{a.user?.email}</div>
                 </div>
               </Td>
-              <Td>{a.country?.countryName || '—'}</Td>
-              <Td>{a.program?.programName || '—'}</Td>
+              <Td>{a.country?.countryName || '-'}</Td>
+              <Td>{a.program?.programName || '-'}</Td>
               <Td>{fmtDate(a.appliedDate)}</Td>
               <Td><StatusPill status={a.status?.statusName || 'Unknown'} color={statusColor(a.status?.statusName)} /></Td>
               <Td>
@@ -132,7 +132,7 @@ export default function ManageApplications() {
                     color={a.visaOutcome.decision === 'APPROVED' ? 'green' : 'red'}
                   />
                 ) : (
-                  <span className="text-xs text-gray-400">—</span>
+                  <span className="text-xs text-gray-400">-</span>
                 )}
               </Td>
               <Td>

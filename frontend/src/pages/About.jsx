@@ -11,7 +11,7 @@ const values = [
   { icon: HiOutlineGlobeAlt, title: 'Global Access', desc: 'We connect students worldwide with opportunities in top study destinations.' },
   { icon: HiOutlineAcademicCap, title: 'Smart Matching', desc: 'Our tier system ensures the best fit between your profile and institutions.' },
   { icon: HiOutlineUserGroup, title: 'Community', desc: 'Join a community of students who share their journeys and support each other.' },
-  { icon: HiOutlineHeart, title: 'Free Forever', desc: 'Core features will always be free — education access is our mission.' },
+  { icon: HiOutlineHeart, title: 'Free Forever', desc: 'Core features will always be free - education access is our mission.' },
 ];
 
 export default function About() {

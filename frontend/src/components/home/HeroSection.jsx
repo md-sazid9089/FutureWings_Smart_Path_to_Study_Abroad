@@ -42,7 +42,7 @@ export default function HeroSection() {
         </h1>
 
         <p className="mt-5 text-center text-lg md:text-xl text-text-muted max-w-2xl mx-auto">
-          Find the best destination countries, scholarships, and track your application — all in one place.
+          Find the best destination countries, scholarships, and track your application - all in one place.
         </p>
 
         {/* CTA buttons */}

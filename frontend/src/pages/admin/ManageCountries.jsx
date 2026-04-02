@@ -144,8 +144,8 @@ export default function ManageCountries() {
             <tr key={c.id} className="hover:bg-white/30 transition-colors">
               <Td>{c.id}</Td>
               <Td className="font-semibold">{c.countryName}</Td>
-              <Td>{c.region || '—'}</Td>
-              <Td>{c.currency || '—'}</Td>
+              <Td>{c.region || '-'}</Td>
+              <Td>{c.currency || '-'}</Td>
               <Td><span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700">T{c.tierLevel}</span></Td>
               <Td><StatusPill status={c.isActive ? 'Accepted' : 'Rejected'} /></Td>
               <Td>

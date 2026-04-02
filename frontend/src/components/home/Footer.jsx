@@ -27,7 +27,7 @@ export default function Footer() {
               <img src={logo} alt="FutureWings Logo" className="w-8 h-8" /> FutureWings
             </Link>
             <p className="text-sm text-text-muted leading-relaxed">
-              Your smart path to studying abroad. Discover, apply, and track — all in one place.
+              Your smart path to studying abroad. Discover, apply, and track - all in one place.
             </p>
           </div>
 

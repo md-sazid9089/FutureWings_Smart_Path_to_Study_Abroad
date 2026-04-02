@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: 'What happens after I receive a visa outcome?',
-    a: 'After your visa decision, you can rate your overall experience — the country, the process, and the support you received. This helps future applicants.',
+    a: 'After your visa decision, you can rate your overall experience - the country, the process, and the support you received. This helps future applicants.',
   },
   {
     q: 'What countries are currently supported?',

@@ -83,7 +83,7 @@ export default function ManageDocuments() {
     }
   };
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
@@ -108,14 +108,14 @@ export default function ManageDocuments() {
               <Td>{d.id}</Td>
               <Td>
                 <div>
-                  <div className="font-semibold">{d.user?.fullName || '—'}</div>
+                  <div className="font-semibold">{d.user?.fullName || '-'}</div>
                   <div className="text-xs text-gray-500">{d.user?.email}</div>
                 </div>
               </Td>
-              <Td>{d.documentType || '—'}</Td>
+              <Td>{d.documentType || '-'}</Td>
               <Td>{fmtDate(d.uploadedAt)}</Td>
               <Td><StatusPill status={d.verificationStatus} color={statusColor(d.verificationStatus)} /></Td>
-              <Td><span className="text-xs text-gray-500 truncate max-w-37.5 inline-block">{d.adminNote || '—'}</span></Td>
+              <Td><span className="text-xs text-gray-500 truncate max-w-37.5 inline-block">{d.adminNote || '-'}</span></Td>
               <Td>
                 <div className="flex gap-2">
                   <button onClick={() => openReview(d)} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 transition-colors" title="Verify">

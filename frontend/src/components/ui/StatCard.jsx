@@ -5,7 +5,7 @@ export default function StatCard({ icon: Icon, label, value, color = 'text-prima
         <Icon className="w-6 h-6" />
       </div>
       <div>
-        <p className="text-2xl font-extrabold text-text">{value ?? '—'}</p>
+        <p className="text-2xl font-extrabold text-text">{value ?? '-'}</p>
         <p className="text-xs text-text-muted font-medium">{label}</p>
       </div>
     </div>
