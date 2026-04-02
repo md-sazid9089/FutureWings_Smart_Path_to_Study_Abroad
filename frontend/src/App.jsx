@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Documents from './pages/Documents';
 import Recommendations from './pages/Recommendations';
+import AIAssistant from './pages/AIAssistant';
 import CountryDetails from './pages/CountryDetails';
 import Universities from './pages/Universities';
 import Programs from './pages/Programs';
@@ -83,6 +84,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/recommendations" element={<Recommendations />} />
+          <Route path="/ai-assistant" element={<AIAssistant />} />
           <Route path="/countries/:id" element={<CountryDetails />} />
           <Route path="/universities/:countryId" element={<Universities />} />
           <Route path="/programs/:universityId" element={<Programs />} />
