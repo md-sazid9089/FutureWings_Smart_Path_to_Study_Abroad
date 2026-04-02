@@ -11,6 +11,20 @@ const { successResponse, errorResponse } = require("../utils/response");
 
 const router = express.Router();
 
+async function getOrCreateApplicationStatus(tx, statusName) {
+  let status = await tx.applicationStatus.findUnique({
+    where: { statusName },
+  });
+
+  if (!status) {
+    status = await tx.applicationStatus.create({
+      data: { statusName },
+    });
+  }
+
+  return status;
+}
+
 // ───────────────────────────────────────────────────────────
 // COUNTRIES CRUD
 // ───────────────────────────────────────────────────────────
