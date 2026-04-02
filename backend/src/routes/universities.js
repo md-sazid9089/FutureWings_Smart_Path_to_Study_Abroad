@@ -43,7 +43,15 @@ router.get("/:id/programs", async (req, res) => {
       orderBy: { programName: "asc" },
     });
 
-    return successResponse(res, programs);
+    const enrichedPrograms = programs.map((program) => ({
+      ...program,
+      countryId: university.countryId || null,
+      universityName: university.universityName || null,
+      universityCity: university.city || null,
+      universityType: university.type || null,
+    }));
+
+    return successResponse(res, enrichedPrograms);
   } catch (error) {
     console.error("Get programs error:", error);
     return errorResponse(res, "Internal server error", 500);
