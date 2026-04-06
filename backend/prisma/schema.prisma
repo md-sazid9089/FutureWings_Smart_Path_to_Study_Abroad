@@ -55,16 +55,16 @@ model University {
 }
 
 model Program {
-  id             Int           @id @default(autoincrement())
-  universityId   Int
-  programName    String        @db.NVarChar(200)
-  level          String?       @db.NVarChar(50)
-  tuitionPerYear Float?
-  durationMonths Int?
-  intakeSeasons  String?       @db.NVarChar(100)
-  programOverview String?      @db.NVarChar(1000)
-  applications   Application[]
-  university     University    @relation(fields: [universityId], references: [id], onUpdate: NoAction)
+  id              Int           @id @default(autoincrement())
+  universityId    Int
+  programName     String        @db.NVarChar(200)
+  level           String?       @db.NVarChar(50)
+  tuitionPerYear  Float?
+  durationMonths  Int?
+  intakeSeasons   String?       @db.NVarChar(100)
+  programOverview String?
+  applications    Application[]
+  university      University    @relation(fields: [universityId], references: [id], onUpdate: NoAction)
 
   @@index([universityId])
   @@map("Programs")

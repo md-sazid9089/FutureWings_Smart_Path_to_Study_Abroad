@@ -9,6 +9,7 @@
     "db:pull": "prisma db pull",
     "db:generate": "prisma generate",
     "db:sync": "npm run db:pull && npm run db:generate",
+    "db:first": "npm run db:sync",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:auth": "cross-env NODE_ENV=test jest --runInBand -- auth.test",
     "test:admin": "cross-env NODE_ENV=test jest --runInBand -- admin.test",
