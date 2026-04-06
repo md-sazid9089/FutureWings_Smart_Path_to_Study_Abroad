@@ -2,13 +2,16 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   HiOutlineArrowPath,
+  HiOutlineChartBarSquare,
   HiOutlineCheckCircle,
   HiOutlineClipboardDocument,
   HiOutlineDocumentText,
   HiOutlineExclamationTriangle,
+  HiOutlineLightBulb,
+  HiOutlineRocketLaunch,
+  HiOutlineShieldCheck,
   HiOutlineSparkles,
   HiOutlineStar,
-  HiOutlineLightBulb,
 } from 'react-icons/hi2';
 import API from '../api/axios';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -23,11 +26,11 @@ My final-year project on predictive analytics taught me how to work with real da
 I now want to study abroad to gain advanced technical skills, broader research exposure, and an international perspective. I believe this program will help me grow into a professional who can contribute meaningfully to technology-driven decision-making in my home country.`;
 
 const quickChecks = [
-  'Clarity and structure',
-  'Academic motivation',
-  'Authenticity and specificity',
-  'Grammar and readability',
-  'Country and program fit',
+  { label: 'Clarity and structure', icon: HiOutlineDocumentText },
+  { label: 'Academic motivation', icon: HiOutlineRocketLaunch },
+  { label: 'Authenticity and specificity', icon: HiOutlineShieldCheck },
+  { label: 'Grammar and readability', icon: HiOutlineCheckCircle },
+  { label: 'Country and program fit', icon: HiOutlineChartBarSquare },
 ];
 
 function toneForScore(score) {
@@ -38,6 +41,30 @@ function toneForScore(score) {
 
 function formatPercent(value) {
   return `${Math.max(0, Math.min(100, Number(value) || 0))}%`;
+}
+
+function scoreMeta(score) {
+  if (score >= 85) {
+    return {
+      label: 'Submission-ready',
+      chip: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      bar: 'bg-emerald-500',
+    };
+  }
+
+  if (score >= 70) {
+    return {
+      label: 'Strong draft',
+      chip: 'bg-amber-100 text-amber-700 border-amber-200',
+      bar: 'bg-amber-500',
+    };
+  }
+
+  return {
+    label: 'Needs revision',
+    chip: 'bg-rose-100 text-rose-700 border-rose-200',
+    bar: 'bg-rose-500',
+  };
 }
 
 export default function SopReview() {
@@ -83,9 +110,12 @@ export default function SopReview() {
   };
 
   const score = Number(review?.score) || 0;
+  const progress = Math.min(100, Math.round((wordCount / 700) * 100));
+  const scoreDetails = scoreMeta(score);
+  const gauge = `conic-gradient(from 0deg, rgba(255,107,61,0.95) ${score * 3.6}deg, rgba(255,255,255,0.4) ${score * 3.6}deg)`;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <PageHeader
         title="SOP Rating"
         subtitle="Paste your statement of purpose and get a Gemini review with a score, strengths, and fixes"
@@ -97,16 +127,55 @@ export default function SopReview() {
         )}
       />
 
+      <GlassPanel className="relative overflow-hidden border border-white/25 p-6 sm:p-8 shadow-xl">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-blue-200/20 blur-3xl" />
+
+        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <HiOutlineSparkles className="h-4 w-4" />
+              Gemini SOP Studio
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-text">Turn your SOP into an application-ready draft</h2>
+            <p className="max-w-2xl text-sm leading-6 text-text-muted">
+              Get instant quality scoring and practical rewrite ideas focused on admissions impact, not just grammar corrections.
+            </p>
+            <div className="space-y-2 rounded-2xl border border-white/30 bg-white/45 p-4">
+              <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+                <span>Draft length signal</span>
+                <span>{wordCount} words</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-white/50">
+                <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-xs text-text-muted">Recommended: 500-800 words for a balanced SOP.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+            {quickChecks.map(({ label, icon: Icon }) => (
+              <div key={label} className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/55 px-4 py-3 text-sm text-text shadow-sm">
+                <div className="rounded-xl bg-primary/10 p-2">
+                  <Icon className="h-4 w-4 text-primary" />
+                </div>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </GlassPanel>
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_340px]">
         <GlassPanel className="space-y-6 border border-white/20 p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-primary">
                 <HiOutlineDocumentText className="h-5 w-5" />
-                <span className="text-sm font-semibold uppercase tracking-wide">Paste area</span>
+                <span className="text-sm font-semibold uppercase tracking-wide">Editor</span>
               </div>
               <p className="text-sm text-text-muted max-w-2xl leading-6">
-                The review focuses on structure, authenticity, academic motivation, and how convincingly your SOP fits the program you are targeting.
+                Paste your latest draft. The model analyzes structure, motivation, fit, and clarity in one pass.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
@@ -125,7 +194,7 @@ export default function SopReview() {
               onChange={(e) => setSopText(e.target.value)}
               rows={16}
               placeholder="Paste your SOP here..."
-              className="w-full rounded-3xl border border-white/40 bg-white/55 px-5 py-4 text-sm leading-7 text-text outline-none transition placeholder:text-text-light focus:border-primary/40 focus:ring-2 focus:ring-primary/20 resize-y min-h-95"
+              className="w-full rounded-3xl border border-white/40 bg-white/60 px-5 py-4 text-sm leading-7 text-text outline-none transition placeholder:text-text-light focus:border-primary/40 focus:ring-2 focus:ring-primary/20 resize-y min-h-95"
             />
           </div>
 
@@ -147,7 +216,7 @@ export default function SopReview() {
               className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-5 py-2.5 text-sm font-semibold text-secondary transition hover:bg-white/60"
             >
               <HiOutlineArrowPath className="h-4 w-4" />
-              Clear
+              Reset
             </button>
           </div>
         </GlassPanel>
@@ -155,26 +224,23 @@ export default function SopReview() {
         <div className="space-y-6">
           <GlassCard className="border border-white/20 p-5">
             <div className="flex items-center gap-2 text-primary mb-3">
-              <HiOutlineSparkles className="h-5 w-5" />
-              <h2 className="text-sm font-semibold uppercase tracking-wide">What Gemini checks</h2>
+              <HiOutlineLightBulb className="h-5 w-5" />
+              <h2 className="text-sm font-semibold uppercase tracking-wide">Best workflow</h2>
             </div>
-            <div className="space-y-2">
-              {quickChecks.map((check) => (
-                <div key={check} className="flex items-center gap-3 rounded-2xl border border-white/25 bg-white/40 px-4 py-3 text-sm text-text">
-                  <HiOutlineCheckCircle className="h-4 w-4 text-primary flex-none" />
-                  <span>{check}</span>
-                </div>
-              ))}
-            </div>
+            <ol className="space-y-2 text-sm leading-6 text-text-muted">
+              <li>1. Paste your draft and run review.</li>
+              <li>2. Fix low-scoring sections first.</li>
+              <li>3. Re-run until verdict is strong.</li>
+            </ol>
           </GlassCard>
 
           <GlassCard className="border border-white/20 p-5">
             <div className="flex items-center gap-2 text-primary mb-3">
-              <HiOutlineLightBulb className="h-5 w-5" />
-              <h2 className="text-sm font-semibold uppercase tracking-wide">Best use</h2>
+              <HiOutlineShieldCheck className="h-5 w-5" />
+              <h2 className="text-sm font-semibold uppercase tracking-wide">Review style</h2>
             </div>
             <p className="text-sm leading-6 text-text-muted">
-              Paste the version you plan to submit, then use the score and section notes to tighten weak claims, remove generic lines, and sharpen your motivation.
+              Strict admissions lens, concise action points, and practical rewrites aligned to study-abroad applications.
             </p>
           </GlassCard>
         </div>
@@ -182,20 +248,33 @@ export default function SopReview() {
 
       {review && (
         <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-          <GlassCard className={`border p-6 ${toneForScore(score)}`}>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest opacity-80">Overall score</p>
-                <h3 className="mt-2 text-4xl font-black tracking-tight">{formatPercent(score)}</h3>
-              </div>
-              <div className="rounded-2xl bg-white/70 p-3 shadow-sm">
-                <HiOutlineStar className="h-7 w-7" />
+          <GlassCard className={`border p-6 ${toneForScore(score)} xl:sticky xl:top-24 h-fit`}>
+            <p className="text-xs font-semibold uppercase tracking-widest opacity-80">Overall score</p>
+            <div className="mt-4 flex items-center justify-center">
+              <div
+                className="relative grid h-32 w-32 place-items-center rounded-full border border-white/40 p-3"
+                style={{ background: gauge }}
+              >
+                <div className="grid h-full w-full place-items-center rounded-full bg-white/90 text-text shadow-inner">
+                  <span className="text-2xl font-black tracking-tight">{formatPercent(score)}</span>
+                </div>
               </div>
             </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 flex items-center justify-center">
+              <span className={`rounded-full border px-3 py-1 text-xs font-bold ${scoreDetails.chip}`}>{scoreDetails.label}</span>
+            </div>
+
+            <div className="mt-4 space-y-2 text-center">
               <p className="text-lg font-semibold text-text">{review.verdict}</p>
               <p className="text-sm leading-6 text-text-muted">{review.summary}</p>
+            </div>
+
+            <div className="mt-5 space-y-1.5">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-white/55">
+                <div className={`h-full rounded-full ${scoreDetails.bar}`} style={{ width: `${Math.max(0, Math.min(100, score))}%` }} />
+              </div>
+              <p className="text-xs text-text-muted">Live score bar</p>
             </div>
           </GlassCard>
 

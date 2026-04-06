@@ -3,7 +3,13 @@ const { requireAuth } = require("../middleware/auth");
 const { successResponse, errorResponse } = require("../utils/response");
 
 const router = express.Router();
-const GEMINI_MODEL = "gemini-3-flash-preview";
+const GEMINI_MODEL_CANDIDATES = [
+  process.env.GEMINI_MODEL,
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+].filter(Boolean);
+const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.AI_CHAT_MAX_OUTPUT_TOKENS) || 1800;
+const CHAT_MAX_CONTINUATIONS = 1;
 
 const sopReviewSchema = {
   type: "object",
@@ -73,6 +79,35 @@ try {
 
 function mapGeminiError(error) {
   const message = error?.message || String(error);
+  const statusCode = Number(error?.status || error?.statusCode || error?.code) || 0;
+
+  if (statusCode === 401) {
+    return {
+      statusCode: 401,
+      message: "Authentication failed. Please verify GEMINI_API_KEY.",
+    };
+  }
+
+  if (statusCode === 403) {
+    return {
+      statusCode: 403,
+      message: "Gemini access denied. Check API key permissions and billing.",
+    };
+  }
+
+  if (statusCode === 404) {
+    return {
+      statusCode: 502,
+      message: "Configured Gemini model is unavailable. Update GEMINI_MODEL.",
+    };
+  }
+
+  if (statusCode === 429) {
+    return {
+      statusCode: 429,
+      message: "Too many AI requests. Please wait a moment and try again.",
+    };
+  }
 
   if (message.includes("401") || message.includes("unauthorized")) {
     return {
@@ -108,7 +143,52 @@ function mapGeminiError(error) {
   };
 }
 
+function isModelUnavailableError(error) {
+  const message = (error?.message || "").toLowerCase();
+  const statusCode = Number(error?.status || error?.statusCode || error?.code) || 0;
+
+  return (
+    statusCode === 404 ||
+    message.includes("model") && (message.includes("not found") || message.includes("not supported"))
+  );
+}
+
+async function generateWithModelFallback(payload) {
+  if (!googleGenAI) {
+    throw new Error("Gemini SDK not initialized");
+  }
+
+  let lastError;
+
+  for (const model of GEMINI_MODEL_CANDIDATES) {
+    try {
+      return await googleGenAI.models.generateContent({
+        ...payload,
+        model,
+      });
+    } catch (error) {
+      lastError = error;
+      if (!isModelUnavailableError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError || new Error("No Gemini model is configured");
+}
+
 function extractResponseText(response) {
+  const candidateParts = response?.candidates?.[0]?.content?.parts;
+  if (Array.isArray(candidateParts) && candidateParts.length) {
+    const joined = candidateParts
+      .map((part) => part?.text || "")
+      .join("")
+      .trim();
+    if (joined) {
+      return joined;
+    }
+  }
+
   return (
     response?.text ||
     response?.candidates?.[0]?.content?.parts?.[0]?.text ||
@@ -125,6 +205,68 @@ function parseJsonPayload(payload) {
     .replace(/```$/, "");
 
   return JSON.parse(cleaned);
+}
+
+function extractStringField(text, fieldName) {
+  const pattern = new RegExp(`\\"${fieldName}\\"\\s*:\\s*\\"((?:[^\\"\\\\]|\\\\.)*)\\"`);
+  const match = text.match(pattern);
+  return match ? match[1].replace(/\\"/g, '"').replace(/\\n/g, "\n") : "";
+}
+
+function extractNumberField(text, fieldName) {
+  const pattern = new RegExp(`\\"${fieldName}\\"\\s*:\\s*(\\d+)`);
+  const match = text.match(pattern);
+  return match ? Number(match[1]) : 0;
+}
+
+function extractStringArrayField(text, fieldName) {
+  const pattern = new RegExp(`\\"${fieldName}\\"\\s*:\\s*\\[(.*?)\\]`, "s");
+  const match = text.match(pattern);
+
+  if (!match) return [];
+
+  return [...match[1].matchAll(/"((?:[^"\\]|\\.)*)"/g)].map((item) =>
+    item[1].replace(/\\"/g, '"').replace(/\\n/g, "\n")
+  );
+}
+
+function recoverSectionScores(text) {
+  const sections = [];
+  const sectionPattern = /"section"\s*:\s*"((?:[^"\\]|\\.)*)"[\s\S]*?"score"\s*:\s*(\d+)[\s\S]*?"feedback"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+  let match;
+
+  while ((match = sectionPattern.exec(text)) !== null) {
+    sections.push({
+      section: match[1].replace(/\\"/g, '"').replace(/\\n/g, "\n"),
+      score: Number(match[2]),
+      feedback: match[3].replace(/\\"/g, '"').replace(/\\n/g, "\n"),
+    });
+  }
+
+  return sections;
+}
+
+function recoverSopReview(text) {
+  const review = {
+    score: extractNumberField(text, "score"),
+    verdict: extractStringField(text, "verdict"),
+    summary: extractStringField(text, "summary"),
+    strengths: extractStringArrayField(text, "strengths"),
+    improvements: extractStringArrayField(text, "improvements"),
+    rewriteSuggestions: extractStringArrayField(text, "rewriteSuggestions"),
+    sectionScores: recoverSectionScores(text),
+    closingAdvice: extractStringField(text, "closingAdvice"),
+  };
+
+  if (!review.summary) {
+    review.summary = "The SOP response was truncated before a full summary could be completed.";
+  }
+
+  if (!review.closingAdvice) {
+    review.closingAdvice = "The review was partially recovered from Gemini output. Refresh and try again for a fuller result.";
+  }
+
+  return review;
 }
 
 function buildSopPrompt(sopText) {
@@ -155,30 +297,8 @@ SOP to review:
 ${sopText.trim()}`;
 }
 
-router.post("/chat", requireAuth, async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message || typeof message !== "string" || !message.trim()) {
-      return errorResponse(res, "Message is required", 400);
-    }
-
-    if (!process.env.GEMINI_API_KEY) {
-      return errorResponse(res, "Gemini API is not configured", 500);
-    }
-
-    if (!googleGenAI) {
-      return errorResponse(res, "Gemini SDK not initialized", 500);
-    }
-
-    const response = await googleGenAI.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `You are FutureWings AI Assistant, a professional and empathetic guide for international students.
+function buildChatPrompt(message) {
+  return `You are FutureWings AI Assistant, a professional and empathetic guide for international students.
 
 FORMATTING REQUIREMENTS:
 1. Start with a professional greeting and brief context paragraph.
@@ -212,18 +332,73 @@ Next Steps:
 
 2. Action item two.
 
-User question: ${message.trim()}`,
-            },
-          ],
+User question: ${message.trim()}`;
+}
+
+function shouldContinueChatResponse(response) {
+  const finishReason = String(response?.candidates?.[0]?.finishReason || "").toUpperCase();
+  return finishReason === "MAX_TOKENS" || finishReason === "LENGTH";
+}
+
+async function generateChatReply(message) {
+  let combinedReply = "";
+  let prompt = buildChatPrompt(message);
+
+  for (let i = 0; i <= CHAT_MAX_CONTINUATIONS; i += 1) {
+    const response = await generateWithModelFallback({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }],
         },
       ],
       config: {
         temperature: 0.6,
-        maxOutputTokens: 800,
+        maxOutputTokens: CHAT_MAX_OUTPUT_TOKENS,
       },
     });
 
-    const reply = extractResponseText(response);
+    const chunk = extractResponseText(response).trim();
+    if (!chunk) {
+      break;
+    }
+
+    combinedReply = combinedReply ? `${combinedReply}\n\n${chunk}` : chunk;
+
+    if (!shouldContinueChatResponse(response) || i === CHAT_MAX_CONTINUATIONS) {
+      break;
+    }
+
+    prompt = `Continue your previous answer exactly from where you stopped.
+Do not restart and do not repeat earlier sections.
+Return only the continuation text.
+
+Original user question: ${message.trim()}
+
+Already generated text:
+${combinedReply}`;
+  }
+
+  return combinedReply;
+}
+
+router.post("/chat", requireAuth, async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    if (!message || typeof message !== "string" || !message.trim()) {
+      return errorResponse(res, "Message is required", 400);
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return errorResponse(res, "Gemini API is not configured", 500);
+    }
+
+    if (!googleGenAI) {
+      return errorResponse(res, "Gemini SDK not initialized", 500);
+    }
+
+    const reply = await generateChatReply(message);
 
     if (!reply) {
       return errorResponse(res, "No response from Gemini", 502);
@@ -265,8 +440,7 @@ router.post("/sop-review", requireAuth, async (req, res) => {
       return errorResponse(res, "Gemini SDK not initialized", 500);
     }
 
-    const response = await googleGenAI.models.generateContent({
-      model: GEMINI_MODEL,
+    const response = await generateWithModelFallback({
       contents: buildSopPrompt(trimmedSop),
       config: {
         temperature: 0.3,
@@ -290,12 +464,12 @@ router.post("/sop-review", requireAuth, async (req, res) => {
         message: parseError?.message,
         responseText: text,
       });
-      return errorResponse(res, "Gemini returned an unreadable review", 502);
+      review = recoverSopReview(text);
     }
 
     review.score = Math.max(0, Math.min(100, Number(review.score) || 0));
 
-    return successResponse(res, { review });
+    return successResponse(res, { review, partial: !text.includes('"closingAdvice"') || !review.sectionScores.length });
   } catch (error) {
     console.error("SOP review error:", {
       message: error?.message,
