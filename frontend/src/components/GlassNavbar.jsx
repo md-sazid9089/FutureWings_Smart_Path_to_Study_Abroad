@@ -20,6 +20,7 @@ const publicLinks = [
 const userLinks = [
   { to: '/recommendations', label: 'Explore' },
   { to: '/ai-assistant', label: 'AI Assistant' },
+  { to: '/sop-rating', label: 'SOP Rating' },
   { to: '/applications', label: 'Applications' },
 ];
 

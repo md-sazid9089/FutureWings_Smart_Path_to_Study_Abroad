@@ -162,8 +162,10 @@ npm install
 # DATABASE_URL="sqlserver://localhost:PORT;database=DB_NAME;integratedSecurity=true;..."
 # JWT_SECRET="your_jwt_secret"
 
-# Initialize database
-npx prisma migrate deploy
+# Database-first sync (introspect existing DB schema)
+npm run db:sync
+
+# Optional: seed sample data
 npx prisma db seed
 
 # Start backend server
@@ -382,11 +384,11 @@ VITE_APP_NAME=FutureWings
 
 ### **Database Connection Issues**
 ```bash
-# Reset migrations
-npx prisma migrate reset
+# Database-first re-sync
+npm run db:sync
 
 # Verify connection
-npx prisma db push
+curl http://localhost:5000/api/health
 ```
 
 ### **Frontend Build Issues**

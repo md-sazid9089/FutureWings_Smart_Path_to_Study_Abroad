@@ -28,6 +28,7 @@ import Applications from './pages/Applications';
 import ApplicationDetails from './pages/ApplicationDetails';
 import VisaOutcome from './pages/VisaOutcome';
 import Rating from './pages/Rating';
+import SopReview from './pages/SopReview';
 
 // ─── Admin pages ─────────────────────────────────────────
 import AdminLogin from './pages/admin/AdminLogin';
@@ -96,6 +97,7 @@ export default function App() {
           <Route path="/applications/:id" element={<ApplicationDetails />} />
           <Route path="/applications/:id/visa-outcome" element={<VisaOutcome />} />
           <Route path="/rating/:applicationId" element={<Rating />} />
+          <Route path="/sop-rating" element={<SopReview />} />
         </Route>
 
         {/* ── Admin routes (with sidebar layout) ──── */}
