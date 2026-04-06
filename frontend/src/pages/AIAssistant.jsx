@@ -59,6 +59,8 @@ export default function AIAssistant() {
     }
   };
 
+  const formatMessage = (text = '') => text.replace(/\r\n/g, '\n').trim();
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -132,7 +134,7 @@ export default function AIAssistant() {
             </span>
           </div>
 
-          <div ref={chatRef} className="max-h-[64vh] min-h-90 overflow-y-auto bg-linear-to-b from-white/20 to-white/5 p-5 space-y-4">
+          <div ref={chatRef} className="max-h-[72vh] min-h-90 overflow-y-auto bg-linear-to-b from-white/20 to-white/5 p-5 space-y-4">
             {messages.length === 0 ? (
               <div className="space-y-5">
                 <EmptyState
@@ -155,13 +157,13 @@ export default function AIAssistant() {
               messages.map((msg, index) => (
                 <div key={`${msg.role}-${index}`} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[88%] rounded-3xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                    className={`max-w-[94%] rounded-3xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap wrap-break-word shadow-sm ${
                       msg.role === 'user'
                         ? 'bg-primary text-white'
                         : 'bg-white/70 text-text border border-white/40'
                     }`}
                   >
-                    {msg.content}
+                    {formatMessage(msg.content)}
                   </div>
                 </div>
               ))
