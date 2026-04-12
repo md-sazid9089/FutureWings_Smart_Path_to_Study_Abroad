@@ -1,0 +1,455 @@
+{
+  "info": {
+    "_postman_id": "stripe-payment-tests",
+    "name": "FutureWings - Stripe Payment Integration",
+    "description": "Complete test collection for Stripe payment endpoints",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get Auth Token (Signup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@futurewings.com\",\n  \"password\": \"Test@1234\",\n  \"fullName\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Get Auth Token (Login)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@futurewings.com\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Endpoints",
+      "item": [
+        {
+          "name": "1. Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/payments/status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "status"]
+            },
+            "description": "Get user's current premium subscription status"
+          }
+        },
+        {
+          "name": "2. Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/payments/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "history"]
+            },
+            "description": "Get user's payment transaction history"
+          }
+        },
+        {
+          "name": "3. Create Checkout - AI Help",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"featureType\": \"AI_HELP\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/payments/create-checkout-session",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "create-checkout-session"]
+            },
+            "description": "Create Stripe checkout session for AI Help ($49.99)"
+          }
+        },
+        {
+          "name": "3. Create Checkout - SOP Testing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"featureType\": \"SOP_TESTING\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/payments/create-checkout-session",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "create-checkout-session"]
+            },
+            "description": "Create Stripe checkout session for SOP Testing ($49.99)"
+          }
+        },
+        {
+          "name": "3. Create Checkout - Visa Consultancy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"featureType\": \"VISA_CONSULTANCY\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/payments/create-checkout-session",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "create-checkout-session"]
+            },
+            "description": "Create Stripe checkout session for Visa Consultancy ($99.99)"
+          }
+        },
+        {
+          "name": "3. Create Checkout - Premium Bundle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"featureType\": \"PREMIUM_BUNDLE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/payments/create-checkout-session",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "create-checkout-session"]
+            },
+            "description": "Create Stripe checkout session for Premium Bundle - All Features ($149.99)"
+          }
+        },
+        {
+          "name": "4. Verify Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/payments/verify-session/{{session_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "verify-session", "{{session_id}}"]
+            },
+            "description": "Verify a checkout session status (use session_id from checkout response)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultancy Endpoints",
+      "item": [
+        {
+          "name": "List All Agencies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies"]
+            },
+            "description": "Get list of all active visa consultancy agencies"
+          }
+        },
+        {
+          "name": "Filter Agencies by Country",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies-by-country/USA",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies-by-country", "USA"]
+            },
+            "description": "Filter agencies by country (USA, Canada, UK, etc.)"
+          }
+        },
+        {
+          "name": "Get Agency Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies", "1"]
+            },
+            "description": "Get details for a specific agency (replace 1 with agency ID)"
+          }
+        },
+        {
+          "name": "Admin: Add Agency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agencyName\": \"Global Visa Consultants\",\n  \"email\": \"info@globalvisa.com\",\n  \"phone\": \"+1-555-0123\",\n  \"country\": \"USA\",\n  \"city\": \"New York\",\n  \"website\": \"https://globalvisa.com\",\n  \"description\": \"Expert visa consultancy for USA, Canada, and UK\",\n  \"specializations\": \"USA,Canada,UK\",\n  \"rating\": 4.8\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies"]
+            },
+            "description": "Admin endpoint to add new visa consultancy agency (requires admin token)"
+          }
+        },
+        {
+          "name": "Admin: Update Agency",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agencyName\": \"Global Visa Consultants - Updated\",\n  \"rating\": 4.9,\n  \"specializations\": \"USA,Canada,UK,Australia\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies", "1"]
+            },
+            "description": "Admin endpoint to update agency details (replace 1 with agency ID)"
+          }
+        },
+        {
+          "name": "Admin: Delete Agency",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/consultancy/agencies/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "consultancy", "agencies", "1"]
+            },
+            "description": "Admin endpoint to delete agency (soft delete - marks inactive)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook Testing",
+      "item": [
+        {
+          "name": "Test Webhook - Checkout Completed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Webhook received', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "stripe-signature",
+                "value": "test_signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_123456\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"cs_test_session\",\n      \"metadata\": {\n        \"userId\": \"1\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/payments/webhook",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "payments", "webhook"]
+            },
+            "description": "Test webhook endpoint with mock checkout.session.completed event (Use Stripe CLI for real testing)"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string",
+      "description": "JWT authentication token from login endpoint"
+    },
+    {
+      "key": "admin_token",
+      "value": "YOUR_ADMIN_JWT_TOKEN_HERE",
+      "type": "string",
+      "description": "JWT authentication token for admin user"
+    },
+    {
+      "key": "session_id",
+      "value": "cs_test_checkout_session_id",
+      "type": "string",
+      "description": "Stripe checkout session ID from create-checkout-session response"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
+}
