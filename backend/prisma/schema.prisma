@@ -8,20 +8,25 @@ datasource db {
 }
 
 model User {
-  id              Int             @id @default(autoincrement())
-  email           String          @unique @db.NVarChar(255)
-  passwordHash    String          @db.NVarChar(255)
-  role            String          @default("USER") @db.NVarChar(10)
-  fullName        String?         @db.NVarChar(200)
-  cgpa            Float?
-  degreeLevel     String?         @db.NVarChar(50)
-  major           String?         @db.NVarChar(100)
-  fundScore       Int?
-  createdAt       DateTime        @default(now())
-  profileHeadline String?         @db.NVarChar(120)
-  applications    Application[]
-  countryRatings  CountryRating[]
-  documents       UserDocument[]
+  id                  Int             @id @default(autoincrement())
+  email               String          @unique @db.NVarChar(255)
+  passwordHash        String          @db.NVarChar(255)
+  role                String          @default("USER") @db.NVarChar(10)
+  fullName            String?         @db.NVarChar(200)
+  cgpa                Float?
+  degreeLevel         String?         @db.NVarChar(50)
+  major               String?         @db.NVarChar(100)
+  fundScore           Int?
+  createdAt           DateTime        @default(now())
+  profileHeadline     String?         @db.NVarChar(120)
+  isPremium           Boolean         @default(false)
+  premiumFeatures     String?         @db.NVarChar(100) // "AI_HELP,SOP_TESTING,VISA_CONSULTANCY"
+  premiumExpiryDate   DateTime?
+  stripeCustomerId    String?         @db.NVarChar(255)
+  applications        Application[]
+  countryRatings      CountryRating[]
+  documents           UserDocument[]
+  payments            Payment[]
 
   @@map("Users")
 }
@@ -158,3 +163,40 @@ model CountryRating {
   @@index([countryId])
   @@map("CountryRatings")
 }
+
+model Payment {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  stripeSessionId   String    @db.NVarChar(255)
+  stripePaymentId   String?   @db.NVarChar(255)
+  amount            Int       // Amount in cents (e.g., 9999 = $99.99)
+  currency          String    @default("USD") @db.NVarChar(10)
+  featureType       String    @db.NVarChar(50) // "AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY"
+  status            String    @default("PENDING") @db.NVarChar(20) // "PENDING", "SUCCESS", "FAILED"
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeSessionId])
+  @@map("Payments")
+}
+
+model VisaConsultancy {
+  id                Int       @id @default(autoincrement())
+  agencyName        String    @db.NVarChar(200)
+  email             String?   @db.NVarChar(255)
+  phone             String?   @db.NVarChar(20)
+  country           String?   @db.NVarChar(100)
+  city              String?   @db.NVarChar(100)
+  website           String?   @db.NVarChar(500)
+  description       String?   @db.NVarChar(1000)
+  specializations   String?   @db.NVarChar(500) // Comma-separated: "UK,USA,Canada"
+  rating            Float?    @default(0.0)
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("VisaConsultancies")
+}
+

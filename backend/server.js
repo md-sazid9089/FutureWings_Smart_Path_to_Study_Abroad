@@ -18,6 +18,10 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 
+// Stripe webhook endpoint must be BEFORE JSON parsing for raw body
+// This is a workaround: we'll handle it within the payments route with conditional parsing
+// Better approach: use the middleware inside the route
+
 // Parse JSON and URL-encoded bodies with size limit
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -34,6 +38,8 @@ if (process.env.NODE_ENV !== 'production') {
 // Using Prisma-integrated routes from src/routes
 app.use("/api/auth", require("./src/routes/auth"));
 app.use("/api/user", require("./src/routes/user"));
+app.use("/api/payments", require("./src/routes/payments"));
+app.use("/api/consultancy", require("./src/routes/consultancy"));
 app.use("/api/applications", require("./src/routes/applications"));
 app.use("/api/countries", require("./src/routes/countries"));
 app.use("/api/ratings", require("./src/routes/ratings"));
