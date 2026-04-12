@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axios";
 import toast from "react-hot-toast";
 import { HiOutlineSparkles, HiOutlineCheckCircle, HiOutlineArrowLeft } from "react-icons/hi2";
 import { PageHeader } from "../components/ui/PageHeader";
@@ -23,10 +23,7 @@ const PremiumCheckout = () => {
 
   const checkCurrentStatus = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("/api/payments/status", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await API.get("/api/payments/status");
 
       const status = response.data.data;
       setUserStatus(status);
@@ -45,14 +42,9 @@ const PremiumCheckout = () => {
 
     setIsProcessing(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "/api/payments/create-checkout-session",
-        { featureType },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await API.post("/api/payments/create-checkout-session", {
+        featureType,
+      });
 
       if (response.data.data.url) {
         // Redirect to Stripe checkout

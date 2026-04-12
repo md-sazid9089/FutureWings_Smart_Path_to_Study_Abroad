@@ -3,6 +3,7 @@ import API from '../api/axios';
 import { PageHeader } from '../components/ui/PageHeader';
 import GlassCard from '../components/ui/GlassCard';
 import EmptyState from '../components/ui/EmptyState';
+import PremiumFeatureWrapper from '../components/PremiumFeatureWrapper';
 import { HiOutlineSparkles, HiOutlinePaperAirplane, HiOutlineBolt, HiOutlineClock, HiOutlineDocumentText, HiOutlineGlobeAlt } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
@@ -62,7 +63,8 @@ export default function AIAssistant() {
   const formatMessage = (text = '') => text.replace(/\r\n/g, '\n').trim();
 
   return (
-    <div className="space-y-6">
+    <PremiumFeatureWrapper feature="AI_HELP">
+      <div className="space-y-6">
       <PageHeader
         title="AI Assistant"
         subtitle="Ask about countries, tiers, documents, programs, and your study-abroad path"
@@ -209,6 +211,7 @@ export default function AIAssistant() {
           </div>
         </GlassCard>
       </div>
-    </div>
+      </div>
+    </PremiumFeatureWrapper>
   );
 }
