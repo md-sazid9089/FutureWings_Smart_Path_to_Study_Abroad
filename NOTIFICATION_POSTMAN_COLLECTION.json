@@ -1,0 +1,717 @@
+{
+  "info": {
+    "_postman_id": "notification-system-collection",
+    "name": "Notification System Testing",
+    "description": "Comprehensive Postman collection for testing the polling-based notification system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login - Test User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@futurewings.com\",\n  \"password\": \"Test@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.environment.set('jwt_token', jsonData.token);",
+                  "  pm.environment.set('user_id', jsonData.user.id);",
+                  "  console.log('Authentication successful');",
+                  "  console.log('JWT Token saved to env');",
+                  "  console.log('User ID: ' + jsonData.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@futurewings.com\",\n  \"password\": \"Admin@1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/admin-login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "admin-login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.environment.set('admin_token', jsonData.token);",
+                  "  console.log('Admin authentication successful');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification Retrieval",
+      "item": [
+        {
+          "name": "Get All Unread Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications?limit=20&offset=0&read=unread",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "read",
+                  "value": "unread"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has notifications array', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('notifications');",
+                  "  pm.expect(jsonData.data.notifications).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('All notifications are unread', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  jsonData.data.notifications.forEach(function(notification) {",
+                  "    pm.expect(notification.read).to.be.false;",
+                  "  });",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.environment.set('notification_count', jsonData.data.total);",
+                  "  if (jsonData.data.notifications.length > 0) {",
+                  "    pm.environment.set('first_notification_id', jsonData.data.notifications[0].id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Notifications (Read & Unread)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications?limit=20&offset=0&read=all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "read",
+                  "value": "all"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "count"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has unreadCount', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('unreadCount');",
+                  "  pm.expect(jsonData.data.unreadCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Specific Notification",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{first_notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{first_notification_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is a single notification', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('id');",
+                  "  pm.expect(jsonData.data).to.have.property('title');",
+                  "  pm.expect(jsonData.data).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Marking as Read",
+      "item": [
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{first_notification_id}}/read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{first_notification_id}}", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Notification marked as read', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data.read).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Updated timestamp exists', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('updatedAt');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/mark-all/read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "mark-all", "read"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains count', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('count');",
+                  "  console.log('Marked ' + jsonData.data.count + ' notifications as read');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification Management",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"subscription\",\n  \"title\": \"Premium Subscription Active\",\n  \"message\": \"Your AI Help premium subscription is now active!\",\n  \"link\": \"/profile\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has notification ID', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('id');",
+                  "  pm.environment.set('created_notification_id', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{created_notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{created_notification_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clear All Notifications",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/clear/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "clear", "all"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains delete count', function() {",
+                  "  let jsonData = pm.response.json();",
+                  "  pm.expect(jsonData.data).to.have.property('count');",
+                  "  console.log('Deleted ' + jsonData.data.count + ' notifications');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Testing Scenarios",
+      "item": [
+        {
+          "name": "Scenario 1 - Create Subscription Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"subscription\",\n  \"title\": \"Premium Subscription Active\",\n  \"message\": \"Your AI Help premium subscription is now active!\",\n  \"link\": \"/profile\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        },
+        {
+          "name": "Scenario 2 - Create AI Recommendation Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"ai\",\n  \"title\": \"New AI Recommendation\",\n  \"message\": \"We found a great match: MIT Computer Science\",\n  \"link\": \"/recommendations/5\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        },
+        {
+          "name": "Scenario 3 - Create Application Update Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"application\",\n  \"title\": \"Your Application Was Updated\",\n  \"message\": \"Status update on your application to Harvard University.\",\n  \"link\": \"/applications/2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        },
+        {
+          "name": "Scenario 4 - Create Visa Outcome Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"visa\",\n  \"title\": \"Visa Outcome Updated\",\n  \"message\": \"Your visa outcome has been updated. Check your applications for details.\",\n  \"link\": \"/visa-outcome\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        },
+        {
+          "name": "Scenario 5 - Create Admin Update Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"admin-update\",\n  \"title\": \"New Country Added\",\n  \"message\": \"Check out New Zealand - a great study destination!\",\n  \"link\": \"/countries\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        },
+        {
+          "name": "Scenario 6 - Create Recommendation Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 123,\n  \"type\": \"recommendation\",\n  \"title\": \"Program Recommendation\",\n  \"message\": \"Based on your profile, we recommend: Stanford MBA Program\",\n  \"link\": \"/recommendations\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notifications/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "create"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "401 Unauthorized - Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401 Unauthorized', function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "404 Not Found - Invalid Notification ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/99999",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "99999"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": [
+                {
+                  "exec": [
+                    "pm.test('Status is 404 Not Found', function() {",
+                    "  pm.response.to.have.status(404);",
+                    "});"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notification_count",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "first_notification_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "created_notification_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
