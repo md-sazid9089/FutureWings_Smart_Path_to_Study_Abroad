@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique @db.NVarChar(255)
-  passwordHash   String          @db.NVarChar(255)
-  role           String          @default("USER") @db.NVarChar(10)
-  fullName       String?         @db.NVarChar(200)
-  cgpa           Float?
-  degreeLevel    String?         @db.NVarChar(50)
-  major          String?         @db.NVarChar(100)
-  fundScore      Int?
-  createdAt      DateTime        @default(now())
-  applications   Application[]
-  countryRatings CountryRating[]
-  documents      UserDocument[]
+  id              Int             @id @default(autoincrement())
+  email           String          @unique @db.NVarChar(255)
+  passwordHash    String          @db.NVarChar(255)
+  role            String          @default("USER") @db.NVarChar(10)
+  fullName        String?         @db.NVarChar(200)
+  cgpa            Float?
+  degreeLevel     String?         @db.NVarChar(50)
+  major           String?         @db.NVarChar(100)
+  fundScore       Int?
+  createdAt       DateTime        @default(now())
+  profileHeadline String?         @db.NVarChar(120)
+  applications    Application[]
+  countryRatings  CountryRating[]
+  documents       UserDocument[]
 
   @@map("Users")
 }

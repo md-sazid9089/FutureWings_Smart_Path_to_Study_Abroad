@@ -11,10 +11,10 @@
     "db:sync": "npm run db:pull && npm run db:generate",
     "db:first": "npm run db:sync",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "test:auth": "cross-env NODE_ENV=test jest --runInBand -- auth.test",
-    "test:admin": "cross-env NODE_ENV=test jest --runInBand -- admin.test",
-    "test:middleware": "cross-env NODE_ENV=test jest --runInBand -- middleware",
-    "test:protected": "cross-env NODE_ENV=test jest --runInBand -- protected.test",
+    "test:watch": "cross-env NODE_ENV=test jest --runInBand --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --runInBand",
+    "test:validation": "cross-env NODE_ENV=test jest --runInBand -- validation.test",
+    "test:utils": "cross-env NODE_ENV=test jest --runInBand -- utils.test",
     "test:verbose": "cross-env NODE_ENV=test jest --runInBand --verbose",
     "vercel-build": "echo done"
   },
@@ -32,5 +32,10 @@
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.2.0",
     "prisma": "^5.22.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
   }
 }

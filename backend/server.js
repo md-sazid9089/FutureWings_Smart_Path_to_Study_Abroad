@@ -6,11 +6,29 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 // Initialize Prisma Client
 const prisma = require("./src/prisma/client");
 
+// Import error handling middleware
+const { errorHandler, notFoundHandler } = require("./src/middleware/errorHandler");
+
 const app = express();
 
 // ─── Middleware ──────────────────────────────────────────
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  optionsSuccessStatus: 200,
+}));
+
+// Parse JSON and URL-encoded bodies with size limit
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Request logging middleware (development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+  });
+}
 
 // ─── Routes ─────────────────────────────────────────────
 // Using Prisma-integrated routes from src/routes
@@ -35,28 +53,23 @@ app.get("/api/health", async (_req, res) => {
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: "ok", database: "connected" });
+    res.json({ status: "ok", database: "connected", timestamp: new Date().toISOString() });
   } catch (error) {
     console.error("Health check error:", error);
-    res.status(500).json({ status: "error", database: "disconnected" });
+    res.status(503).json({ status: "error", database: "disconnected", timestamp: new Date().toISOString() });
   }
 });
 
-// ─── 404 fallback ───────────────────────────────────────
-app.use("/api/*", (_req, res) => res.status(404).json({ error: "Not found" }));
+// ─── 404 and catch-all handlers ──────────────────────────
+app.use("/api/*", notFoundHandler);
+app.use("*", notFoundHandler);
 
-// ─── Error handler ──────────────────────────────────────
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(500).json({
-    success: false,
-    error: { message: "Internal server error" },
-  });
-});
+// ─── Global Error Handler (must be last) ────────────────
+app.use(errorHandler);
 
 // ─── Graceful shutdown ──────────────────────────────────
 process.on("SIGINT", async () => {
-  console.log("Shutting down gracefully...");
+  console.log("\nShutting down gracefully...");
   await prisma.$disconnect();
   process.exit(0);
 });
@@ -64,8 +77,9 @@ process.on("SIGINT", async () => {
 // ─── Start ──────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`\n✓ Backend running on http://localhost:${PORT}`);
+  console.log(`✓ Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`✓ CORS enabled for: ${process.env.FRONTEND_URL || "http://localhost:3000"}\n`);
 });
 
 module.exports = app;
