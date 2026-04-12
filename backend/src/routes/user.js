@@ -30,6 +30,9 @@ router.get("/me", requireAuth, async (req, res) => {
         degreeLevel: true,
         major: true,
         fundScore: true,
+        isPremium: true,
+        premiumFeatures: true,
+        premiumExpiryDate: true,
         createdAt: true,
       },
     });
@@ -38,7 +41,21 @@ router.get("/me", requireAuth, async (req, res) => {
       return errorResponse(res, "User not found", 404);
     }
 
-    return successResponse(res, user);
+    // Check if premium has expired
+    let isPremium = user.isPremium;
+    if (isPremium && user.premiumExpiryDate && user.premiumExpiryDate < new Date()) {
+      isPremium = false;
+      // Reset premium status if expired
+      await prisma.user.update({
+        where: { id: userId },
+        data: { isPremium: false, premiumFeatures: null },
+      });
+    }
+
+    return successResponse(res, {
+      ...user,
+      isPremium,
+    });
   } catch (error) {
     console.error("Get user error:", error);
     return errorResponse(res, "Internal server error", 500);

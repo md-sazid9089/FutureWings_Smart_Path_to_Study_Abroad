@@ -19,32 +19,53 @@ export const PremiumUpgradeButton = ({
 
   useEffect(() => {
     checkPremiumStatus();
+    
+    // Listen for user data updates (e.g., after payment)
+    const handleUserUpdate = () => {
+      checkPremiumStatus();
+    };
+    
+    window.addEventListener("userUpdated", handleUserUpdate);
+    return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
 
   const checkPremiumStatus = async () => {
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("token");
       if (!token) {
         setLoading(false);
         return;
       }
 
-      const response = await axios.get("/api/payments/status", {
+      // First check if user data is in localStorage
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.isPremium) {
+          setIsPremium(true);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // If not in localStorage, fetch from API
+      const response = await axios.get("/api/user/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const userStatus = response.data.data;
+      const user = response.data.data;
+      
+      // Check if premium and has the feature or is PREMIUM_BUNDLE
       const hasPremium =
-        userStatus.isPremium &&
-        userStatus.features.includes(featureType || "PREMIUM_BUNDLE")
-          .split(",")
-          .some((f) =>
-            userStatus.features.includes(
-              featureType ? featureType : "PREMIUM_BUNDLE"
-            )
-          );
+        user.isPremium &&
+        (featureType === "PREMIUM_BUNDLE" ||
+          (user.premiumFeatures &&
+            user.premiumFeatures.includes(featureType)));
 
       setIsPremium(hasPremium);
+      
+      // Update localStorage
+      localStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
       console.error("Premium check error:", error);
     } finally {
@@ -116,28 +137,59 @@ export const PremiumFeatureGuard = ({
 
   useEffect(() => {
     checkPremiumStatus();
+    
+    // Listen for user data updates (e.g., after payment)
+    const handleUserUpdate = () => {
+      checkPremiumStatus();
+    };
+    
+    window.addEventListener("userUpdated", handleUserUpdate);
+    return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, [featureType]);
 
   const checkPremiumStatus = async () => {
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("token");
       if (!token) {
         setLoading(false);
         return;
       }
 
-      const response = await axios.get("/api/payments/status", {
+      // First check if user data is in localStorage
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.isPremium) {
+          // Check if user has the specific feature or has PREMIUM_BUNDLE
+          const hasPremium =
+            featureType === "PREMIUM_BUNDLE" ||
+            (user.premiumFeatures &&
+              user.premiumFeatures.includes(featureType));
+          
+          setIsPremium(hasPremium);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // If not in localStorage, fetch from API
+      const response = await axios.get("/api/user/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const userStatus = response.data.data;
+      const user = response.data.data;
+      
+      // Check if premium and has the feature or is PREMIUM_BUNDLE
       const hasPremium =
-        userStatus.isPremium &&
-        userStatus.features.length > 0
-          ? userStatus.features.includes(featureType)
-          : false;
+        user.isPremium &&
+        (featureType === "PREMIUM_BUNDLE" ||
+          (user.premiumFeatures &&
+            user.premiumFeatures.includes(featureType)));
 
       setIsPremium(hasPremium);
+      
+      // Update localStorage
+      localStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
       console.error("Premium check error:", error);
     } finally {

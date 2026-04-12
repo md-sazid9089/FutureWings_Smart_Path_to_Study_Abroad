@@ -1,5 +1,5 @@
 /**
- * Stripe Checkout Page
+ * Premium Checkout Page
  * Displays premium feature options and initiates Stripe checkout
  */
 
@@ -7,197 +7,231 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { GlassNavbar } from "../components/GlassNavbar";
+import { HiOutlineSparkles, HiOutlineCheckCircle, HiOutlineArrowLeft } from "react-icons/hi2";
+import { PageHeader } from "../components/ui/PageHeader";
+import GlassCard from "../components/ui/GlassCard";
+import PrimaryButton from "../components/ui/PrimaryButton";
 
 const PremiumCheckout = () => {
   const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [userStatus, setUserStatus] = useState(null);
 
   useEffect(() => {
-    fetchUserStatus();
+    checkCurrentStatus();
   }, []);
 
-  const fetchUserStatus = async () => {
+  const checkCurrentStatus = async () => {
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("token");
       const response = await axios.get("/api/payments/status", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUserStatus(response.data.data);
+
+      const status = response.data.data;
+      setUserStatus(status);
+
+      if (status.isPremium) {
+        toast.success("You already have premium access!");
+        navigate("/ai-assistant");
+      }
     } catch (error) {
-      console.error("Failed to fetch user status:", error);
+      console.error("Error checking status:", error);
+    }
+  };
+
+  const handlePayment = async (featureType) => {
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "/api/payments/create-checkout-session",
+        { featureType },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = response.data.data.url;
+      } else {
+        toast.error("Failed to create checkout session");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error(error.response?.data?.error?.message || "Failed to process payment");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const plans = [
     {
       id: "AI_HELP",
-      name: "AI Help",
+      name: "AI Writing Assistant",
       price: 49.99,
-      description: "Get AI-powered assistance with your applications",
-      features: ["AI Assistant", "Application Review", "Personalized Guidance"],
+      duration: "30 days",
+      description: "Get AI-powered assistance for your SOP and applications",
+      features: [
+        "AI-powered SOP writing",
+        "Grammar & style suggestions",
+        "24/7 instant support",
+        "Unlimited revisions",
+      ],
     },
     {
       id: "SOP_TESTING",
-      name: "SOP Testing",
+      name: "SOP Review & Testing",
       price: 49.99,
-      description: "Test and refine your Statement of Purpose",
-      features: ["SOP Evaluation", "Writing Tips", "Multiple Revisions"],
+      duration: "30 days",
+      description: "Professional review and testing of your Statement of Purpose",
+      features: [
+        "Expert SOP review",
+        "Detailed feedback",
+        "Multiple versions support",
+        "Interview preparation",
+      ],
     },
     {
       id: "VISA_CONSULTANCY",
       name: "Visa Consultancy",
       price: 99.99,
-      description: "Connect with expert visa consultants",
-      features: ["Access to Agencies", "Expert Consultations", "Visa Guidance"],
+      duration: "30 days",
+      description: "Expert visa guidance and document preparation support",
+      features: [
+        "Visa requirement guide",
+        "Document checklist",
+        "Expert one-on-one consultation",
+        "Priority email support",
+      ],
     },
     {
       id: "PREMIUM_BUNDLE",
       name: "Premium Bundle",
       price: 149.99,
-      description: "Get all premium features for one month",
-      features: ["All Features", "Priority Support", "Best Value"],
-      isPopular: true,
+      duration: "30 days",
+      description: "All premium features combined at a discounted price",
+      features: [
+        "AI Writing Assistant",
+        "SOP Review & Testing",
+        "Visa Consultancy",
+        "24/7 Priority support",
+      ],
+      recommended: true,
     },
   ];
 
-  const handleCheckout = async (planId) => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("auth_token");
-
-      const response = await axios.post(
-        "/api/payments/create-checkout-session",
-        { featureType: planId },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      // Redirect to Stripe Checkout
-      if (response.data.data.url) {
-        window.location.href = response.data.data.url;
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error(error.response?.data?.error?.message || "Failed to initiate checkout");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <GlassNavbar />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Unlock Premium Features
-          </h1>
-          <p className="text-xl text-gray-600">
-            Elevate your study abroad journey with our premium services
-          </p>
-          {userStatus?.isPremium && (
-            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg inline-block">
-              <p className="text-green-800">
-                ✓ You have premium access until {new Date(userStatus.expiryDate).toLocaleDateString()}
-              </p>
-            </div>
-          )}
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <PageHeader
+        title="Unlock Premium Features"
+        subtitle="Enhance your study abroad journey with AI-powered tools and expert guidance"
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Back button */}
+        <button
+          onClick={() => navigate("/ai-assistant")}
+          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 transition"
+        >
+          <HiOutlineArrowLeft className="w-5 h-5" />
+          Back to AI Assistant
+        </button>
+
+        {/* Features grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {plans.map((plan) => (
-            <div
+            <GlassCard
               key={plan.id}
-              className={`relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 ${
-                plan.isPopular ? "ring-2 ring-blue-500 lg:scale-105" : ""
+              className={`flex flex-col h-full transition transform ${
+                plan.recommended ? "ring-2 ring-blue-400 scale-105" : ""
               }`}
             >
-              {plan.isPopular && (
-                <div className="absolute top-0 right-0 bg-blue-500 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
-                  Popular
+              {/* Recommended badge */}
+              {plan.recommended && (
+                <div className="mb-4">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <HiOutlineSparkles className="w-4 h-4" />
+                    Recommended
+                  </span>
                 </div>
               )}
 
-              <div className="p-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {plan.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+              {/* Title */}
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                {plan.name}
+              </h3>
 
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-blue-600">
+              {/* Description */}
+              <p className="text-slate-600 text-sm mb-4 flex-grow">
+                {plan.description}
+              </p>
+
+              {/* Price */}
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-slate-900">
                     ${plan.price}
                   </span>
-                  <span className="text-gray-600 ml-2">/month</span>
-                </div>
-
-                <button
-                  onClick={() => handleCheckout(plan.id)}
-                  disabled={loading}
-                  className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors duration-300 ${
-                    plan.isPopular
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {loading ? "Processing..." : "Choose Plan"}
-                </button>
-
-                <div className="mt-6 space-y-3">
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center text-sm text-gray-700">
-                      <span className="mr-2 text-blue-500">✓</span>
-                      {feature}
-                    </div>
-                  ))}
+                  <span className="text-slate-600 text-sm">/ {plan.duration}</span>
                 </div>
               </div>
-            </div>
+
+              {/* Benefits */}
+              <div className="mb-8 space-y-3">
+                {plan.features.map((feature) => (
+                  <div key={feature} className="flex items-start gap-2">
+                    <HiOutlineCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-slate-700 text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Button */}
+              <PrimaryButton
+                onClick={() => handlePayment(plan.id)}
+                disabled={isProcessing}
+                className="w-full"
+              >
+                {isProcessing ? "Processing..." : "Get Started"}
+              </PrimaryButton>
+            </GlassCard>
           ))}
         </div>
 
         {/* FAQ Section */}
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             Frequently Asked Questions
           </h2>
+
           <div className="space-y-4">
-            <details className="group cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-gray-900">
-                How long is the subscription valid?
-                <span className="group-open:rotate-180 transition-transform">↓</span>
-              </summary>
-              <p className="mt-2 text-gray-600">
-                All premium subscriptions are valid for 30 days from the date of purchase.
-              </p>
-            </details>
-
-            <details className="group cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-gray-900">
-                Can I cancel my subscription?
-                <span className="group-open:rotate-180 transition-transform">↓</span>
-              </summary>
-              <p className="mt-2 text-gray-600">
-                You can cancel anytime from your account settings. Your access will remain valid
-                until the end of your subscription period.
-              </p>
-            </details>
-
-            <details className="group cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-gray-900">
-                Is my payment secure?
-                <span className="group-open:rotate-180 transition-transform">↓</span>
-              </summary>
-              <p className="mt-2 text-gray-600">
-                Yes! We use Stripe for payment processing, which is PCI DSS compliant and uses
-                industry-leading security standards.
-              </p>
-            </details>
+            {[
+              {
+                q: "Is my payment secure?",
+                a: "Yes! We use Stripe, a level 1 PCI-DSS compliant payment processor trusted by millions of businesses worldwide.",
+              },
+              {
+                q: "What happens after I purchase?",
+                a: "Your premium access will be activated immediately. You'll be redirected to your dashboard where you can start using premium features.",
+              },
+              {
+                q: "How long is the access valid?",
+                a: "Premium access is valid for 30 days from the date of purchase. You can renew your subscription anytime.",
+              },
+              {
+                q: "Do you offer refunds?",
+                a: "We offer full refunds within 48 hours of purchase if you're not satisfied with our service.",
+              },
+            ].map((item, idx) => (
+              <GlassCard key={idx} className="p-6">
+                <h4 className="font-semibold text-slate-900 mb-3">{item.q}</h4>
+                <p className="text-slate-600 text-sm">{item.a}</p>
+              </GlassCard>
+            ))}
           </div>
         </div>
       </div>
