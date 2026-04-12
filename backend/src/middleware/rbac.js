@@ -1,6 +1,9 @@
 /**
  * Role-Based Access Control (RBAC) Middleware
  * Manages user roles and permissions across the platform
+ *
+ * ROLES: ADMIN, STUDENT
+ * (MODERATOR role can be added in future if needed)
  */
 
 const { AuthorizationError } = require('../utils/errors');
@@ -11,7 +14,6 @@ const { asyncHandler } = require('./errorHandler');
  */
 const ROLES = {
   ADMIN: 'ADMIN',
-  MODERATOR: 'MODERATOR',
   STUDENT: 'STUDENT',
 };
 
@@ -20,49 +22,49 @@ const ROLES = {
  */
 const PERMISSIONS = {
   // User management
-  'user:read_own': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
-  'user:read_all': [ROLES.ADMIN, ROLES.MODERATOR],
-  'user:update_own': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
+  'user:read_own': [ROLES.ADMIN, ROLES.STUDENT],
+  'user:read_all': [ROLES.ADMIN],
+  'user:update_own': [ROLES.ADMIN, ROLES.STUDENT],
   'user:update_any': [ROLES.ADMIN],
   'user:delete_any': [ROLES.ADMIN],
 
   // Application management
   'application:create': [ROLES.ADMIN, ROLES.STUDENT],
-  'application:read_own': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
-  'application:read_all': [ROLES.ADMIN, ROLES.MODERATOR],
+  'application:read_own': [ROLES.ADMIN, ROLES.STUDENT],
+  'application:read_all': [ROLES.ADMIN],
   'application:update_own': [ROLES.ADMIN, ROLES.STUDENT],
-  'application:update_any': [ROLES.ADMIN, ROLES.MODERATOR],
+  'application:update_any': [ROLES.ADMIN],
   'application:delete_own': [ROLES.STUDENT],
   'application:delete_any': [ROLES.ADMIN],
 
   // University management
-  'university:create': [ROLES.ADMIN, ROLES.MODERATOR],
-  'university:read': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
-  'university:update': [ROLES.ADMIN, ROLES.MODERATOR],
+  'university:create': [ROLES.ADMIN],
+  'university:read': [ROLES.ADMIN, ROLES.STUDENT],
+  'university:update': [ROLES.ADMIN],
   'university:delete': [ROLES.ADMIN],
 
   // Document management
   'document:create': [ROLES.ADMIN, ROLES.STUDENT],
-  'document:read_own': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
-  'document:read_all': [ROLES.ADMIN, ROLES.MODERATOR],
+  'document:read_own': [ROLES.ADMIN, ROLES.STUDENT],
+  'document:read_all': [ROLES.ADMIN],
   'document:update_own': [ROLES.STUDENT],
   'document:update_any': [ROLES.ADMIN],
   'document:delete_own': [ROLES.STUDENT],
   'document:delete_any': [ROLES.ADMIN],
 
   // Scholarship management
-  'scholarship:create': [ROLES.ADMIN, ROLES.MODERATOR],
-  'scholarship:read': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
-  'scholarship:update': [ROLES.ADMIN, ROLES.MODERATOR],
+  'scholarship:create': [ROLES.ADMIN],
+  'scholarship:read': [ROLES.ADMIN, ROLES.STUDENT],
+  'scholarship:update': [ROLES.ADMIN],
   'scholarship:delete': [ROLES.ADMIN],
 
   // Content moderation
-  'content:moderate': [ROLES.ADMIN, ROLES.MODERATOR],
+  'content:moderate': [ROLES.ADMIN],
   'content:delete': [ROLES.ADMIN],
 
   // Rating management
   'rating:create': [ROLES.ADMIN, ROLES.STUDENT],
-  'rating:read': [ROLES.ADMIN, ROLES.MODERATOR, ROLES.STUDENT],
+  'rating:read': [ROLES.ADMIN, ROLES.STUDENT],
   'rating:update_own': [ROLES.STUDENT],
   'rating:delete_own': [ROLES.STUDENT],
   'rating:delete_any': [ROLES.ADMIN],
@@ -72,7 +74,7 @@ const PERMISSIONS = {
   'recommendation:generate': [ROLES.ADMIN, ROLES.STUDENT],
 
   // Admin dashboard
-  'admin:dashboard': [ROLES.ADMIN, ROLES.MODERATOR],
+  'admin:dashboard': [ROLES.ADMIN],
   'admin:analytics': [ROLES.ADMIN],
   'admin:settings': [ROLES.ADMIN],
 };
@@ -206,14 +208,13 @@ const isResourceOwner = (resourceIdParam, getResourceOwner) => {
 const adminOnly = requireRole(ROLES.ADMIN);
 
 /**
- * Middleware for moderator and admin operations
- */
-const moderatorOrAdmin = requireRole(ROLES.ADMIN, ROLES.MODERATOR);
-
-/**
  * Middleware for authenticated users (any role)
  */
 const authenticatedOnly = requireAuth;
+
+// Future: Moderator role can be added back with:
+// const ROLES = { ADMIN: 'ADMIN', MODERATOR: 'MODERATOR', STUDENT: 'STUDENT' };
+// And update PERMISSIONS accordingly
 
 module.exports = {
   ROLES,
@@ -226,6 +227,5 @@ module.exports = {
   attachUserContext,
   isResourceOwner,
   adminOnly,
-  moderatorOrAdmin,
   authenticatedOnly,
 };

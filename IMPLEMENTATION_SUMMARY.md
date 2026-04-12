@@ -146,22 +146,24 @@ Successfully implemented comprehensive error handling, validation, RBAC, testing
 
 ### Phase 3: RBAC Implementation ✅
 
-**Roles:** ADMIN, MODERATOR, STUDENT
+**Roles:** ADMIN, STUDENT
+*(MODERATOR can be added in future phases if needed)*
 
-**Permissions (35+):**
-- User management (read, update, delete)
-- Application management (full CRUD with ownership checks)
-- Content moderation
-- Admin dashboard access
-- Settings management
+**Permissions (26):**
+- User management (read own/all, update own/any)
+- Application management (create, read own/all)
+- University management (view, admin create)
+- Document management
+- Ratings and recommendations
+- Admin dashboard and settings
 
 **Key Features:**
-- Permission matrix enforcement
+- Simplified 2-role permission matrix
 - Route-level access control
 - Resource ownership verification
-- Role-based shortcuts (adminOnly, moderatorOrAdmin)
+- Role-based shortcuts (adminOnly)
 
-**Impact:** Secure access control with proper authorization ✅
+**Impact:** Streamlined access control focused on core ADMIN/STUDENT separation ✅
 
 ### Phase 4: Test Suite Setup ✅
 
