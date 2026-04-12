@@ -49,9 +49,9 @@ Successfully delivered comprehensive platform enhancements to FutureWings includ
 
 **RBAC System** ✅
 - **File:** `backend/src/middleware/rbac.js`
-- **Roles:** ADMIN, MODERATOR, STUDENT
-- **Permissions:** 35+ granular permissions
-- **Impact:** Secure access control based on roles
+- **Roles:** ADMIN, STUDENT *(MODERATOR deferred to future)*
+- **Permissions:** 26 granular permissions (simplified from 35+)
+- **Impact:** Secure streamlined access control based on 2-role architecture
 - **Usage Example:** `router.delete('/', adminOnly, handler)` - Role-based access
 
 **Enhanced Responses** ✅
@@ -150,10 +150,10 @@ Successfully delivered comprehensive platform enhancements to FutureWings includ
 
 ### Access Control  
 ✅ Role-Based Access Control (RBAC)  
-✅ 35+ granular permissions  
+✅ 26 granular permissions (simplified to 2-role architecture)  
 ✅ Resource ownership verification  
 ✅ Route-level access control  
-✅ Admin/moderator/student role separation  
+✅ Admin/student role separation (moderator deferred to future)  
 
 ### Error Handling
 ✅ No sensitive data in error messages  

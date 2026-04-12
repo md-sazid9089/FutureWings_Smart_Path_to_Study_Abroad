@@ -31,9 +31,9 @@ Complete implementation of error handling, validation, RBAC, testing, and fronte
 
 **`backend/src/middleware/rbac.js`**
 - Purpose: Role-Based Access Control with permission matrix
-- Roles: ADMIN, MODERATOR, STUDENT
-- Permissions: 35+ including user management, applications, content moderation
-- Middleware: `adminOnly`, `moderatorOrAdmin`, `requirePermission()`, `requireRole()`
+- Roles: ADMIN, STUDENT *(MODERATOR deferred to future phases)*
+- Permissions: 26 granular permissions (simplified architecture)
+- Middleware: `adminOnly`, `requirePermission()`, `requireRole()`, `authenticatedOnly`
 
 ### Testing
 
@@ -319,10 +319,11 @@ project/
 - XSS prevention
 
 ### RBAC ✅
-- 3 roles (ADMIN, MODERATOR, STUDENT)
-- 35+ permissions
+- 2 roles (ADMIN, STUDENT) - simplified
+- 26 permissions (streamlined architecture)
 - Route-level access control
 - Resource ownership verification
+- MODERATOR deferred to future phases
 
 ### Testing ✅
 - Jest backend configuration

@@ -172,28 +172,30 @@ const strength = validatePasswordStrength(password);
 ### Implementation (`backend/src/middleware/rbac.js`)
 
 **Roles:**
-- `ADMIN` - Full platform access
-- `MODERATOR` - Content moderation and user management
+- `ADMIN` - Full platform access and management
 - `STUDENT` - Limited to own data and peer content
 
+*(MODERATOR role can be added in future if needed)*
+
 **Permission Matrix:**
-| Action | ADMIN | MODERATOR | STUDENT |
-|--------|-------|-----------|---------|
-| `user:read_own` | ✓ | ✓ | ✓ |
-| `user:read_all` | ✓ | ✓ | ✗ |
-| `user:update_own` | ✓ | ✓ | ✓ |
-| `user:update_any` | ✓ | ✗ | ✗ |
-| `application:create` | ✓ | ✗ | ✓ |
-| `application:read_own` | ✓ | ✓ | ✓ |
-| `admin:dashboard` | ✓ | ✓ | ✗ |
-| `admin:settings` | ✓ | ✗ | ✗ |
+| Action | ADMIN | STUDENT |
+|--------|-------|---------|
+| `user:read_own` | ✓ | ✓ |
+| `user:read_all` | ✓ | ✗ |
+| `user:update_own` | ✓ | ✓ |
+| `user:update_any` | ✓ | ✗ |
+| `application:create` | ✓ | ✓ |
+| `application:read_own` | ✓ | ✓ |
+| `application:read_all` | ✓ | ✗ |
+| `university:create` | ✓ | ✗ |
+| `admin:dashboard` | ✓ | ✗ |
+| `admin:settings` | ✓ | ✗ |
 
 **Middleware Functions:**
 - `requireAuth` - Require authentication
 - `requireRole(...roles)` - Require specific role(s)
 - `requirePermission(permission, ownershipCheck)` - Permission-based access
 - `adminOnly` - Admin-only access shortcut
-- `moderatorOrAdmin` - Admin or moderator access
 - `authenticatedOnly` - Any authenticated user
 
 ### Usage Example
@@ -383,10 +385,10 @@ const result = await handleFormSubmit(
 - [x] File upload validation
 
 ### Phase 3: RBAC ✅
-- [x] Role and permission definitions
+- [x] Role and permission definitions (ADMIN, STUDENT)
 - [x] Permission checking middleware
 - [x] Ownership verification
-- [x] Admin/moderator shortcuts
+- [x] Admin shortcuts (moderator role deferred to future)
 
 ### Phase 4: Testing ✅
 - [x] Jest backend configuration
