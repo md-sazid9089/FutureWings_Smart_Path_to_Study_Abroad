@@ -21,6 +21,8 @@ import Profile from './pages/Profile';
 import Documents from './pages/Documents';
 import Recommendations from './pages/Recommendations';
 import AIAssistant from './pages/AIAssistant';
+import PremiumCheckout from './pages/PremiumCheckout';
+import PaymentSuccess from './pages/PaymentSuccess';
 import CountryDetails from './pages/CountryDetails';
 import Universities from './pages/Universities';
 import Programs from './pages/Programs';
@@ -90,6 +92,7 @@ export default function App() {
           <Route path="/documents" element={<Documents />} />
           <Route path="/recommendations" element={<Recommendations />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
+          <Route path="/premium-checkout" element={<PremiumCheckout />} />
           <Route path="/countries/:id" element={<CountryDetails />} />
           <Route path="/universities/:countryId" element={<Universities />} />
           <Route path="/programs/:universityId" element={<Programs />} />
@@ -98,6 +101,11 @@ export default function App() {
           <Route path="/applications/:id/visa-outcome" element={<VisaOutcome />} />
           <Route path="/rating/:applicationId" element={<Rating />} />
           <Route path="/sop-rating" element={<SopReview />} />
+        </Route>
+
+        {/* ── Payment Success (protected but no layout) ── */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
 
         {/* ── Admin routes (with sidebar layout) ──── */}
