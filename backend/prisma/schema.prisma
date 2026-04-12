@@ -27,6 +27,7 @@ model User {
   countryRatings      CountryRating[]
   documents           UserDocument[]
   payments            Payment[]
+  notifications       Notification[]
 
   @@map("Users")
 }
@@ -200,3 +201,18 @@ model VisaConsultancy {
   @@map("VisaConsultancies")
 }
 
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  type      String    @db.NVarChar(50) // "subscription", "visa", "ai", "admin-update", "recommendation", "application"
+  title     String    @db.NVarChar(200)
+  message   String    @db.NVarChar(500)
+  read      Boolean   @default(false)
+  link      String?   @db.NVarChar(500) // Optional link to navigate to
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@map("Notifications")
+}
