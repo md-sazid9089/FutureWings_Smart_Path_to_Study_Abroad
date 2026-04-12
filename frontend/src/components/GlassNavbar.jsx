@@ -8,7 +8,11 @@ import {
   HiOutlineUserCircle,
   HiOutlineDocumentText,
   HiOutlineChevronDown,
+  HiOutlineBell,
 } from 'react-icons/hi2';
+import { useNotificationPoller } from '../hooks/useNotificationPoller';
+import NotificationBadge from './NotificationBadge';
+import NotificationDropdown from './NotificationDropdown';
 
 const publicLinks = [
   { to: '/', label: 'Home' },
@@ -27,8 +31,20 @@ const userLinks = [
 export default function GlassNavbar() {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const notificationRef = useRef(null);
   const navigate = useNavigate();
+
+  // Use notification polling hook
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    loading: notificationLoading,
+  } = useNotificationPoller(30000); // Poll every 30 seconds
 
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -46,6 +62,9 @@ export default function GlassNavbar() {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(e.target)) {
+        setNotificationDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -85,48 +104,71 @@ export default function GlassNavbar() {
         {/* Desktop right */}
         <div className="hidden md:flex items-center gap-3">
           {isLoggedIn ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/40 transition-colors"
-              >
-                <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
-                  <span className="text-xs font-bold text-primary">
-                    {(user.email || 'U')[0].toUpperCase()}
-                  </span>
-                </div>
-                <HiOutlineChevronDown className={`w-3.5 h-3.5 text-secondary transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+            <>
+              {/* Notification Bell */}
+              <div className="relative" ref={notificationRef}>
+                <button
+                  onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
+                  className="relative p-2 rounded-full hover:bg-white/40 transition-colors text-secondary"
+                  title="Notifications"
+                >
+                  <HiOutlineBell className="w-5 h-5" />
+                  <NotificationBadge count={unreadCount} />
+                </button>
+                <NotificationDropdown
+                  notifications={notifications}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                  onDelete={deleteNotification}
+                  isOpen={notificationDropdownOpen}
+                  isLoading={notificationLoading}
+                />
+              </div>
 
-              {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-52 glass-strong rounded-2xl p-2 shadow-xl">
-                  <p className="px-3 py-2 text-xs text-text-muted truncate border-b border-white/20 mb-1">
-                    {user.email}
-                  </p>
-                  <Link
-                    to="/profile"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-secondary hover:bg-white/50 transition-colors"
-                  >
-                    <HiOutlineUserCircle className="w-4 h-4" /> Profile
-                  </Link>
-                  <Link
-                    to="/documents"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-secondary hover:bg-white/50 transition-colors"
-                  >
-                    <HiOutlineDocumentText className="w-4 h-4" /> Documents
-                  </Link>
-                  <hr className="border-white/20 my-1" />
-                  <button
-                    onClick={logout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-danger hover:bg-red-50 transition-colors"
-                  >
-                    <HiOutlineArrowRightOnRectangle className="w-4 h-4" /> Logout
-                  </button>
-                </div>
-              )}
-            </div>
+              {/* User Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/40 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                    <span className="text-xs font-bold text-primary">
+                      {(user.email || 'U')[0].toUpperCase()}
+                    </span>
+                  </div>
+                  <HiOutlineChevronDown className={`w-3.5 h-3.5 text-secondary transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-52 glass-strong rounded-2xl p-2 shadow-xl">
+                    <p className="px-3 py-2 text-xs text-text-muted truncate border-b border-white/20 mb-1">
+                      {user.email}
+                    </p>
+                    <Link
+                      to="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-secondary hover:bg-white/50 transition-colors"
+                    >
+                      <HiOutlineUserCircle className="w-4 h-4" /> Profile
+                    </Link>
+                    <Link
+                      to="/documents"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-secondary hover:bg-white/50 transition-colors"
+                    >
+                      <HiOutlineDocumentText className="w-4 h-4" /> Documents
+                    </Link>
+                    <hr className="border-white/20 my-1" />
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-danger hover:bg-red-50 transition-colors"
+                    >
+                      <HiOutlineArrowRightOnRectangle className="w-4 h-4" /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <div className="flex items-center gap-2">
               <Link
