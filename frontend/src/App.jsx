@@ -103,10 +103,8 @@ export default function App() {
           <Route path="/sop-rating" element={<SopReview />} />
         </Route>
 
-        {/* ── Payment Success (protected but no layout) ── */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-        </Route>
+        {/* ── Payment Success (protected, full-page) ── */}
+        <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
 
         {/* ── Admin routes (with sidebar layout) ──── */}
         <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>

@@ -62,6 +62,9 @@ router.post("/signup", async (req, res) => {
           email: user.email,
           role: user.role,
           fullName: user.fullName,
+          isPremium: false,
+          premiumFeatures: [],
+          premiumExpiryDate: null,
         },
       },
       201
@@ -104,6 +107,17 @@ router.post("/login", async (req, res) => {
       return errorResponse(res, "Invalid email or password", 401);
     }
 
+    // Check if premium has expired
+    let isPremium = user.isPremium;
+    if (isPremium && user.premiumExpiryDate && user.premiumExpiryDate < new Date()) {
+      isPremium = false;
+      // Reset premium status if expired
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { isPremium: false, premiumFeatures: null },
+      });
+    }
+
     // Generate JWT token
     const token = signToken({ userId: user.id, role: user.role });
 
@@ -114,6 +128,9 @@ router.post("/login", async (req, res) => {
         email: user.email,
         role: user.role,
         fullName: user.fullName,
+        isPremium,
+        premiumFeatures: user.premiumFeatures ? user.premiumFeatures.split(",") : [],
+        premiumExpiryDate: user.premiumExpiryDate,
       },
     });
   } catch (error) {
