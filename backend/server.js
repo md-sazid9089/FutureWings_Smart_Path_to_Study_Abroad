@@ -34,6 +34,16 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// ─── Entry Point ─────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.json({
+    status: "success",
+    message: "FutureWings API is Live",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
 // ─── Routes ─────────────────────────────────────────────
 // Using Prisma-integrated routes from src/routes
 app.use("/api/auth", require("./src/routes/auth"));
@@ -43,6 +53,9 @@ app.use("/api/payments", require("./src/routes/payments"));
 app.use("/api/payments", require("./src/routes/inlinePayment"));
 app.use("/api/consultancy", require("./src/routes/consultancy"));
 app.use("/api/applications", require("./src/routes/applications"));
+// Note: visa-outcomes should be combined or used as a sub-route. 
+// Moving it here to ensure it doesn't conflict.
+app.use("/api/applications", require("./src/routes/visa-outcomes"));
 app.use("/api/countries", require("./src/routes/countries"));
 app.use("/api/ratings", require("./src/routes/ratings"));
 app.use("/api/recommendations", require("./src/routes/recommendations"));
@@ -52,19 +65,27 @@ app.use("/api/universities", require("./src/routes/universities"));
 app.use("/api/ai-assistant", require("./src/routes/ai-assistant"));
 app.use("/api/admin", require("./src/routes/admin"));
 
-// ─── Special route for visa outcomes ─────────────────────
-// GET /api/applications/:id/visa-outcome
-app.use("/api/applications", require("./src/routes/visa-outcomes"));
+// Route moved up to consolidate applications endpoints
 
 // ─── Health check ───────────────────────────────────────
 app.get("/api/health", async (_req, res) => {
   try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: "ok", database: "connected", timestamp: new Date().toISOString() });
+    // Test database connection with a real count to ensure tables exist
+    const userCount = await prisma.user.count();
+    res.json({ 
+      status: "ok", 
+      database: "connected", 
+      userCount,
+      timestamp: new Date().toISOString() 
+    });
   } catch (error) {
     console.error("Health check error:", error);
-    res.status(503).json({ status: "error", database: "disconnected", timestamp: new Date().toISOString() });
+    res.status(503).json({ 
+      status: "error", 
+      database: "disconnected", 
+      error: error.message,
+      timestamp: new Date().toISOString() 
+    });
   }
 });
 
