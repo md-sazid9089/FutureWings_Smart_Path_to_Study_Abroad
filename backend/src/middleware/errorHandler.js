@@ -5,6 +5,7 @@
 
 const { errorResponse } = require('../utils/response');
 const { AppError } = require('../utils/errors');
+const logger = require('../utils/logger');
 
 /**
  * Async handler wrapper to catch errors in async route handlers
@@ -19,12 +20,12 @@ const asyncHandler = (fn) => (req, res, next) => {
  * Must be registered after all other middleware and routes
  */
 const errorHandler = (err, req, res, next) => {
-  // Log error for debugging
-  console.error('Error Handler:', {
-    message: err.message,
-    code: err.code || 'UNKNOWN',
-    status: err.statusCode || 500,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  // Log error with Winston
+  logger.error(err.message, {
+    url: req.originalUrl,
+    method: req.method,
+    stack: err.stack,
+    code: err.code,
   });
 
   // Handle custom AppError instances

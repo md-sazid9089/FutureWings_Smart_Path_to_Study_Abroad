@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { syncPremiumStatus } from '../utils/syncPremiumStatus';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import logo from '../asset/logo.png';
@@ -7,9 +6,11 @@ import GlassPanel from '../components/ui/GlassPanel';
 import TextField from '../components/ui/TextField';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +21,8 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await API.post('/api/auth/login', form);
-      localStorage.setItem('token', res.data.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.data.user));
-      // Sync premium status from backend after login
-      await syncPremiumStatus();
+      const { user, token } = res.data.data;
+      login(user, token);
       toast.success('Welcome back!');
       navigate('/recommendations');
     } catch (err) {

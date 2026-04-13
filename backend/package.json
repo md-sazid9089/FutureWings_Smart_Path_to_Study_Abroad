@@ -34,7 +34,8 @@
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.2.0",
     "prisma": "^5.22.0",
-    "stripe": "^22.0.1"
+    "stripe": "^22.0.1",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

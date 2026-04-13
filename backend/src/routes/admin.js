@@ -8,6 +8,8 @@ const express = require("express");
 const prisma = require("../prisma/client");
 const { requireAdmin } = require("../middleware/admin");
 const { successResponse, errorResponse } = require("../utils/response");
+const { asyncHandler } = require("../middleware/errorHandler");
+const { getPaginationParams, formatPaginatedData } = require("../utils/pagination");
 
 const router = express.Router();
 
@@ -33,56 +35,46 @@ async function getOrCreateApplicationStatus(tx, statusName) {
  * GET /api/admin/countries
  * Get all countries
  */
-router.get("/countries", requireAdmin, async (req, res) => {
-  try {
-    const countries = await prisma.country.findMany({
-      select: {
-        id: true,
-        countryName: true,
-        region: true,
-        currency: true,
-        tierLevel: true,
-        isActive: true,
-      },
-      orderBy: { countryName: "asc" },
-    });
+router.get("/countries", requireAdmin, asyncHandler(async (req, res) => {
+  const countries = await prisma.country.findMany({
+    select: {
+      id: true,
+      countryName: true,
+      region: true,
+      currency: true,
+      tierLevel: true,
+      isActive: true,
+    },
+    orderBy: { countryName: "asc" },
+  });
 
-    return successResponse(res, countries);
-  } catch (error) {
-    console.error("Get countries error:", error);
-    return errorResponse(res, "Internal server error", 500);
-  }
-});
+  return successResponse(res, countries);
+}));
 
 /**
  * POST /api/admin/countries
  * Create a new country
  * Body: { countryName, region?, currency?, tierLevel? }
  */
-router.post("/countries", requireAdmin, async (req, res) => {
-  try {
-    const { countryName, region, currency, tierLevel } = req.body;
+router.post("/countries", requireAdmin, asyncHandler(async (req, res) => {
+  const { countryName, region, currency, tierLevel } = req.body;
 
-    if (!countryName) {
-      return errorResponse(res, "countryName is required", 400);
-    }
-
-    const country = await prisma.country.create({
-      data: {
-        countryName,
-        region: region || null,
-        currency: currency || null,
-        tierLevel: tierLevel || 3,
-        isActive: true,
-      },
-    });
-
-    return successResponse(res, country, 201);
-  } catch (error) {
-    console.error("Create country error:", error);
-    return errorResponse(res, "Internal server error", 500);
+  if (!countryName) {
+    return errorResponse(res, "countryName is required", 400);
   }
-});
+
+  const country = await prisma.country.create({
+    data: {
+      countryName,
+      region: region || null,
+      currency: currency || null,
+      tierLevel: tierLevel || 3,
+      isActive: true,
+    },
+  });
+
+  return successResponse(res, country, 201);
+}));
 
 /**
  * PUT /api/admin/countries/:id
@@ -1015,13 +1007,16 @@ router.get("/visa-outcomes", requireAdmin, async (req, res) => {
  * GET /api/admin/users
  * Get all users with optional role filter
  */
-router.get("/users", requireAdmin, async (req, res) => {
-  try {
-    const { role } = req.query;
-    const where = role ? { role } : {};
+router.get("/users", requireAdmin, asyncHandler(async (req, res) => {
+  const { role } = req.query;
+  const where = role ? { role } : {};
+  const { skip, take, page, limit } = getPaginationParams(req.query);
 
-    const users = await prisma.user.findMany({
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
       where,
+      skip,
+      take,
       select: {
         id: true,
         email: true,
@@ -1040,13 +1035,11 @@ router.get("/users", requireAdmin, async (req, res) => {
         },
       },
       orderBy: { createdAt: "desc" },
-    });
+    }),
+    prisma.user.count({ where }),
+  ]);
 
-    return successResponse(res, users);
-  } catch (error) {
-    console.error("Get users error:", error);
-    return errorResponse(res, "Internal server error", 500);
-  }
-});
+  return successResponse(res, formatPaginatedData(users, total, page, limit));
+}));
 
 module.exports = router;
