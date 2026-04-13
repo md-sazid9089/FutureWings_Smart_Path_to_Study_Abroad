@@ -43,7 +43,7 @@ function validatePassword(password) {
  * @returns {boolean}
  */
 function isValidPhone(phone) {
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  const phoneRegex = /^\+?[1-9]\d{6,14}$/;
   return phoneRegex.test(phone.replace(/\D/g, ''));
 }
 

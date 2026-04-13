@@ -33,6 +33,7 @@ router.get("/me", requireAuth, async (req, res) => {
         isPremium: true,
         premiumFeatures: true,
         premiumExpiryDate: true,
+        stripeCustomerId: true,
         createdAt: true,
       },
     });

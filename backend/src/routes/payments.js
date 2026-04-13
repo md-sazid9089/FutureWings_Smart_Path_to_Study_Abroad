@@ -15,8 +15,82 @@ const { successResponse, errorResponse } = require("../utils/response");
 
 const router = express.Router();
 
-// Middleware to handle raw body for webhook
-router.use((req, res, next) => {
+// Feature pricing in cents (USD)
+const FEATURE_PRICING = {
+  PREMIUM_BUNDLE: 2999, // $29.99
+  AI_ASSISTANT: 999,    // $9.99
+  APPLICATIONS: 1499,   // $14.99
+  CONSULTANCY: 1999,    // $19.99
+};
+
+// Feature bundles - which features each type unlocks
+const FEATURE_BUNDLES = {
+  PREMIUM_BUNDLE: ["AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY", "SCHOLARSHIPS"],
+  AI_HELP: ["AI_HELP"],
+  SOP_TESTING: ["SOP_TESTING"],
+  VISA_CONSULTANCY: ["VISA_CONSULTANCY"],
+};
+
+/**
+ * POST /api/payments/create-checkout-session
+ * Create a Stripe checkout session for premium features
+ */
+router.post("/create-checkout-session", requireAuth, async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    const { featureType = "PREMIUM_BUNDLE" } = req.body;
+
+    // Validate feature type
+    if (!FEATURE_PRICING[featureType]) {
+      return errorResponse(res, "Invalid feature type", 400);
+    }
+
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    // Create or get Stripe customer
+    let stripeCustomerId = user.stripeCustomerId;
+
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.fullName || "User",
+        metadata: { userId: userId.toString() },
+      });
+      stripeCustomerId = customer.id;
+
+      // Save Stripe customer ID to database
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId },
+      });
+    }
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create({
+      customer: stripeCustomerId,
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Premium Access - ${featureType.replace(/_/g, " ")}`,
+              description: `Unlock ${featureType.replace(/_/g, " ")} features for 1 month`,
+            },
+            unit_amount: FEATURE_PRICING[featureType],
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/`,
       metadata: {
         userId: userId.toString(),
@@ -74,7 +148,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
       }
 
       // Find the payment record
-      const payment = await prisma.payment.findUnique({
+      const payment = await prisma.payment.findFirst({
         where: { stripeSessionId: session.id },
       });
 
@@ -116,7 +190,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
       const session = charge.checkout_session;
 
       if (session) {
-        const payment = await prisma.payment.findUnique({
+        const payment = await prisma.payment.findFirst({
           where: { stripeSessionId: session },
         });
 
@@ -241,32 +315,18 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
     }
 
     // Get payment record
-    let payment = await prisma.payment.findUnique({
+    let payment = await prisma.payment.findFirst({
       where: { stripeSessionId: sessionId },
     });
 
-    // If payment record doesn't exist but session is paid, create it
-    if (!payment && session.payment_status === "paid") {
-      payment = await prisma.payment.create({
-        data: {
-          userId: parseInt(session.metadata.userId),
-          stripeSessionId: sessionId,
-          stripePaymentId: session.payment_intent,
-          amount: session.amount_total,
-          currency: session.currency?.toUpperCase() || "USD",
-          featureType: session.metadata.featureType,
-          status: "SUCCESS",
-          completedAt: new Date(),
-        },
-      });
-
-      // Update user's premium status
+    // Helper: activate premium for the user
+    const activatePremium = async (paymentUserId) => {
       const features = FEATURE_BUNDLES[session.metadata.featureType] || [session.metadata.featureType];
       const premiumExpiryDate = new Date();
       premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30);
 
       const user = await prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: paymentUserId },
       });
 
       let updatedFeatures = features;
@@ -276,7 +336,7 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
       }
 
       await prisma.user.update({
-        where: { id: userId },
+        where: { id: paymentUserId },
         data: {
           isPremium: true,
           premiumFeatures: updatedFeatures.join(","),
@@ -284,7 +344,39 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
         },
       });
 
-      console.log(`✓ Payment verified and activated for user ${userId}, features: ${updatedFeatures.join(", ")}`);
+      console.log(`✓ Premium activated for user ${paymentUserId}, features: ${updatedFeatures.join(", ")}`);
+    };
+
+    if (session.payment_status === "paid") {
+      if (!payment) {
+        // No payment record exists — create one with SUCCESS status
+        payment = await prisma.payment.create({
+          data: {
+            userId: parseInt(session.metadata.userId),
+            stripeSessionId: sessionId,
+            stripePaymentId: session.payment_intent,
+            amount: session.amount_total,
+            currency: session.currency?.toUpperCase() || "USD",
+            featureType: session.metadata.featureType,
+            status: "SUCCESS",
+            completedAt: new Date(),
+          },
+        });
+
+        await activatePremium(userId);
+      } else if (payment.status !== "SUCCESS") {
+        // Payment record exists but is still PENDING — update it to SUCCESS
+        payment = await prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: "SUCCESS",
+            stripePaymentId: session.payment_intent,
+            completedAt: new Date(),
+          },
+        });
+
+        await activatePremium(payment.userId);
+      }
     }
 
     if (!payment) {

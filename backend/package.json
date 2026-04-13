@@ -17,7 +17,7 @@
     "test:validation": "cross-env NODE_ENV=test jest --runInBand -- validation.test",
     "test:utils": "cross-env NODE_ENV=test jest --runInBand -- utils.test",
     "test:verbose": "cross-env NODE_ENV=test jest --runInBand --verbose",
-    "vercel-build": "echo done"
+    "vercel-build": "prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
