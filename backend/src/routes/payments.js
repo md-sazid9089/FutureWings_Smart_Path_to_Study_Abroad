@@ -17,10 +17,10 @@ const router = express.Router();
 
 // Feature pricing in cents (USD)
 const FEATURE_PRICING = {
-  PREMIUM_BUNDLE: 2999, // $29.99
-  AI_ASSISTANT: 999,    // $9.99
-  APPLICATIONS: 1499,   // $14.99
-  CONSULTANCY: 1999,    // $19.99
+  PREMIUM_BUNDLE: 14999, // $149.99
+  AI_HELP: 4999,        // $49.99
+  SOP_TESTING: 4999,     // $49.99
+  VISA_CONSULTANCY: 9999, // $99.99
 };
 
 // Feature bundles - which features each type unlocks
@@ -42,7 +42,7 @@ router.post("/create-checkout-session", requireAuth, async (req, res) => {
 
     // Validate feature type
     if (!FEATURE_PRICING[featureType]) {
-      return errorResponse(res, "Invalid feature type", 400);
+      return errorResponse(res, `Invalid feature type: ${featureType}`, 400);
     }
 
     // Get user from database
@@ -91,10 +91,10 @@ router.post("/create-checkout-session", requireAuth, async (req, res) => {
       ],
       mode: "payment",
       success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/`,
+      cancel_url: `${process.env.FRONTEND_URL}/premium-checkout`,
       metadata: {
         userId: userId.toString(),
-        featureType: "PREMIUM_BUNDLE",
+        featureType: featureType,
       },
     });
 
