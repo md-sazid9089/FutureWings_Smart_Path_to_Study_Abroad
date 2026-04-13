@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { syncPremiumStatus } from '../utils/syncPremiumStatus';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import logo from '../asset/logo.png';
@@ -21,6 +22,8 @@ export default function Signup() {
       const res = await API.post('/api/auth/signup', form);
       localStorage.setItem('token', res.data.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.data.user));
+      // Sync premium status from backend after signup
+      await syncPremiumStatus();
       toast.success('Account created!');
       navigate('/recommendations');
     } catch (err) {

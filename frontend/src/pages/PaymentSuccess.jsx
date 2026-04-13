@@ -6,7 +6,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axios";
+import { syncPremiumStatus } from "../utils/syncPremiumStatus";
 import toast from "react-hot-toast";
 import { HiOutlineCheckCircle, HiOutlineArrowRight } from "react-icons/hi2";
 import GlassCard from "../components/ui/GlassCard";
@@ -24,6 +25,16 @@ const PaymentSuccess = () => {
     verifyPaymentAndRefreshUser();
   }, [sessionId]);
 
+  const getFeatureRedirectUrl = (featureType) => {
+    const redirectMap = {
+      AI_HELP: "/ai-assistant",
+      SOP_TESTING: "/sop-review",
+      VISA_CONSULTANCY: "/visa-outcome",
+      PREMIUM_BUNDLE: "/ai-assistant",
+    };
+    return redirectMap[featureType] || "/dashboard";
+  };
+
   const verifyPaymentAndRefreshUser = async () => {
     try {
       if (!sessionId) {
@@ -33,39 +44,36 @@ const PaymentSuccess = () => {
         return;
       }
 
-      const token = localStorage.getItem("token");
-      
       // Step 1: Verify payment
-      const paymentResponse = await axios.get(
-        `/api/payments/verify-session/${sessionId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const paymentResponse = await API.get(
+        `/api/payments/verify-session/${sessionId}`
       );
 
       const paymentData = paymentResponse.data.data;
       setPaymentDetails(paymentData);
 
-      // Step 2: CRITICAL - Refresh user data from backend
-      // This is essential to get the updated isPremium, premiumFeatures, and premiumExpiryDate
-      const userResponse = await axios.get("/api/user/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const userData = userResponse.data.data;
-
-      // Step 3: Update local storage with new user data
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      // Step 4: Emit custom event to notify other components of the update
+      // Step 2: CRITICAL - Sync premium status from backend
+      await syncPremiumStatus();
+      // Step 3: Emit custom event to notify other components of the update
       window.dispatchEvent(new Event("userUpdated"));
 
       if (paymentData.status === "SUCCESS" || paymentData.paymentStatus === "paid") {
         setStatus("success");
         toast.success("🎉 Premium features activated!");
+
+        // Step 5: Auto-redirect to feature page after 2 seconds
+        setTimeout(() => {
+          const redirectUrl = getFeatureRedirectUrl(paymentData.featureType);
+          navigate(redirectUrl);
+        }, 2000);
       } else {
         setStatus("pending");
         toast.loading("Payment is being processed...");
+
+        // Keep checking every 2 seconds
+        setTimeout(() => {
+          verifyPaymentAndRefreshUser();
+        }, 2000);
       }
     } catch (error) {
       console.error("Payment verification error:", error);

@@ -8,6 +8,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 // ─── Public pages ────────────────────────────────────────
 import HomePage from './pages/HomePage';
+import InlinePaymentPage from './pages/InlinePaymentPage';
 import About from './pages/About';
 import Blog from './pages/Blog';
 import News from './pages/News';
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="/news" element={<News />} />
           <Route path="/news/:id" element={<NewsArticle />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/inline-payment" element={<InlinePaymentPage />} />
         </Route>
 
         {/* ── Auth routes (guest only) ────────── */}
@@ -103,10 +105,8 @@ export default function App() {
           <Route path="/sop-rating" element={<SopReview />} />
         </Route>
 
-        {/* ── Payment Success (protected but no layout) ── */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-        </Route>
+        {/* ── Payment Success (protected, full-page) ── */}
+        <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
 
         {/* ── Admin routes (with sidebar layout) ──── */}
         <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>

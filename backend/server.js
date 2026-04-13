@@ -40,6 +40,7 @@ app.use("/api/auth", require("./src/routes/auth"));
 app.use("/api/user", require("./src/routes/user"));
 app.use("/api/notifications", require("./src/routes/notifications"));
 app.use("/api/payments", require("./src/routes/payments"));
+app.use("/api/payments", require("./src/routes/inlinePayment"));
 app.use("/api/consultancy", require("./src/routes/consultancy"));
 app.use("/api/applications", require("./src/routes/applications"));
 app.use("/api/countries", require("./src/routes/countries"));

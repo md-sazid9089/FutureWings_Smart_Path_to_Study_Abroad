@@ -33,6 +33,7 @@ router.get("/me", requireAuth, async (req, res) => {
         isPremium: true,
         premiumFeatures: true,
         premiumExpiryDate: true,
+        stripeCustomerId: true,
         createdAt: true,
       },
     });
@@ -100,6 +101,24 @@ router.put("/me", requireAuth, async (req, res) => {
   } catch (error) {
     console.error("Update user error:", error);
     return errorResponse(res, "Internal server error", 500);
+  }
+});
+
+/**
+ * POST /api/user/get-started
+ * Instantly set isPremium true when user clicks Get Started
+ */
+router.post("/get-started", requireAuth, async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isPremium: true, premiumExpiryDate: new Date() },
+    });
+    return successResponse(res, { message: "Premium status updated, you can now complete the payment." });
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    return errorResponse(res, "Error updating user premium status.", 500);
   }
 });
 

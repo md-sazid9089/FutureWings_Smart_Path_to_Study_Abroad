@@ -30,8 +30,13 @@ function verifyToken(token) {
  * Returns 401 if no valid token
  */
 function requireAuth(req, res, next) {
-  const header = req.headers.authorization;
+  // Allow test automation to inject userId directly for integration tests
+  if (process.env.NODE_ENV === 'test' && req.headers['x-test-user-id']) {
+    req.auth = { userId: parseInt(req.headers['x-test-user-id'], 10), role: 'USER' };
+    return next();
+  }
 
+  const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
     return res.status(401).json({
       success: false,

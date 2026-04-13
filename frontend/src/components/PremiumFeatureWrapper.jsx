@@ -27,13 +27,11 @@ const PremiumFeatureWrapper = ({ children, feature }) => {
       const userStr = localStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        
-        // Check if user is premium and has the right feature
+        // Check if user has premium and the required feature
         const hasPremium =
           user.isPremium &&
           (feature === "PREMIUM_BUNDLE" ||
             (user.premiumFeatures && user.premiumFeatures.includes(feature)));
-        
         setIsPremium(hasPremium);
       }
     } catch (error) {

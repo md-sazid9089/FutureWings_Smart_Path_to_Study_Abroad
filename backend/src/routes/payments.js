@@ -15,39 +15,30 @@ const { successResponse, errorResponse } = require("../utils/response");
 
 const router = express.Router();
 
-// Middleware to handle raw body for webhook
-router.use((req, res, next) => {
-  if (req.path === "/webhook") {
-    return express.raw({ type: "application/json" })(req, res, next);
-  }
-  next();
-});
-
-// Feature pricing (in cents)
+// Feature pricing in cents (USD)
 const FEATURE_PRICING = {
-  AI_HELP: 4999, // $49.99
-  SOP_TESTING: 4999, // $49.99
-  VISA_CONSULTANCY: 9999, // $99.99
-  PREMIUM_BUNDLE: 14999, // $149.99 (all features)
+  PREMIUM_BUNDLE: 2999, // $29.99
+  AI_ASSISTANT: 999,    // $9.99
+  APPLICATIONS: 1499,   // $14.99
+  CONSULTANCY: 1999,    // $19.99
 };
 
-// Feature bundles
+// Feature bundles - which features each type unlocks
 const FEATURE_BUNDLES = {
+  PREMIUM_BUNDLE: ["AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY", "SCHOLARSHIPS"],
   AI_HELP: ["AI_HELP"],
   SOP_TESTING: ["SOP_TESTING"],
   VISA_CONSULTANCY: ["VISA_CONSULTANCY"],
-  PREMIUM_BUNDLE: ["AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY"],
 };
 
 /**
  * POST /api/payments/create-checkout-session
- * Create a Stripe Checkout session for payment
- * Body: { featureType: "AI_HELP" | "SOP_TESTING" | "VISA_CONSULTANCY" | "PREMIUM_BUNDLE" }
+ * Create a Stripe checkout session for premium features
  */
 router.post("/create-checkout-session", requireAuth, async (req, res) => {
   try {
-    const { featureType } = req.body;
     const userId = req.auth.userId;
+    const { featureType = "PREMIUM_BUNDLE" } = req.body;
 
     // Validate feature type
     if (!FEATURE_PRICING[featureType]) {
@@ -100,10 +91,10 @@ router.post("/create-checkout-session", requireAuth, async (req, res) => {
       ],
       mode: "payment",
       success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+      cancel_url: `${process.env.FRONTEND_URL}/`,
       metadata: {
         userId: userId.toString(),
-        featureType: featureType,
+        featureType: "PREMIUM_BUNDLE",
       },
     });
 
@@ -148,9 +139,16 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
     // Handle checkout.session.completed event
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
+      console.log('Stripe Session Data (webhook):', session);
+
+      // Defensive checks for required fields
+      if (!session.metadata || !session.amount_total) {
+        console.error('Missing required session data in webhook: metadata or amount_total', session);
+        return res.status(200).json({ received: true });
+      }
 
       // Find the payment record
-      const payment = await prisma.payment.findUnique({
+      const payment = await prisma.payment.findFirst({
         where: { stripeSessionId: session.id },
       });
 
@@ -169,32 +167,21 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
         },
       });
 
-      // Update user's premium status
-      const features = FEATURE_BUNDLES[payment.featureType] || [payment.featureType];
+      // Always unlock all features for the user
+      const features = FEATURE_BUNDLES["PREMIUM_BUNDLE"];
       const premiumExpiryDate = new Date();
       premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30); // 30 days subscription
-
-      // Get existing premium features
-      const user = await prisma.user.findUnique({
-        where: { id: payment.userId },
-      });
-
-      let updatedFeatures = features;
-      if (user.premiumFeatures) {
-        const existingFeatures = user.premiumFeatures.split(",");
-        updatedFeatures = Array.from(new Set([...existingFeatures, ...features]));
-      }
 
       await prisma.user.update({
         where: { id: payment.userId },
         data: {
           isPremium: true,
-          premiumFeatures: updatedFeatures.join(","),
+          premiumFeatures: features.join(","),
           premiumExpiryDate,
         },
       });
 
-      console.log(`Payment confirmed for user ${payment.userId}, features: ${updatedFeatures.join(", ")}`);
+      console.log(`Payment confirmed for user ${payment.userId}, features: ${features.join(", ")}`);
     }
 
     // Handle charge.failed event
@@ -203,7 +190,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
       const session = charge.checkout_session;
 
       if (session) {
-        const payment = await prisma.payment.findUnique({
+        const payment = await prisma.payment.findFirst({
           where: { stripeSessionId: session },
         });
 
@@ -310,9 +297,16 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
 
     // Retrieve session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    console.log('Stripe Session Data (verify-session):', session);
 
     if (!session) {
       return errorResponse(res, "Session not found", 404);
+    }
+
+    // Defensive checks for required fields
+    if (!session.metadata || !session.amount_total) {
+      console.error('Missing required session data: metadata or amount_total', session);
+      return errorResponse(res, "Internal Server Error: Missing session data", 500);
     }
 
     // Verify it belongs to the current user
@@ -321,12 +315,72 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
     }
 
     // Get payment record
-    const payment = await prisma.payment.findUnique({
+    let payment = await prisma.payment.findFirst({
       where: { stripeSessionId: sessionId },
     });
 
+    // Helper: activate premium for the user
+    const activatePremium = async (paymentUserId) => {
+      const features = FEATURE_BUNDLES[session.metadata.featureType] || [session.metadata.featureType];
+      const premiumExpiryDate = new Date();
+      premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30);
+
+      const user = await prisma.user.findUnique({
+        where: { id: paymentUserId },
+      });
+
+      let updatedFeatures = features;
+      if (user?.premiumFeatures) {
+        const existingFeatures = user.premiumFeatures.split(",").filter(f => f);
+        updatedFeatures = Array.from(new Set([...existingFeatures, ...features]));
+      }
+
+      await prisma.user.update({
+        where: { id: paymentUserId },
+        data: {
+          isPremium: true,
+          premiumFeatures: updatedFeatures.join(","),
+          premiumExpiryDate,
+        },
+      });
+
+      console.log(`✓ Premium activated for user ${paymentUserId}, features: ${updatedFeatures.join(", ")}`);
+    };
+
+    if (session.payment_status === "paid") {
+      if (!payment) {
+        // No payment record exists — create one with SUCCESS status
+        payment = await prisma.payment.create({
+          data: {
+            userId: parseInt(session.metadata.userId),
+            stripeSessionId: sessionId,
+            stripePaymentId: session.payment_intent,
+            amount: session.amount_total,
+            currency: session.currency?.toUpperCase() || "USD",
+            featureType: session.metadata.featureType,
+            status: "SUCCESS",
+            completedAt: new Date(),
+          },
+        });
+
+        await activatePremium(userId);
+      } else if (payment.status !== "SUCCESS") {
+        // Payment record exists but is still PENDING — update it to SUCCESS
+        payment = await prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: "SUCCESS",
+            stripePaymentId: session.payment_intent,
+            completedAt: new Date(),
+          },
+        });
+
+        await activatePremium(payment.userId);
+      }
+    }
+
     if (!payment) {
-      return errorResponse(res, "Payment record not found", 404);
+      return errorResponse(res, "Payment not yet processed", 400);
     }
 
     return successResponse(res, {
@@ -334,6 +388,7 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
       featureType: payment.featureType,
       amount: payment.amount,
       paymentStatus: session.payment_status, // "paid" or "unpaid"
+      verified: true,
     });
   } catch (error) {
     console.error("Session verification error:", error);

@@ -42,12 +42,14 @@ const PremiumCheckout = () => {
 
     setIsProcessing(true);
     try {
+      // Instantly unlock premium before payment
+      await API.post("/api/user/get-started");
+
       const response = await API.post("/api/payments/create-checkout-session", {
         featureType,
       });
 
       if (response.data.data.url) {
-        // Redirect to Stripe checkout
         window.location.href = response.data.data.url;
       } else {
         toast.error("Failed to create checkout session");
