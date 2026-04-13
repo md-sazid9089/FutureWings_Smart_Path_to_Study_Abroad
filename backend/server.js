@@ -12,8 +12,28 @@ const { errorHandler, notFoundHandler } = require("./src/middleware/errorHandler
 const app = express();
 
 // ─── Middleware ──────────────────────────────────────────
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim().replace(/\/$/, ""))
+  : ["http://localhost:3000"];
+
 app.use(cors({
-  origin: (process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : "http://localhost:3000"),
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // allow predefined origins
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // allow Vercel preview environments
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Return error for non-matching origins
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 }));
