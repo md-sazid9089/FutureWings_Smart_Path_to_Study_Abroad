@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import API from "../api/axios";
+import { syncPremiumStatus } from "../utils/syncPremiumStatus";
 import toast from "react-hot-toast";
 import { HiOutlineCheckCircle, HiOutlineArrowRight } from "react-icons/hi2";
 import GlassCard from "../components/ui/GlassCard";
@@ -51,15 +52,9 @@ const PaymentSuccess = () => {
       const paymentData = paymentResponse.data.data;
       setPaymentDetails(paymentData);
 
-      // Step 2: CRITICAL - Refresh user data from backend
-      // This is essential to get the updated isPremium, premiumFeatures, and premiumExpiryDate
-      const userResponse = await API.get("/api/user/me");
-      const userData = userResponse.data.data;
-
-      // Step 3: Update local storage with new user data
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      // Step 4: Emit custom event to notify other components of the update
+      // Step 2: CRITICAL - Sync premium status from backend
+      await syncPremiumStatus();
+      // Step 3: Emit custom event to notify other components of the update
       window.dispatchEvent(new Event("userUpdated"));
 
       if (paymentData.status === "SUCCESS" || paymentData.paymentStatus === "paid") {

@@ -103,4 +103,22 @@ router.put("/me", requireAuth, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/user/get-started
+ * Instantly set isPremium true when user clicks Get Started
+ */
+router.post("/get-started", requireAuth, async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isPremium: true, premiumExpiryDate: new Date() },
+    });
+    return successResponse(res, { message: "Premium status updated, you can now complete the payment." });
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    return errorResponse(res, "Error updating user premium status.", 500);
+  }
+});
+
 module.exports = router;

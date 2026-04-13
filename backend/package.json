@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
+    "start:test": "cross-env NODE_ENV=test node server.js",
     "seed": "node prisma/seed.js",
     "db:pull": "prisma db pull",
     "db:generate": "prisma generate",
@@ -25,6 +26,7 @@
     "@google/genai": "^1.48.0",
     "@prisma/adapter-mssql": "^7.4.2",
     "@prisma/client": "^5.22.0",
+    "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",

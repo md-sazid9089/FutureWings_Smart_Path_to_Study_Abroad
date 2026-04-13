@@ -27,13 +27,12 @@ const PremiumFeatureWrapper = ({ children, feature }) => {
       const userStr = localStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        
-        // Check if user is premium and has the right feature
+        // Require both isPremium and a valid stripeCustomerId
         const hasPremium =
           user.isPremium &&
+          user.stripeCustomerId &&
           (feature === "PREMIUM_BUNDLE" ||
             (user.premiumFeatures && user.premiumFeatures.includes(feature)));
-        
         setIsPremium(hasPremium);
       }
     } catch (error) {

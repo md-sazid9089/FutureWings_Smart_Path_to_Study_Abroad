@@ -3,9 +3,6 @@ BEGIN TRY
 BEGIN TRAN;
 
 -- AlterTable
-ALTER TABLE [dbo].[Countries] ADD [visaFeeNote] NVARCHAR(100);
-
--- AlterTable
 ALTER TABLE [dbo].[Users] ADD [isPremium] BIT NOT NULL CONSTRAINT [Users_isPremium_df] DEFAULT 0,
 [premiumExpiryDate] DATETIME2,
 [premiumFeatures] NVARCHAR(100),
