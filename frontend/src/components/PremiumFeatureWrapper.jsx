@@ -8,37 +8,30 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiOutlineSparkles, HiOutlineLockClosed } from "react-icons/hi2";
 import PrimaryButton from "./ui/PrimaryButton";
+import { useAuth } from "../context/AuthContext";
 
 const PremiumFeatureWrapper = ({ children, feature }) => {
   const navigate = useNavigate();
+  const { user, loading: authLoading, syncPremiumStatus } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkPremiumStatus();
-
-    // Listen for premium status updates after payment
-    window.addEventListener("userUpdated", checkPremiumStatus);
-    return () => window.removeEventListener("userUpdated", checkPremiumStatus);
-  }, []);
+    if (!authLoading) {
+      checkPremiumStatus();
+    }
+  }, [user, authLoading]);
 
   const checkPremiumStatus = () => {
-    try {
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        // Check if user has premium and the required feature
-        const hasPremium =
-          user.isPremium &&
-          (feature === "PREMIUM_BUNDLE" ||
-            (user.premiumFeatures && user.premiumFeatures.includes(feature)));
-        setIsPremium(hasPremium);
-      }
-    } catch (error) {
-      console.error("Error checking premium status:", error);
-    } finally {
-      setLoading(false);
+    if (user) {
+      // Check if user has premium and the required feature
+      const hasPremium =
+        user.isPremium &&
+        (feature === "PREMIUM_BUNDLE" ||
+          (user.premiumFeatures && user.premiumFeatures.includes(feature)));
+      setIsPremium(hasPremium);
     }
+    setLoading(false);
   };
 
   if (loading) {

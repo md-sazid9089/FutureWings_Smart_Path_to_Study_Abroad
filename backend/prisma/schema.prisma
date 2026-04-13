@@ -129,7 +129,7 @@ model Application {
   countryRatings CountryRating[]
   visaOutcome    VisaOutcome?
 
-  @@index([userId])
+  @@index([userId, statusId])
   @@index([countryId])
   @@index([programId])
   @@index([statusId])
