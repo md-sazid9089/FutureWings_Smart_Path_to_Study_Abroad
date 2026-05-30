@@ -1,5 +1,5 @@
 const express = require("express");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, requirePremium } = require("../middleware/auth");
 const { successResponse, errorResponse } = require("../utils/response");
 
 const router = express.Router();
@@ -382,7 +382,7 @@ ${combinedReply}`;
   return combinedReply;
 }
 
-router.post("/chat", requireAuth, async (req, res) => {
+router.post("/chat", requireAuth, requirePremium, async (req, res) => {
   try {
     const { message } = req.body;
 
@@ -414,7 +414,7 @@ router.post("/chat", requireAuth, async (req, res) => {
   }
 });
 
-router.post("/sop-review", requireAuth, async (req, res) => {
+router.post("/sop-review", requireAuth, requirePremium, async (req, res) => {
   try {
     const { sopText } = req.body;
 

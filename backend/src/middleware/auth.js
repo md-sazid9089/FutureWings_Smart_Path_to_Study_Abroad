@@ -3,6 +3,7 @@
  */
 
 const jwt = require("jsonwebtoken");
+const prisma = require("../prisma/client");
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
 
@@ -62,4 +63,31 @@ module.exports = {
   signToken,
   verifyToken,
   requireAuth,
+  requirePremium: async function requirePremium(req, res, next) {
+    try {
+      const auth = req.auth || {};
+      const userId = auth.userId;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { isPremium: true, premiumExpiryDate: true },
+      });
+
+      if (!user || !user.isPremium) {
+        return res.status(403).json({ success: false, error: { message: 'Premium subscription required' } });
+      }
+
+      if (user.premiumExpiryDate && user.premiumExpiryDate < new Date()) {
+        return res.status(403).json({ success: false, error: { message: 'Premium subscription expired' } });
+      }
+
+      return next();
+    } catch (err) {
+      console.error('requirePremium error:', err);
+      return res.status(500).json({ success: false, error: { message: 'Server error' } });
+    }
+  },
 };

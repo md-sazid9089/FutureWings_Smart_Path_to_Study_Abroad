@@ -42,6 +42,11 @@ app.use(cors({
 // This is a workaround: we'll handle it within the payments route with conditional parsing
 // Better approach: use the middleware inside the route
 
+// Register payments routes before the JSON body parser so the webhook
+// route can receive the raw request body for Stripe signature verification.
+app.use("/api/payments", require("./src/routes/payments"));
+app.use("/api/payments", require("./src/routes/inlinePayment"));
+
 // Parse JSON and URL-encoded bodies with size limit
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -69,8 +74,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", require("./src/routes/auth"));
 app.use("/api/user", require("./src/routes/user"));
 app.use("/api/notifications", require("./src/routes/notifications"));
-app.use("/api/payments", require("./src/routes/payments"));
-app.use("/api/payments", require("./src/routes/inlinePayment"));
 app.use("/api/consultancy", require("./src/routes/consultancy"));
 app.use("/api/applications", require("./src/routes/applications"));
 // Note: visa-outcomes should be combined or used as a sub-route. 

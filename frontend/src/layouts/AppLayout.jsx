@@ -2,12 +2,14 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import GlassNavbar from '../components/GlassNavbar';
-import { syncPremiumStatus } from '../utils/syncPremiumStatus';
+import { useAuth } from '../context/AuthContext';
 
 
 export default function AppLayout() {
+  const { syncPremiumStatus } = useAuth();
+
   useEffect(() => {
-    // Sync premium status on session start
+    // Sync premium status on session start via AuthContext
     syncPremiumStatus();
     // Sync on tab storage event
     const handleStorage = (event) => {

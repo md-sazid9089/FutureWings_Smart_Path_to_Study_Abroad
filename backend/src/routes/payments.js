@@ -130,8 +130,24 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
   const sig = req.headers["stripe-signature"];
 
   try {
+    // Ensure raw payload is passed to Stripe for signature verification.
+    // Some environments parse JSON before this route; accept either raw Buffer/string or parsed object.
+    let rawBody = req.body;
+    if (rawBody && typeof rawBody === 'object' && !(rawBody instanceof Buffer)) {
+      try {
+        rawBody = JSON.stringify(rawBody);
+      } catch (err) {
+        console.error('Failed to stringify parsed webhook body:', err);
+      }
+    }
+
+    console.log('webhook rawBody type:', typeof rawBody, 'isBuffer:', Buffer.isBuffer(rawBody));
+    if (typeof rawBody === 'string') {
+      console.log('rawBody preview:', rawBody.slice(0, 300));
+    }
+
     const event = stripe.webhooks.constructEvent(
-      req.body,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -167,8 +183,9 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
         },
       });
 
-      // Always unlock all features for the user
-      const features = FEATURE_BUNDLES["PREMIUM_BUNDLE"];
+      // Determine purchased feature type and unlock corresponding features
+      const featureType = (session.metadata && session.metadata.featureType) ? session.metadata.featureType : "PREMIUM_BUNDLE";
+      const features = FEATURE_BUNDLES[featureType] || [featureType];
       const premiumExpiryDate = new Date();
       premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30); // 30 days subscription
 

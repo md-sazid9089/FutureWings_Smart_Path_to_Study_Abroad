@@ -22,6 +22,15 @@ const PremiumFeatureWrapper = ({ children, feature }) => {
     }
   }, [user, authLoading]);
 
+  // Listen for manual user updates (e.g., after payment flow that dispatches 'userUpdated')
+  useEffect(() => {
+    const handler = () => {
+      checkPremiumStatus();
+    };
+    window.addEventListener('userUpdated', handler);
+    return () => window.removeEventListener('userUpdated', handler);
+  }, []);
+
   const checkPremiumStatus = () => {
     if (user) {
       // Check if user has premium and the required feature

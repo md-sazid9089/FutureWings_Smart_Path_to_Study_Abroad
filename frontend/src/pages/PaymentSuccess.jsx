@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import API from "../api/axios";
-import { syncPremiumStatus } from "../utils/syncPremiumStatus";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { HiOutlineCheckCircle, HiOutlineArrowRight } from "react-icons/hi2";
 import GlassCard from "../components/ui/GlassCard";
@@ -18,6 +18,8 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("verifying");
   const [paymentDetails, setPaymentDetails] = useState(null);
+
+  const { syncPremiumStatus } = useAuth();
 
   const sessionId = searchParams.get("session_id");
 
@@ -52,7 +54,7 @@ const PaymentSuccess = () => {
       const paymentData = paymentResponse.data.data;
       setPaymentDetails(paymentData);
 
-      // Step 2: CRITICAL - Sync premium status from backend
+      // Step 2: CRITICAL - Sync premium status from backend via AuthContext
       await syncPremiumStatus();
       // Step 3: Emit custom event to notify other components of the update
       window.dispatchEvent(new Event("userUpdated"));

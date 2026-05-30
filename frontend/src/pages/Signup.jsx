@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { syncPremiumStatus } from '../utils/syncPremiumStatus';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import logo from '../asset/logo.png';
@@ -12,6 +12,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '', fullname: '' });
   const [loading, setLoading] = useState(false);
+  const { syncPremiumStatus } = useAuth();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
