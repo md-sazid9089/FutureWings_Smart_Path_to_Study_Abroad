@@ -60,16 +60,16 @@ export default function ManageRatings() {
     return (total / items.length).toFixed(1);
   }, [items]);
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
   return (
     <>
-      <PageHeader title="Ratings & Reviews" subtitle={`${items.length} ratings · Avg ${avg}/5`} />
+      <PageHeader title="Ratings & Reviews" subtitle={`${items.length} ratings  Avg ${avg}/5`} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by user, email, or comment…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by user, email, or comment..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="w-52">
           <option value="">All Countries</option>
           {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
@@ -85,15 +85,15 @@ export default function ManageRatings() {
               <Td>{r.id}</Td>
               <Td>
                 <div>
-                  <div className="font-semibold">{r.user?.fullName || '—'}</div>
+                  <div className="font-semibold">{r.user?.fullName || '-'}</div>
                   <div className="text-xs text-gray-500">{r.user?.email}</div>
                 </div>
               </Td>
-              <Td>{r.country?.countryName || '—'}</Td>
+              <Td>{r.country?.countryName || '-'}</Td>
               <Td><Stars count={r.rating} /></Td>
               <Td>
                 <span className="text-sm text-gray-600 truncate max-w-xs inline-block">
-                  {r.comment || '—'}
+                  {r.comment || '-'}
                 </span>
               </Td>
               <Td>{fmtDate(r.createdAt)}</Td>

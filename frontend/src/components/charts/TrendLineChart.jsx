@@ -60,10 +60,10 @@ function CustomLegend({ lines, hidden, onToggle }) {
 }
 
 /**
- * TrendLineChart — multi-line chart with clickable legend to toggle lines
+ * TrendLineChart - multi-line chart with clickable legend to toggle lines
  * Props:
- *   data   — array of { year, [countryKey]: value, ... }
- *   lines  — array of { key, color, label }
+ *   data   - array of { year, [countryKey]: value, ... }
+ *   lines  - array of { key, color, label }
  */
 export default function TrendLineChart({ data = [], lines = [] }) {
   const [hidden, setHidden] = useState([]);

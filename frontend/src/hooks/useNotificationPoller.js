@@ -114,14 +114,14 @@ export const useNotificationPoller = (pollingInterval = 30000) => {
     }, pollingInterval);
 
     // Report polling started
-    console.log('🔔 Notification polling started (interval: ' + pollingInterval + 'ms)');
+    console.log('Notification polling started (interval: ' + pollingInterval + 'ms)');
 
     // Cleanup on unmount
     return () => {
       isPollingRef.current = false;
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
-        console.log('🔔 Notification polling stopped');
+        console.log('Notification polling stopped');
       }
     };
   }, [pollingInterval, fetchNotifications]);
@@ -131,12 +131,12 @@ export const useNotificationPoller = (pollingInterval = 30000) => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         isPollingRef.current = false;
-        console.log('🔔 Polling paused (tab hidden)');
+        console.log('Polling paused (tab hidden)');
       } else {
         isPollingRef.current = true;
         // Fetch immediately when tab becomes visible
         fetchNotifications();
-        console.log('🔔 Polling resumed (tab visible)');
+        console.log('Polling resumed (tab visible)');
       }
     };
 

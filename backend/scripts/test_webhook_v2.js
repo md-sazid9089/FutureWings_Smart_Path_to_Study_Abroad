@@ -13,7 +13,7 @@
  *
  * Expected output:
  *   Status: 200
- *   SUCCESS — webhook accepted
+ *   SUCCESS - webhook accepted
  */
 
 require('dotenv').config();
@@ -29,7 +29,7 @@ if (!rawSecret) {
 // Stripe's constructEvent base64-decodes the part after "whsec_"
 const secretBytes = Buffer.from(rawSecret.replace('whsec_', ''), 'base64');
 
-// Build the fake event payload — include amount_total so webhook logic proceeds
+// Build the fake event payload - include amount_total so webhook logic proceeds
 const sessionId = 'cs_test_' + Date.now();
 const eventId   = 'evt_test_' + Date.now();
 
@@ -54,7 +54,7 @@ const payload = JSON.stringify({
   },
 });
 
-// ── HMAC-SHA256 signature (identical algorithm to stripe.webhooks.constructEvent) ──
+// -- HMAC-SHA256 signature (identical algorithm to stripe.webhooks.constructEvent) --
 const timestamp    = Math.floor(Date.now() / 1000);
 const signedPayload = `${timestamp}.${payload}`;
 
@@ -65,7 +65,7 @@ const hmac = crypto
 
 const stripeSignature = `t=${timestamp},v1=${hmac}`;
 
-// ── HTTP request ──────────────────────────────────────────────────────────────
+// -- HTTP request --------------------------------------------------------------
 const bodyBuffer = Buffer.from(payload, 'utf8');
 
 const options = {
@@ -93,10 +93,10 @@ const req = http.request(options, (res) => {
     console.log('Status  :', res.statusCode);
     console.log('Response:', data);
     if (res.statusCode === 200) {
-      console.log('\n✅  SUCCESS — webhook accepted (200)');
+      console.log('\nSUCCESS - webhook accepted (200)');
       console.log('    Run: node scripts/check_demo_user.js  to verify DB update');
     } else {
-      console.log('\n❌  FAILED — check backend logs for details');
+      console.log('\nFAILED - check backend logs for details');
       process.exit(1);
     }
   });

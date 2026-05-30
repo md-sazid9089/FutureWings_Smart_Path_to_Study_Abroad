@@ -161,7 +161,7 @@ const VisaConsultancy = () => {
                   {/* Location */}
                   {(agency.city || agency.country) && (
                     <p className="text-sm text-gray-600 mb-2">
-                      📍 {agency.city}, {agency.country}
+                      <i className="ti ti-map-pin"></i> {agency.city}, {agency.country}
                     </p>
                   )}
 
@@ -207,7 +207,7 @@ const VisaConsultancy = () => {
                       rel="noopener noreferrer"
                       className="block text-center text-blue-600 hover:text-blue-700 text-sm mt-2 underline"
                     >
-                      Visit Website →
+                      Visit Website ->
                     </a>
                   )}
                 </div>

@@ -20,7 +20,7 @@ export default function AdminLogin() {
       const res = await API.post('/api/auth/login', form);
       const { token, user } = res.data.data;
       if (user.role !== 'ADMIN') {
-        toast.error('Access denied – admin only');
+        toast.error('Access denied  admin only');
         return;
       }
       localStorage.setItem('token', token);
@@ -38,16 +38,16 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <GlassPanel className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-4xl">🛡️</span>
+          <i className="ti ti-shield text-4xl"></i>
           <h1 className="text-2xl font-extrabold text-text mt-2">Admin Login</h1>
           <p className="text-text-muted text-sm mt-1">FutureWings Control Panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="admin@futurewings.com" />
-          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="••••••••" />
+          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="" />
           <PrimaryButton type="submit" loading={loading} className="w-full">
-            {loading ? 'Signing in…' : 'Admin Login'}
+            {loading ? 'Signing in...' : 'Admin Login'}
           </PrimaryButton>
         </form>
       </GlassPanel>

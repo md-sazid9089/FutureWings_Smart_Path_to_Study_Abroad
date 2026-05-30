@@ -79,7 +79,7 @@ export default function AdminVisaOutcome() {
   return (
     <>
       <PageHeader title="Visa Outcome" subtitle={`Application #${app.id}`}>
-        <SecondaryButton onClick={() => navigate('/admin/applications')}>← Back</SecondaryButton>
+        <SecondaryButton onClick={() => navigate('/admin/applications')}> Back</SecondaryButton>
       </PageHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -115,9 +115,9 @@ export default function AdminVisaOutcome() {
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <SelectField label="Decision *" value={form.decision} onChange={(e) => setForm({ ...form, decision: e.target.value })}>
-              <option value="">Select decision…</option>
-              <option value="APPROVED">✅ Approved</option>
-              <option value="DENIED">❌ Denied</option>
+              <option value="">Select decision...</option>
+              <option value="APPROVED">Approved</option>
+              <option value="DENIED">Denied</option>
             </SelectField>
             <TextField label="Reason Title" value={form.reasonTitle} onChange={(e) => setForm({ ...form, reasonTitle: e.target.value })} placeholder="e.g. Strong academic profile" />
             <TextField label="Destination Date" type="date" value={form.destinationDate} onChange={(e) => setForm({ ...form, destinationDate: e.target.value })} />
@@ -127,7 +127,7 @@ export default function AdminVisaOutcome() {
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 className="w-full rounded-xl border border-white/30 bg-white/40 backdrop-blur-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all min-h-25"
-                placeholder="Additional notes about the visa decision…"
+                placeholder="Additional notes about the visa decision..."
               />
             </div>
             <div className="flex justify-end gap-3 pt-2">

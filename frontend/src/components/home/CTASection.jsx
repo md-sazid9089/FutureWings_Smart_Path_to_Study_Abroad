@@ -21,7 +21,7 @@ export default function CTASection() {
             to={isLoggedIn ? '/recommendations' : '/signup'}
             className="relative inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all duration-200 hover:scale-[1.03] text-lg"
           >
-            Create Free Account →
+            Create Free Account ->
           </Link>
         </div>
       </div>

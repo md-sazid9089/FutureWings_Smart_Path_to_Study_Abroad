@@ -189,7 +189,7 @@ export default function Programs() {
                   loading={applying === p.id}
                   className="w-full text-xs px-4 py-2"
                 >
-                    {applying === p.id ? 'Applying…' : 'Apply Now'}
+                    {applying === p.id ? 'Applying...' : 'Apply Now'}
                 </PrimaryButton>
                   {!p.countryId && (
                     <p className="mt-2 text-[11px] text-danger">Cannot apply: country mapping unavailable.</p>

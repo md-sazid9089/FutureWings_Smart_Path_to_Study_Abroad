@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 
 const destinations = [
-  { name: 'United States', tier: 'Tier 1', emoji: '🇺🇸', tagline: 'Top-ranked universities worldwide', color: 'bg-blue-100 text-blue-700' },
-  { name: 'United Kingdom', tier: 'Tier 1', emoji: '🇬🇧', tagline: 'World-class education heritage', color: 'bg-red-100 text-red-700' },
-  { name: 'Canada', tier: 'Tier 1', emoji: '🇨🇦', tagline: 'Inclusive and affordable options', color: 'bg-emerald-100 text-emerald-700' },
-  { name: 'Germany', tier: 'Tier 2', emoji: '🇩🇪', tagline: 'Low-tuition STEM powerhouse', color: 'bg-amber-100 text-amber-700' },
-  { name: 'Australia', tier: 'Tier 1', emoji: '🇦🇺', tagline: 'High quality of life & research', color: 'bg-purple-100 text-purple-700' },
-  { name: 'Japan', tier: 'Tier 2', emoji: '🇯🇵', tagline: 'Innovation meets tradition', color: 'bg-rose-100 text-rose-700' },
+  { name: 'United States', tier: 'Tier 1', emoji: '', tagline: 'Top-ranked universities worldwide', color: 'bg-blue-100 text-blue-700' },
+  { name: 'United Kingdom', tier: 'Tier 1', emoji: '', tagline: 'World-class education heritage', color: 'bg-red-100 text-red-700' },
+  { name: 'Canada', tier: 'Tier 1', emoji: '', tagline: 'Inclusive and affordable options', color: 'bg-emerald-100 text-emerald-700' },
+  { name: 'Germany', tier: 'Tier 2', emoji: '', tagline: 'Low-tuition STEM powerhouse', color: 'bg-amber-100 text-amber-700' },
+  { name: 'Australia', tier: 'Tier 1', emoji: '', tagline: 'High quality of life & research', color: 'bg-purple-100 text-purple-700' },
+  { name: 'Japan', tier: 'Tier 2', emoji: '', tagline: 'Innovation meets tradition', color: 'bg-rose-100 text-rose-700' },
 ];
 
 export default function PopularDestinations() {
@@ -47,7 +47,7 @@ export default function PopularDestinations() {
                 to={isLoggedIn ? '/recommendations' : '/signup'}
                 className="inline-flex items-center text-sm font-semibold text-primary hover:text-primary-dark transition-colors"
               >
-                View Details →
+                View Details ->
               </Link>
             </div>
           ))}

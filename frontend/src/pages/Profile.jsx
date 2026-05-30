@@ -89,7 +89,7 @@ export default function Profile() {
           </div>
 
           <PrimaryButton type="submit" loading={saving}>
-            {saving ? 'Saving…' : 'Update Profile'}
+            {saving ? 'Saving...' : 'Update Profile'}
           </PrimaryButton>
         </form>
       </GlassPanel>

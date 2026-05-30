@@ -113,8 +113,8 @@ export default function ManageScholarships() {
     }
   };
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
-  const fmtAmount = (v) => v != null ? `$${Number(v).toLocaleString()}` : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
+  const fmtAmount = (v) => v != null ? `$${Number(v).toLocaleString()}` : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
@@ -125,7 +125,7 @@ export default function ManageScholarships() {
       </PageHeader>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by name or criteria…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by name or criteria..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="w-52">
           <option value="">All Countries</option>
           {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
@@ -145,7 +145,7 @@ export default function ManageScholarships() {
                   {s.eligibilityCriteria && <div className="text-xs text-gray-500 truncate max-w-xs">{s.eligibilityCriteria}</div>}
                 </div>
               </Td>
-              <Td>{s.country?.countryName || '—'}</Td>
+              <Td>{s.country?.countryName || '-'}</Td>
               <Td>{fmtAmount(s.amount)}</Td>
               <Td>{fmtDate(s.deadline)}</Td>
               <Td>
@@ -163,21 +163,21 @@ export default function ManageScholarships() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField label="Scholarship Name *" value={form.scholarshipName} onChange={(e) => setForm({ ...form, scholarshipName: e.target.value })} />
           <SelectField label="Country *" value={form.countryId} onChange={(e) => setForm({ ...form, countryId: e.target.value })}>
-            <option value="">Select country…</option>
+            <option value="">Select country...</option>
             {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
           </SelectField>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <TextField label="Amount ($)" type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} placeholder="e.g. 10000" />
             <TextField label="Deadline" type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
           </div>
-          <TextField label="Apply Link" value={form.applyLink} onChange={(e) => setForm({ ...form, applyLink: e.target.value })} placeholder="https://…" />
+          <TextField label="Apply Link" value={form.applyLink} onChange={(e) => setForm({ ...form, applyLink: e.target.value })} placeholder="https://..." />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Eligibility Criteria</label>
             <textarea
               value={form.eligibilityCriteria}
               onChange={(e) => setForm({ ...form, eligibilityCriteria: e.target.value })}
               className="w-full rounded-xl border border-white/30 bg-white/40 backdrop-blur-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all min-h-20"
-              placeholder="Describe eligibility requirements…"
+              placeholder="Describe eligibility requirements..."
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">

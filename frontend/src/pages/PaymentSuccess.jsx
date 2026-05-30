@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
 
       if (paymentData.status === "SUCCESS" || paymentData.paymentStatus === "paid") {
         setStatus("success");
-        toast.success("🎉 Premium features activated!");
+        toast.success("Premium features activated!");
 
         // Step 5: Auto-redirect to feature page after 2 seconds
         setTimeout(() => {
@@ -181,15 +181,15 @@ const PaymentSuccess = () => {
             <h3 className="font-semibold text-slate-900 mb-3">What's Next?</h3>
             <ul className="space-y-2 text-sm text-slate-600">
               <li className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
+                <span className="text-green-500 font-bold">v</span>
                 <span>Premium features are now unlocked in your dashboard</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
+                <span className="text-green-500 font-bold">v</span>
                 <span>Confirmation email sent to your registered email</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 font-bold">✓</span>
+                <span className="text-green-500 font-bold">v</span>
                 <span>Valid for 30 days from purchase date</span>
               </li>
             </ul>

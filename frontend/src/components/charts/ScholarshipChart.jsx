@@ -35,9 +35,9 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 /**
- * ScholarshipChart — dual-axis composed chart (bars = scholarships, line = avg cost)
+ * ScholarshipChart - dual-axis composed chart (bars = scholarships, line = avg cost)
  * Props:
- *   data — array of { country, scholarships, avgCost, ... }
+ *   data - array of { country, scholarships, avgCost, ... }
  */
 export default function ScholarshipChart({ data = [] }) {
   return (

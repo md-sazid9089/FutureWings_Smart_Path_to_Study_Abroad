@@ -120,7 +120,7 @@ export default function HeroSection() {
                 onClick={handleGetTier}
                 className="px-8 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all duration-200 hover:scale-[1.03]"
               >
-                Get My Tier →
+                Get My Tier ->
               </button>
             </div>
           </div>

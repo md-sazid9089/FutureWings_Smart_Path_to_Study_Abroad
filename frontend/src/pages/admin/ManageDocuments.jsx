@@ -92,7 +92,7 @@ export default function ManageDocuments() {
       <PageHeader title="Document Verification" subtitle={`${items.length} documents`} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by type, name, or email…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by type, name, or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-44">
           <option value="">All Status</option>
           {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -147,9 +147,9 @@ export default function ManageDocuments() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <SelectField label="Decision *" value={form.verificationStatus} onChange={(e) => setForm({ ...form, verificationStatus: e.target.value })}>
-                <option value="">Select decision…</option>
-                <option value="VERIFIED">✅ Verify</option>
-                <option value="REJECTED">❌ Reject</option>
+                <option value="">Select decision...</option>
+                <option value="VERIFIED">Verify</option>
+                <option value="REJECTED">Reject</option>
               </SelectField>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Admin Note</label>
@@ -157,7 +157,7 @@ export default function ManageDocuments() {
                   value={form.adminNote}
                   onChange={(e) => setForm({ ...form, adminNote: e.target.value })}
                   className="w-full rounded-xl border border-white/30 bg-white/40 backdrop-blur-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all min-h-20"
-                  placeholder="Optional note for the user…"
+                  placeholder="Optional note for the user..."
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">

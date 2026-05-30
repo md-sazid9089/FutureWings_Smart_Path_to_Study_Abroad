@@ -23,10 +23,10 @@ import CountryBarChart from '../components/charts/CountryBarChart';
 import TrendLineChart from '../components/charts/TrendLineChart';
 import ScholarshipChart from '../components/charts/ScholarshipChart';
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* -----------------------------------------------------------------------------
    DEMO DATA
    TODO: Replace with API call to /api/insights/country-stats
-   ───────────────────────────────────────────────────────────────────────────── */
+   ----------------------------------------------------------------------------- */
 const countryData = [
   { country: 'Canada',      acceptance: 78, scholarships: 245, avgCost: 18000, trend: 'up'     },
   { country: 'Germany',     acceptance: 65, scholarships: 189, avgCost: 8000,  trend: 'up'     },
@@ -58,22 +58,22 @@ const TREND_LINES = [
 
 // TODO: Replace with API call to /api/insights/country-details
 const countryDetails = {
-  Canada:      { flag: '🇨🇦', bestFor: 'Business, Engineering, Life Sciences'         },
-  Germany:     { flag: '🇩🇪', bestFor: 'Engineering, Computer Science, Natural Sciences' },
-  Australia:   { flag: '🇦🇺', bestFor: 'Marine Biology, Mining, Business'              },
-  UK:          { flag: '🇬🇧', bestFor: 'Law, Finance, Arts & Humanities'               },
-  USA:         { flag: '🇺🇸', bestFor: 'Technology, Medicine, Research'                },
-  Netherlands: { flag: '🇳🇱', bestFor: 'STEM, Sustainability, Agriculture'             },
-  Sweden:      { flag: '🇸🇪', bestFor: 'Innovation, Design, Environment'               },
-  'New Zealand':{ flag: '🇳🇿', bestFor: 'Agriculture, Environmental Science, Tourism'  },
+  Canada:      { flag: '', bestFor: 'Business, Engineering, Life Sciences'         },
+  Germany:     { flag: '', bestFor: 'Engineering, Computer Science, Natural Sciences' },
+  Australia:   { flag: '', bestFor: 'Marine Biology, Mining, Business'              },
+  UK:          { flag: '', bestFor: 'Law, Finance, Arts & Humanities'               },
+  USA:         { flag: '', bestFor: 'Technology, Medicine, Research'                },
+  Netherlands: { flag: '', bestFor: 'STEM, Sustainability, Agriculture'             },
+  Sweden:      { flag: '', bestFor: 'Innovation, Design, Environment'               },
+  'New Zealand':{ flag: '', bestFor: 'Agriculture, Environmental Science, Tourism'  },
 };
 
 // TODO: Replace with API call to /api/insights/trend-reasons
 const trendReasonCards = [
   {
     country: 'Australia',
-    flag: '🇦🇺',
-    trendLabel: '↓ Declining (−12% since 2019)',
+    flag: '',
+    trendLabel: '<i className="ti ti-trending-down text-red-500"></i> Declining (12% since 2019)',
     trendType: 'down',
     reasons: [
       'Stricter post-study work visa rules introduced in 2023',
@@ -81,12 +81,12 @@ const trendReasonCards = [
       'Increased domestic student intake reducing international seats',
       'Rising living costs reducing overall appeal',
     ],
-    recommendation: 'Still a strong option — apply early and target universities outside Sydney/Melbourne for better chances.',
+    recommendation: 'Still a strong option - apply early and target universities outside Sydney/Melbourne for better chances.',
   },
   {
     country: 'UK',
-    flag: '🇬🇧',
-    trendLabel: '↓ Declining (−4% since 2019)',
+    flag: '',
+    trendLabel: '<i className="ti ti-trending-down text-red-500"></i> Declining (4% since 2019)',
     trendType: 'down',
     reasons: [
       'Post-Brexit visa complexity for EU students',
@@ -94,12 +94,12 @@ const trendReasonCards = [
       'Tuition fees increased for international students',
       'Stronger competition from European alternatives (Germany, Netherlands)',
     ],
-    recommendation: 'Russell Group universities remain prestigious — focus on specialized programs where UK leads globally.',
+    recommendation: 'Russell Group universities remain prestigious - focus on specialized programs where UK leads globally.',
   },
   {
     country: 'Netherlands',
-    flag: '🇳🇱',
-    trendLabel: '↑ Rising (+12% since 2019)',
+    flag: '',
+    trendLabel: '<i className="ti ti-trending-up text-green-500"></i> Rising (+12% since 2019)',
     trendType: 'up',
     reasons: [
       'Most programs taught in English',
@@ -107,18 +107,18 @@ const trendReasonCards = [
       'Strong tech and engineering industry',
       'Easy post-study work permit (Orientation Year)',
     ],
-    recommendation: 'Highly recommended for STEM students — apply to TU Delft, Eindhoven, or Wageningen.',
+    recommendation: 'Highly recommended for STEM students - apply to TU Delft, Eindhoven, or Wageningen.',
   },
 ];
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* -----------------------------------------------------------------------------
    SUB-COMPONENTS
-   ───────────────────────────────────────────────────────────────────────────── */
+   ----------------------------------------------------------------------------- */
 
 function SampleDataBadge() {
   return (
     <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full font-medium">
-      📊 Sample Data
+      Sample Data
     </span>
   );
 }
@@ -167,16 +167,16 @@ function AcceptanceGauge({ value }) {
 function TrendPill({ trend }) {
   if (trend === 'up')     return <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full"><HiOutlineArrowTrendingUp className="w-3.5 h-3.5" />Rising</span>;
   if (trend === 'down')   return <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full"><HiOutlineArrowTrendingDown className="w-3.5 h-3.5" />Declining</span>;
-  return <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full">→ Stable</span>;
+  return <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full"><i className="ti ti-minus text-gray-500"></i> Stable</span>;
 }
 
 function SkeletonBlock({ className = '' }) {
   return <div className={`skeleton rounded-2xl ${className}`} />;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* -----------------------------------------------------------------------------
    MAIN PAGE
-   ───────────────────────────────────────────────────────────────────────────── */
+   ----------------------------------------------------------------------------- */
 
 export default function SmartInsights() {
   const [selectedCountry, setSelectedCountry] = useState('Canada');
@@ -193,7 +193,7 @@ export default function SmartInsights() {
 
   const handleNotifyMe = () => {
     toast.success("You'll be notified when live data is available!", {
-      icon: '🔔',
+      icon: <HiOutlineBell className="text-primary w-5 h-5" />,
       duration: 4000,
     });
   };
@@ -201,7 +201,7 @@ export default function SmartInsights() {
   return (
     <div className="space-y-8">
 
-      {/* ── SECTION 1 — Page Header ─────────────────────────────── */}
+      {/* -- SECTION 1 - Page Header ------------------------------- */}
       <div>
         <PageHeader
           title="Smart Insights"
@@ -215,8 +215,8 @@ export default function SmartInsights() {
         {/* Demo data notice banner */}
         <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2 text-amber-700 font-semibold">
-            <span className="text-lg">📊</span>
-            Demo Mode — Real data coming soon
+            <HiOutlineChartBarSquare className="w-5 h-5" />
+            Demo Mode - Real data coming soon
           </div>
           <p className="text-sm text-amber-600 sm:ml-auto max-w-xl">
             This feature uses sample data to demonstrate insights. Actual data will be integrated as our platform grows.
@@ -224,7 +224,7 @@ export default function SmartInsights() {
         </div>
       </div>
 
-      {/* ── SECTION 2 — Country Bar Chart ───────────────────────── */}
+      {/* -- SECTION 2 - Country Bar Chart ------------------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
           <SkeletonBlock className="h-8 w-72 mb-6" />
@@ -240,14 +240,14 @@ export default function SmartInsights() {
         </ChartSection>
       )}
 
-      {/* ── SECTION 3 — Yearly Trend Line Chart ─────────────────── */}
+      {/* -- SECTION 3 - Yearly Trend Line Chart ------------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
           <SkeletonBlock className="h-8 w-80 mb-6" />
           <SkeletonBlock className="h-64 w-full" />
         </GlassPanel>
       ) : (
-        <ChartSection title="Acceptance Rate Trends by Country (2019–2024)">
+        <ChartSection title="Acceptance Rate Trends by Country (20192024)">
           <p className="text-sm text-text-muted mb-6 max-w-2xl">
             Six-year trend lines for the top 5 destinations. Click the country buttons below the chart to
             show or hide individual lines.
@@ -256,7 +256,7 @@ export default function SmartInsights() {
         </ChartSection>
       )}
 
-      {/* ── SECTION 4 — Decrease / Increase Reason Cards ─────────── */}
+      {/* -- SECTION 4 - Decrease / Increase Reason Cards ----------- */}
       {loaded && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -294,7 +294,7 @@ export default function SmartInsights() {
                 </ul>
 
                 <div className={`rounded-xl p-3 text-sm leading-relaxed ${card.trendType === 'up' ? 'bg-emerald-100/60 text-emerald-800' : 'bg-amber-50 text-amber-800 border border-amber-100'}`}>
-                  <span className="font-semibold">💡 Recommendation: </span>
+                  <span className="font-semibold"><HiOutlineLightBulb className="inline w-4 h-4 text-amber-500 mb-0.5" /> Recommendation: </span>
                   {card.recommendation}
                 </div>
               </GlassCard>
@@ -303,7 +303,7 @@ export default function SmartInsights() {
         </div>
       )}
 
-      {/* ── SECTION 5 — Scholarship Comparison Chart ─────────────── */}
+      {/* -- SECTION 5 - Scholarship Comparison Chart --------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
           <SkeletonBlock className="h-8 w-96 mb-6" />
@@ -313,20 +313,20 @@ export default function SmartInsights() {
         <ChartSection title="Scholarship Availability vs Average Tuition Cost">
           <p className="text-sm text-text-muted mb-6 max-w-2xl">
             Blue bars show how many scholarships each country offers. The orange line tracks average annual
-            tuition — lower is better for budget-conscious students.
+            tuition - lower is better for budget-conscious students.
           </p>
           <ScholarshipChart data={countryData} />
           <div className="mt-5 flex items-start gap-2.5 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-800">
             <HiOutlineLightBulb className="w-5 h-5 flex-none text-blue-500 mt-0.5" />
             <span>
               <strong>Germany and Sweden</strong> offer the lowest tuition costs with generous scholarship
-              programs — ideal for budget-conscious students.
+              programs - ideal for budget-conscious students.
             </span>
           </div>
         </ChartSection>
       )}
 
-      {/* ── SECTION 6 — Country Filter & Detail Panel ────────────── */}
+      {/* -- SECTION 6 - Country Filter & Detail Panel -------------- */}
       {loaded && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -355,14 +355,14 @@ export default function SmartInsights() {
           {selected && (
             <GlassPanel className="border border-white/25 p-6 sm:p-8 shadow-xl">
               <div className="grid gap-8 md:grid-cols-[auto_1fr]">
-                {/* Left — gauge */}
+                {/* Left - gauge */}
                 <div className="flex flex-col items-center gap-3">
                   <span className="text-5xl">{details.flag}</span>
                   <AcceptanceGauge value={selected.acceptance} />
                   <TrendPill trend={selected.trend} />
                 </div>
 
-                {/* Right — stats */}
+                {/* Right - stats */}
                 <div className="space-y-5">
                   <div>
                     <h3 className="text-2xl font-extrabold text-text">{selected.country}</h3>
@@ -409,7 +409,7 @@ export default function SmartInsights() {
         </div>
       )}
 
-      {/* ── SECTION 7 — Coming Soon Banner ───────────────────────── */}
+      {/* -- SECTION 7 - Coming Soon Banner ------------------------- */}
       {loaded && (
         <GlassPanel className="relative overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/5 to-blue-500/5 p-8 shadow-xl text-center">
           {/* decorative blobs */}
@@ -423,7 +423,7 @@ export default function SmartInsights() {
             </div>
 
             <h2 className="text-2xl font-extrabold text-text">
-              We're building live analytics for you 🚀
+              We're building live analytics for you
             </h2>
 
             <div className="max-w-2xl mx-auto grid sm:grid-cols-2 gap-3 text-left mt-6">

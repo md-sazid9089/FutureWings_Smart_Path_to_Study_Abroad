@@ -37,10 +37,10 @@ axios.post(
   }
 )
   .then(r => {
-    console.log('SUCCESS — Status:', r.status);
+    console.log('SUCCESS - Status:', r.status);
     console.log('Response:', JSON.stringify(r.data, null, 2));
   })
   .catch(e => {
-    console.error('FAILED — Status:', e.response?.status);
+    console.error('FAILED - Status:', e.response?.status);
     console.error('Error:', JSON.stringify(e.response?.data, null, 2));
   });

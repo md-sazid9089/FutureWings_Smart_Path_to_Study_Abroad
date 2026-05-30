@@ -150,42 +150,42 @@ export const filterByType = (notifications, type) => {
 export const getNotificationStyle = (type) => {
   const styles = {
     subscription: {
-      icon: "💳",
+      icon: "ti ti-credit-card",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
       textColor: "text-blue-900",
       badgeColor: "bg-blue-500",
     },
     visa: {
-      icon: "📋",
+      icon: "ti ti-clipboard",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
       textColor: "text-green-900",
       badgeColor: "bg-green-500",
     },
     ai: {
-      icon: "🤖",
+      icon: "ti ti-robot",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
       textColor: "text-purple-900",
       badgeColor: "bg-purple-500",
     },
     recommendation: {
-      icon: "⭐",
+      icon: "ti ti-star",
       bgColor: "bg-yellow-50",
       borderColor: "border-yellow-200",
       textColor: "text-yellow-900",
       badgeColor: "bg-yellow-500",
     },
     application: {
-      icon: "📄",
+      icon: "ti ti-file",
       bgColor: "bg-indigo-50",
       borderColor: "border-indigo-200",
       textColor: "text-indigo-900",
       badgeColor: "bg-indigo-500",
     },
     "admin-update": {
-      icon: "⚙️",
+      icon: "ti ti-settings",
       bgColor: "bg-red-50",
       borderColor: "border-red-200",
       textColor: "text-red-900",

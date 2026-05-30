@@ -45,7 +45,7 @@ export default function ManageUsers() {
     );
   }, [items, search]);
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
 
   if (loading) return <LoadingSkeleton rows={6} />;
 
@@ -54,7 +54,7 @@ export default function ManageUsers() {
       <PageHeader title="Users" subtitle={`${items.length} users total`} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by name, email, or major…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by name, email, or major..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="w-36">
           <option value="">All Roles</option>
           <option value="USER">User</option>
@@ -69,7 +69,7 @@ export default function ManageUsers() {
           {filtered.map((u) => (
             <tr key={u.id} className="hover:bg-white/30 transition-colors">
               <Td>{u.id}</Td>
-              <Td className="font-semibold">{u.fullName || '—'}</Td>
+              <Td className="font-semibold">{u.fullName || '-'}</Td>
               <Td>{u.email}</Td>
               <Td>
                 <StatusPill
@@ -77,8 +77,8 @@ export default function ManageUsers() {
                   color={u.role === 'ADMIN' ? 'blue' : 'green'}
                 />
               </Td>
-              <Td>{u.cgpa ?? '—'}</Td>
-              <Td>{u.degreeLevel || '—'}</Td>
+              <Td>{u.cgpa ?? '-'}</Td>
+              <Td>{u.degreeLevel || '-'}</Td>
               <Td>{u._count?.applications ?? 0}</Td>
               <Td>{u._count?.documents ?? 0}</Td>
               <Td>{fmtDate(u.createdAt)}</Td>
@@ -103,7 +103,7 @@ export default function ManageUsers() {
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Full Name</span>
-                <p className="font-medium">{selected.fullName || '—'}</p>
+                <p className="font-medium">{selected.fullName || '-'}</p>
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Email</span>
@@ -119,19 +119,19 @@ export default function ManageUsers() {
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">CGPA</span>
-                <p className="font-medium">{selected.cgpa ?? '—'}</p>
+                <p className="font-medium">{selected.cgpa ?? '-'}</p>
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Degree Level</span>
-                <p className="font-medium">{selected.degreeLevel || '—'}</p>
+                <p className="font-medium">{selected.degreeLevel || '-'}</p>
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Major</span>
-                <p className="font-medium">{selected.major || '—'}</p>
+                <p className="font-medium">{selected.major || '-'}</p>
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Fund Score</span>
-                <p className="font-medium">{selected.fundScore ?? '—'}</p>
+                <p className="font-medium">{selected.fundScore ?? '-'}</p>
               </div>
             </div>
 

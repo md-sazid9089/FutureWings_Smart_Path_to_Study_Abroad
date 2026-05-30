@@ -129,7 +129,7 @@ export default function NotificationDropdown({
                     href={notif.link}
                     className="text-xs text-primary hover:text-primary-dark mt-2 block font-medium hover:underline"
                   >
-                    View Details →
+                    View Details ->
                   </a>
                 )}
               </div>

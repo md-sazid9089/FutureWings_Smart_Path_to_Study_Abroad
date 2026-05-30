@@ -140,7 +140,7 @@ export default function ManagePrograms() {
       </PageHeader>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by program name…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by program name..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={uniFilter} onChange={(e) => setUniFilter(e.target.value)} className="w-52">
           <option value="">All Universities</option>
           {universities.map((u) => <option key={u.id} value={u.id}>{u.universityName}</option>)}
@@ -160,9 +160,9 @@ export default function ManagePrograms() {
               <Td>{p.id}</Td>
               <Td className="font-semibold">{p.programName}</Td>
               <Td>{p.university?.universityName || '-'}</Td>
-              <Td>{p.level || '—'}</Td>
-              <Td>{p.durationMonths ? `${p.durationMonths} mo` : '—'}</Td>
-              <Td>{p.intakeSeasons || '—'}</Td>
+              <Td>{p.level || '-'}</Td>
+              <Td>{p.durationMonths ? `${p.durationMonths} mo` : '-'}</Td>
+              <Td>{p.intakeSeasons || '-'}</Td>
               <Td>{fmtCurrency(p.tuitionPerYear)}</Td>
               <Td>
                 <div className="flex gap-2">
@@ -179,7 +179,7 @@ export default function ManagePrograms() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField label="Program Name *" value={form.programName} onChange={(e) => setForm({ ...form, programName: e.target.value })} />
           <SelectField label="University *" value={form.universityId} onChange={(e) => setForm({ ...form, universityId: e.target.value })}>
-            <option value="">Select university…</option>
+            <option value="">Select university...</option>
             {universities.map((u) => <option key={u.id} value={u.id}>{u.universityName}</option>)}
           </SelectField>
           <TextField label="Level" value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} placeholder="e.g. Masters, Bachelors, PhD" />

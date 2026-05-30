@@ -76,7 +76,7 @@ export default function Footer() {
 
         <div className="border-t border-white/20 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-text-muted">
-            © {new Date().getFullYear()} FutureWings. All rights reserved.
+            (c) {new Date().getFullYear()} FutureWings. All rights reserved.
           </p>
           
         </div>

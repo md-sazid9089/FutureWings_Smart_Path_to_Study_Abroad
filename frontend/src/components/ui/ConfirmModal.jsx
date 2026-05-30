@@ -18,7 +18,7 @@ export default function ConfirmModal({ open, onClose, onConfirm, title, message,
               hover:bg-red-600 active:scale-[0.97] transition-all duration-200
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Deleting…' : 'Delete'}
+            {loading ? 'Deleting...' : 'Delete'}
           </button>
         ) : (
           <PrimaryButton onClick={onConfirm} loading={loading}>Confirm</PrimaryButton>

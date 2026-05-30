@@ -220,7 +220,7 @@ export const NotificationItem = ({ notification, onRead, onDelete }) => {
           }}
           className="text-gray-400 hover:text-gray-600 ml-2"
         >
-          ✕
+          X
         </button>
       </div>
     </div>
@@ -267,7 +267,7 @@ export const NotificationDropdown = ({ isOpen, onClose }) => {
 
         {!isLoading && notifications.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            <p className="text-lg">✨ No notifications</p>
+            <p className="text-lg">No notifications</p>
             <p className="text-sm">You're all caught up!</p>
           </div>
         )}
@@ -292,7 +292,7 @@ export const NotificationDropdown = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="text-center block text-blue-600 hover:text-blue-800 font-medium text-sm py-2"
           >
-            View all notifications →
+            View all notifications ->
           </a>
         </div>
       )}
@@ -315,13 +315,13 @@ export const NotificationCenter = () => {
   const [filter, setFilter] = useState("all");
 
   const types = [
-    { id: "all", label: "All", icon: "📬" },
-    { id: "subscription", label: "Subscriptions", icon: "💳" },
-    { id: "visa", label: "Visa", icon: "📋" },
-    { id: "ai", label: "AI", icon: "🤖" },
-    { id: "recommendation", label: "Recommendations", icon: "⭐" },
-    { id: "application", label: "Applications", icon: "📄" },
-    { id: "admin-update", label: "Updates", icon: "⚙️" },
+    { id: "all", label: "All", icon: "ti ti-mailbox" },
+    { id: "subscription", label: "Subscriptions", icon: "ti ti-credit-card" },
+    { id: "visa", label: "Visa", icon: "ti ti-clipboard" },
+    { id: "ai", label: "AI", icon: "ti ti-robot" },
+    { id: "recommendation", label: "Recommendations", icon: "ti ti-star" },
+    { id: "application", label: "Applications", icon: "ti ti-file" },
+    { id: "admin-update", label: "Updates", icon: "ti ti-settings" },
   ];
 
   const filteredNotifications =
@@ -381,7 +381,7 @@ export const NotificationCenter = () => {
 
           {!isLoading && filteredNotifications.length === 0 && (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <p className="text-2xl mb-2">✨</p>
+              <i className="ti ti-bell text-2xl mb-2 block"></i>
               <p className="text-gray-600">No notifications in this category</p>
             </div>
           )}

@@ -71,7 +71,7 @@ export default function Rating() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <SelectField label="Rating (1-5)" id="ratingValue" name="ratingValue" value={form.ratingValue} onChange={handleChange}>
               {[1, 2, 3, 4, 5].map((v) => (
-                <option key={v} value={v}>{'★'.repeat(v)}{'☆'.repeat(5 - v)} ({v})</option>
+                <option key={v} value={v}>{'*'.repeat(v)}{'-'.repeat(5 - v)} ({v})</option>
               ))}
             </SelectField>
 
@@ -83,13 +83,13 @@ export default function Rating() {
                 value={form.comments}
                 onChange={handleChange}
                 rows="4"
-                placeholder="Share your experience…"
+                placeholder="Share your experience..."
                 className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/50 border border-white/50 transition-all duration-200 placeholder:text-text-light focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none"
               />
             </div>
 
             <PrimaryButton type="submit" loading={submitting}>
-              {submitting ? 'Submitting…' : 'Submit Rating'}
+              {submitting ? 'Submitting...' : 'Submit Rating'}
             </PrimaryButton>
           </form>
         </GlassPanel>

@@ -43,7 +43,7 @@ export default function VisaOutcomesList() {
     });
   }, [items, search, decisionFilter]);
 
-  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+  const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '-';
 
   if (loading) return <LoadingSkeleton rows={5} />;
 
@@ -52,7 +52,7 @@ export default function VisaOutcomesList() {
       <PageHeader title="Visa Outcomes" subtitle={`${items.length} outcomes total`} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by user or reason…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by user or reason..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={decisionFilter} onChange={(e) => setDecisionFilter(e.target.value)} className="w-44">
           <option value="">All Decisions</option>
           <option value="APPROVED">Approved</option>
@@ -69,19 +69,19 @@ export default function VisaOutcomesList() {
               <Td>{v.id}</Td>
               <Td>
                 <div>
-                  <div className="font-semibold">{v.application?.user?.fullName || '—'}</div>
+                  <div className="font-semibold">{v.application?.user?.fullName || '-'}</div>
                   <div className="text-xs text-gray-500">{v.application?.user?.email}</div>
                 </div>
               </Td>
-              <Td>{v.application?.country?.countryName || '—'}</Td>
-              <Td>{v.application?.program?.programName || '—'}</Td>
+              <Td>{v.application?.country?.countryName || '-'}</Td>
+              <Td>{v.application?.program?.programName || '-'}</Td>
               <Td>
                 <StatusPill
                   status={v.decision}
                   color={v.decision === 'APPROVED' ? 'green' : 'red'}
                 />
               </Td>
-              <Td><span className="text-sm truncate max-w-37.5 inline-block">{v.reasonTitle || '—'}</span></Td>
+              <Td><span className="text-sm truncate max-w-37.5 inline-block">{v.reasonTitle || '-'}</span></Td>
               <Td>{fmtDate(v.destinationDate || v.createdAt)}</Td>
               <Td>
                 <button

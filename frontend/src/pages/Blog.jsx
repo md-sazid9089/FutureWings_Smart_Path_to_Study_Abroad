@@ -38,7 +38,7 @@ export default function Blog() {
               <h2 className="text-xl font-bold text-text mb-2">{p.title}</h2>
               <p className="text-sm text-text-muted leading-relaxed">{p.excerpt}</p>
               <button className="mt-4 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-                Read More →
+                Read More ->
               </button>
             </article>
           ))}

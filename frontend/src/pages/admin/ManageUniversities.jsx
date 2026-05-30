@@ -122,7 +122,7 @@ export default function ManageUniversities() {
       </PageHeader>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by name or city…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by name or city..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="w-48">
           <option value="">All Countries</option>
           {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
@@ -137,9 +137,9 @@ export default function ManageUniversities() {
             <tr key={u.id} className="hover:bg-white/30 transition-colors">
               <Td>{u.id}</Td>
               <Td className="font-semibold">{u.universityName}</Td>
-              <Td>{u.country?.countryName || '—'}</Td>
-              <Td>{u.type || '—'}</Td>
-              <Td>{u.city || '—'}</Td>
+              <Td>{u.country?.countryName || '-'}</Td>
+              <Td>{u.type || '-'}</Td>
+              <Td>{u.city || '-'}</Td>
               <Td>
                 <div className="flex gap-2">
                   <button onClick={() => openEdit(u)} className="p-1.5 rounded-lg hover:bg-white/50 text-secondary transition-colors" title="Edit"><HiOutlinePencilSquare className="w-4 h-4" /></button>
@@ -155,7 +155,7 @@ export default function ManageUniversities() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField label="University Name *" value={form.universityName} onChange={(e) => setForm({ ...form, universityName: e.target.value })} />
           <SelectField label="Country *" value={form.countryId} onChange={(e) => setForm({ ...form, countryId: e.target.value })}>
-            <option value="">Select country…</option>
+            <option value="">Select country...</option>
             {countries.map((c) => <option key={c.id} value={c.id}>{c.countryName}</option>)}
           </SelectField>
           <TextField label="Type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} placeholder="e.g. Public, Private" />

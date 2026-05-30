@@ -84,7 +84,7 @@ export default function ProfileCompletionModal({ user, onClose, onComplete }) {
             onClick={handleComplete}
             className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-colors shadow-sm"
           >
-            Complete My Profile →
+            Complete My Profile ->
           </button>
           
           <button

@@ -169,7 +169,7 @@ export default function News() {
                 <div className="flex items-center justify-between pt-4 border-t border-white/30">
                   <span className="text-xs text-text-light">{article.date}</span>
                   <Link to={`/news/${article.id}`} className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-                    Read More →
+                    Read More ->
                   </Link>
                 </div>
               </article>

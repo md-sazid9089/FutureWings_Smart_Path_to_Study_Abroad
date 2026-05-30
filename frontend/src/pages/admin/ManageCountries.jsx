@@ -119,10 +119,10 @@ export default function ManageCountries() {
         <PrimaryButton onClick={openCreate}><HiOutlinePlus className="w-4 h-4" /> Add Country</PrimaryButton>
       </PageHeader>
 
-      {/* ─── Filters ────────────────────────────── */}
+      {/* --- Filters ------------------------------ */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <TextField
-          placeholder="Search by name or region…"
+          placeholder="Search by name or region..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1"
@@ -135,7 +135,7 @@ export default function ManageCountries() {
         </SelectField>
       </div>
 
-      {/* ─── Table ──────────────────────────────── */}
+      {/* --- Table -------------------------------- */}
       {filtered.length === 0 ? (
         <EmptyState icon={HiOutlineGlobeAlt} title="No countries found" message={search ? 'Try a different search term' : 'Create your first country'} />
       ) : (
@@ -159,7 +159,7 @@ export default function ManageCountries() {
         </GlassTable>
       )}
 
-      {/* ─── Create / Edit Modal ────────────────── */}
+      {/* --- Create / Edit Modal ------------------ */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Country' : 'Add Country'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField label="Country Name *" value={form.countryName} onChange={(e) => setForm({ ...form, countryName: e.target.value })} />
@@ -183,7 +183,7 @@ export default function ManageCountries() {
         </form>
       </Modal>
 
-      {/* ─── Delete Confirm ─────────────────────── */}
+      {/* --- Delete Confirm ----------------------- */}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}

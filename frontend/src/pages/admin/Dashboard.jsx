@@ -50,14 +50,14 @@ export default function Dashboard() {
     <>
       <PageHeader title="Dashboard" subtitle="Overview of FutureWings platform" />
 
-      {/* ─── Stat Cards ──────────────────────────── */}
+      {/* --- Stat Cards ---------------------------- */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {cards.map((s) => (
           <StatCard key={s.label} {...s} />
         ))}
       </div>
 
-      {/* ─── Status Breakdown ────────────────────── */}
+      {/* --- Status Breakdown ---------------------- */}
       {data?.statusBreakdown?.length > 0 && (
         <div className="mb-8">
           <h3 className="text-lg font-bold text-text mb-3">Application Status Breakdown</h3>
@@ -72,7 +72,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ─── Recent Applications ─────────────────── */}
+      {/* --- Recent Applications ------------------- */}
       <div className="mb-8">
         <h3 className="text-lg font-bold text-text mb-3">Recent Applications</h3>
         {data?.recentApplications?.length > 0 ? (
@@ -96,7 +96,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ─── Pending Documents ───────────────────── */}
+      {/* --- Pending Documents --------------------- */}
       <div>
         <h3 className="text-lg font-bold text-text mb-3">Pending Document Verifications</h3>
         {data?.recentDocuments?.length > 0 ? (

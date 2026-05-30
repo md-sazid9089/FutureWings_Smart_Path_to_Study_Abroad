@@ -48,7 +48,7 @@ export default function Signup() {
           <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="you@email.com" />
           <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="Min 6 characters" />
           <PrimaryButton type="submit" loading={loading} className="w-full">
-            {loading ? 'Creating…' : 'Sign Up'}
+            {loading ? 'Creating...' : 'Sign Up'}
           </PrimaryButton>
         </form>
 
@@ -59,7 +59,7 @@ export default function Signup() {
           </Link>
         </p>
         <p className="text-center text-xs text-text-light mt-3">
-          <Link to="/" className="hover:text-primary transition-colors">← Back to Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors"> Back to Home</Link>
         </p>
       </GlassPanel>
     </div>

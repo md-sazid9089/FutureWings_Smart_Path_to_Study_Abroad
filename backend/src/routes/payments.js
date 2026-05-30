@@ -144,7 +144,7 @@ async function webhookHandler(req, res) {
 
       // Validate metadata exists (userId is required to activate the user)
       if (!session.metadata || !session.metadata.userId) {
-        console.error('Missing metadata.userId in webhook event — cannot activate premium', session);
+        console.error('Missing metadata.userId in webhook event - cannot activate premium', session);
         return res.status(200).json({ received: true });
       }
 
@@ -165,7 +165,7 @@ async function webhookHandler(req, res) {
       if (!payment) {
         // No pre-existing payment record (e.g. test/CLI events or race conditions).
         // Create one so there is an audit trail and proceed to activate the user.
-        console.log(`No payment record for session ${session.id} — creating one and activating user ${userId}`);
+        console.log(`No payment record for session ${session.id} - creating one and activating user ${userId}`);
         payment = await prisma.payment.create({
           data: {
             userId,
@@ -203,7 +203,7 @@ async function webhookHandler(req, res) {
         },
       });
 
-      console.log(`✅ Premium activated for user ${userId}, features: ${features.join(", ")}`);
+      console.log(`Premium activated for user ${userId}, features: ${features.join(", ")}`);
     }
 
     // Handle charge.failed event
@@ -370,12 +370,12 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
         },
       });
 
-      console.log(`✓ Premium activated for user ${paymentUserId}, features: ${updatedFeatures.join(", ")}`);
+      console.log(`Premium activated for user ${paymentUserId}, features: ${updatedFeatures.join(", ")}`);
     };
 
     if (session.payment_status === "paid") {
       if (!payment) {
-        // No payment record exists — create one with SUCCESS status
+        // No payment record exists - create one with SUCCESS status
         payment = await prisma.payment.create({
           data: {
             userId: parseInt(session.metadata.userId),
@@ -391,7 +391,7 @@ router.get("/verify-session/:sessionId", requireAuth, async (req, res) => {
 
         await activatePremium(userId);
       } else if (payment.status !== "SUCCESS") {
-        // Payment record exists but is still PENDING — update it to SUCCESS
+        // Payment record exists but is still PENDING - update it to SUCCESS
         payment = await prisma.payment.update({
           where: { id: payment.id },
           data: {

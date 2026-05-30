@@ -7,14 +7,14 @@ import PublicLayout from './layouts/PublicLayout';
 import AppLayout from './layouts/AppLayout';
 import AdminLayout from './layouts/AdminLayout';
 
-// ─── Loading Component ─────────────────────────────────────
+// --- Loading Component -------------------------------------
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-white/50 backdrop-blur-sm">
     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
   </div>
 );
 
-// ─── Public pages ────────────────────────────────────────
+// --- Public pages ----------------------------------------
 const HomePage = lazy(() => import('./pages/HomePage'));
 const InlinePaymentPage = lazy(() => import('./pages/InlinePaymentPage'));
 const About = lazy(() => import('./pages/About'));
@@ -23,7 +23,7 @@ const News = lazy(() => import('./pages/News'));
 const NewsArticle = lazy(() => import('./pages/NewsArticle'));
 const Contact = lazy(() => import('./pages/Contact'));
 
-// ─── User pages ──────────────────────────────────────────
+// --- User pages ------------------------------------------
 const Signup = lazy(() => import('./pages/Signup'));
 const Login = lazy(() => import('./pages/Login'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -42,7 +42,7 @@ const Rating = lazy(() => import('./pages/Rating'));
 const SopReview = lazy(() => import('./pages/SopReview'));
 const SmartInsights = lazy(() => import('./pages/SmartInsights'));
 
-// ─── Admin pages ─────────────────────────────────────────
+// --- Admin pages -----------------------------------------
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const ManageCountries = lazy(() => import('./pages/admin/ManageCountries'));
@@ -82,7 +82,7 @@ export default function App() {
       />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* ── Public routes with navbar ────────── */}
+          {/* -- Public routes with navbar ---------- */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<About />} />
@@ -93,12 +93,12 @@ export default function App() {
             <Route path="/inline-payment" element={<InlinePaymentPage />} />
           </Route>
 
-          {/* ── Auth routes (guest only) ────────── */}
+          {/* -- Auth routes (guest only) ---------- */}
           <Route path="/signup" element={<GuestOnly><Signup /></GuestOnly>} />
           <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
           <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* ── Protected user routes (with navbar layout) ── */}
+          {/* -- Protected user routes (with navbar layout) -- */}
           <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/documents" element={<Documents />} />
@@ -116,10 +116,10 @@ export default function App() {
             <Route path="/smart-insights" element={<SmartInsights />} />
           </Route>
 
-          {/* ── Payment Success (protected, full-page) ── */}
+          {/* -- Payment Success (protected, full-page) -- */}
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
 
-          {/* ── Admin routes (with sidebar layout) ──── */}
+          {/* -- Admin routes (with sidebar layout) ---- */}
           <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/users" element={<ManageUsers />} />
@@ -134,7 +134,7 @@ export default function App() {
             <Route path="/admin/ratings" element={<ManageRatings />} />
           </Route>
 
-          {/* ── Fallback ──────────────────────────── */}
+          {/* -- Fallback ---------------------------- */}
           <Route path="*" element={
             <div className="min-h-screen flex items-center justify-center">
               <div className="glass-strong rounded-3xl p-12 text-center">

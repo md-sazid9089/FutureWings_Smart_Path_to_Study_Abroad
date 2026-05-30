@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
 });
 
-// ─── Request interceptor: attach JWT token ───────────────
+// --- Request interceptor: attach JWT token ---------------
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -16,7 +16,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ─── Response interceptor: handle 401 globally ───────────
+// --- Response interceptor: handle 401 globally -----------
 API.interceptors.response.use(
   (response) => response,
   (error) => {

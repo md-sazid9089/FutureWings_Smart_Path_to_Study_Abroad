@@ -97,7 +97,7 @@ export default function ManageApplications() {
       <PageHeader title="Manage Applications" subtitle={`${items.length} applications`} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <TextField placeholder="Search by user, email, or program…" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
+        <TextField placeholder="Search by user, email, or program..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
         <SelectField value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-40">
           <option value="">All Status</option>
           {STATUS_NAMES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -162,7 +162,7 @@ export default function ManageApplications() {
               </p>
             </div>
             <SelectField label="New Status *" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-              <option value="">Select…</option>
+              <option value="">Select...</option>
               {STATUS_NAMES.map((s) => <option key={s} value={s}>{s}</option>)}
             </SelectField>
             <div className="flex justify-end gap-3 pt-2">

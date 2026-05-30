@@ -227,7 +227,7 @@ const AdminConsultancyManagement = () => {
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700"
               >
-                ✕
+                X
               </button>
             </div>
 
@@ -386,7 +386,7 @@ const AdminConsultancyManagement = () => {
                       {agency.phone && <div className="text-sm">{agency.phone}</div>}
                     </td>
                     <td className="px-6 py-3 text-sm text-gray-600">
-                      ⭐ {agency.rating}/5
+                      <i className="ti ti-star-filled text-amber-400"></i> {agency.rating}/5
                     </td>
                     <td className="px-6 py-3 text-sm">
                       <span

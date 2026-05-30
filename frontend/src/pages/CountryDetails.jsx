@@ -59,7 +59,7 @@ export default function CountryDetails() {
     <>
       <PageHeader
         title={country?.countryName || 'Country Details'}
-        subtitle={country ? `${country.region || 'Global region'} • ${country.currency || 'Currency not listed'}` : 'Universities and scholarships'}
+        subtitle={country ? `${country.region || 'Global region'}  ${country.currency || 'Currency not listed'}` : 'Universities and scholarships'}
       />
 
       <GlassCard className="relative overflow-hidden border border-white/20 mb-8">

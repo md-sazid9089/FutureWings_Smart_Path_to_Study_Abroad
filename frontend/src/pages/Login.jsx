@@ -43,9 +43,9 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="you@email.com" />
-          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="••••••••" />
+          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="" />
           <PrimaryButton type="submit" loading={loading} className="w-full">
-            {loading ? 'Signing in…' : 'Sign In'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </PrimaryButton>
         </form>
 
@@ -56,7 +56,7 @@ export default function Login() {
           </Link>
         </p>
         <p className="text-center text-xs text-text-light mt-3">
-          <Link to="/" className="hover:text-primary transition-colors">← Back to Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors"> Back to Home</Link>
         </p>
       </GlassPanel>
     </div>
