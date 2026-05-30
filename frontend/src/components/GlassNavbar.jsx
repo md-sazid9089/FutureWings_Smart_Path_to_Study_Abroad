@@ -76,7 +76,7 @@ export default function GlassNavbar() {
   const navLinks = isLoggedIn ? [...publicLinks, ...userLinks] : publicLinks;
 
   return (
-    <header className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
+    <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
       <nav className="glass-nav rounded-full px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-primary font-extrabold text-lg tracking-tight select-none">
@@ -84,14 +84,14 @@ export default function GlassNavbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-0.5">
           {navLinks.map(l => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.to === '/'}
               className={({ isActive }) =>
-                `relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                `relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-primary text-white shadow-sm'
                     : 'text-secondary hover:bg-white/40'
