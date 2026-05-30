@@ -40,6 +40,7 @@ const ApplicationDetails = lazy(() => import('./pages/ApplicationDetails'));
 const VisaOutcome = lazy(() => import('./pages/VisaOutcome'));
 const Rating = lazy(() => import('./pages/Rating'));
 const SopReview = lazy(() => import('./pages/SopReview'));
+const SmartInsights = lazy(() => import('./pages/SmartInsights'));
 
 // ─── Admin pages ─────────────────────────────────────────
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
@@ -112,6 +113,7 @@ export default function App() {
             <Route path="/applications/:id/visa-outcome" element={<VisaOutcome />} />
             <Route path="/rating/:applicationId" element={<Rating />} />
             <Route path="/sop-rating" element={<SopReview />} />
+            <Route path="/smart-insights" element={<SmartInsights />} />
           </Route>
 
           {/* ── Payment Success (protected, full-page) ── */}

@@ -9,6 +9,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineChevronDown,
   HiOutlineBell,
+  HiOutlineChartBarSquare,
 } from 'react-icons/hi2';
 import { useNotificationPoller } from '../hooks/useNotificationPoller';
 import NotificationBadge from './NotificationBadge';
@@ -25,6 +26,7 @@ const userLinks = [
   { to: '/recommendations', label: 'Explore' },
   { to: '/ai-assistant', label: 'AI Assistant' },
   { to: '/sop-rating', label: 'SOP Rating' },
+  { to: '/smart-insights', label: 'Smart Insights', badge: 'New' },
   { to: '/applications', label: 'Applications' },
 ];
 
@@ -89,7 +91,7 @@ export default function GlassNavbar() {
               to={l.to}
               end={l.to === '/'}
               className={({ isActive }) =>
-                `px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                `relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-primary text-white shadow-sm'
                     : 'text-secondary hover:bg-white/40'
@@ -97,6 +99,11 @@ export default function GlassNavbar() {
               }
             >
               {l.label}
+              {l.badge && (
+                <span className="ml-0.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white leading-none">
+                  {l.badge}
+                </span>
+              )}
             </NavLink>
           ))}
         </div>
@@ -203,12 +210,17 @@ export default function GlassNavbar() {
               end={l.to === '/'}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
-                `block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                `flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive ? 'bg-primary text-white' : 'text-secondary hover:bg-white/40'
                 }`
               }
             >
               {l.label}
+              {l.badge && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white leading-none">
+                  {l.badge}
+                </span>
+              )}
             </NavLink>
           ))}
           <hr className="border-white/30 my-2" />
