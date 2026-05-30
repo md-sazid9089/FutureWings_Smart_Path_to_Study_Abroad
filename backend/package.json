@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@google/genai": "^1.48.0",
-    "@prisma/adapter-mssql": "^7.4.2",
     "@prisma/client": "^5.22.0",
     "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
@@ -32,7 +31,6 @@
     "dotenv": "^17.3.1",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.3",
-    "mssql": "^12.2.0",
     "prisma": "^5.22.0",
     "stripe": "^22.0.1",
     "winston": "^3.19.0"

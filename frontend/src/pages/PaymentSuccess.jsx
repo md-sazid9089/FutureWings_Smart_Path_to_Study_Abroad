@@ -28,7 +28,7 @@ const PaymentSuccess = () => {
   const getFeatureRedirectUrl = (featureType) => {
     const redirectMap = {
       AI_HELP: "/ai-assistant",
-      SOP_TESTING: "/sop-review",
+      SOP_TESTING: "/sop-rating",
       VISA_CONSULTANCY: "/visa-outcome",
       PREMIUM_BUNDLE: "/ai-assistant",
     };

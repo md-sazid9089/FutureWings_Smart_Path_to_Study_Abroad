@@ -4,26 +4,26 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id                  Int             @id @default(autoincrement())
-  email               String          @unique @db.NVarChar(255)
-  passwordHash        String          @db.NVarChar(255)
-  role                String          @default("USER") @db.NVarChar(10)
-  fullName            String?         @db.NVarChar(200)
+  email               String          @unique @db.VarChar(191)
+  passwordHash        String          @db.VarChar(191)
+  role                String          @default("USER") @db.VarChar(10)
+  fullName            String?         @db.VarChar(191)
   cgpa                Float?
-  degreeLevel         String?         @db.NVarChar(50)
-  major               String?         @db.NVarChar(100)
+  degreeLevel         String?         @db.VarChar(50)
+  major               String?         @db.VarChar(100)
   fundScore           Int?
   createdAt           DateTime        @default(now())
-  profileHeadline     String?         @db.NVarChar(120)
+  profileHeadline     String?         @db.VarChar(120)
   isPremium           Boolean         @default(false)
-  premiumFeatures     String?         @db.NVarChar(100) // "AI_HELP,SOP_TESTING,VISA_CONSULTANCY"
+  premiumFeatures     String?         @db.VarChar(100)
   premiumExpiryDate   DateTime?
-  stripeCustomerId    String?         @db.NVarChar(255)
+  stripeCustomerId    String?         @db.VarChar(191)
   applications        Application[]
   countryRatings      CountryRating[]
   documents           UserDocument[]
@@ -35,12 +35,12 @@ model User {
 
 model Country {
   id             Int             @id @default(autoincrement())
-  countryName    String          @db.NVarChar(100)
-  region         String?         @db.NVarChar(100)
-  currency       String?         @db.NVarChar(20)
+  countryName    String          @db.VarChar(191)
+  region         String?         @db.VarChar(100)
+  currency       String?         @db.VarChar(20)
   tierLevel      Int             @default(3)
   isActive       Boolean         @default(true)
-  visaFeeNote    String?         @db.NVarChar(100)
+  visaFeeNote    String?         @db.VarChar(100)
   applications   Application[]
   countryRatings CountryRating[]
   scholarships   Scholarship[]
@@ -52,11 +52,11 @@ model Country {
 model University {
   id             Int       @id @default(autoincrement())
   countryId      Int
-  universityName String    @db.NVarChar(200)
-  type           String?   @db.NVarChar(50)
-  city           String?   @db.NVarChar(100)
+  universityName String    @db.VarChar(191)
+  type           String?   @db.VarChar(50)
+  city           String?   @db.VarChar(100)
   programs       Program[]
-  country        Country   @relation(fields: [countryId], references: [id], onUpdate: NoAction)
+  country        Country   @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
   @@index([countryId])
   @@map("Universities")
@@ -65,14 +65,14 @@ model University {
 model Program {
   id              Int           @id @default(autoincrement())
   universityId    Int
-  programName     String        @db.NVarChar(200)
-  level           String?       @db.NVarChar(50)
+  programName     String        @db.VarChar(191)
+  level           String?       @db.VarChar(50)
   tuitionPerYear  Float?
   durationMonths  Int?
-  intakeSeasons   String?       @db.NVarChar(100)
-  programOverview String?
+  intakeSeasons   String?       @db.VarChar(100)
+  programOverview String?       @db.LongText
   applications    Application[]
-  university      University    @relation(fields: [universityId], references: [id], onUpdate: NoAction)
+  university      University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
 
   @@index([universityId])
   @@map("Programs")
@@ -81,12 +81,12 @@ model Program {
 model Scholarship {
   id                  Int       @id @default(autoincrement())
   countryId           Int
-  scholarshipName     String    @db.NVarChar(200)
-  eligibilityCriteria String?   @db.NVarChar(500)
-  applyLink           String?   @db.NVarChar(500)
+  scholarshipName     String    @db.VarChar(191)
+  eligibilityCriteria String?   @db.VarChar(500)
+  applyLink           String?   @db.VarChar(500)
   deadline            DateTime?
   amount              Float?
-  country             Country   @relation(fields: [countryId], references: [id], onUpdate: NoAction)
+  country             Country   @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
   @@index([countryId])
   @@map("Scholarships")
@@ -95,12 +95,12 @@ model Scholarship {
 model UserDocument {
   id                 Int      @id @default(autoincrement())
   userId             Int
-  filePath           String   @db.NVarChar(500)
-  fileType           String?  @db.NVarChar(50)
-  verificationStatus String   @default("PENDING") @db.NVarChar(20)
-  adminNote          String?  @db.NVarChar(500)
+  filePath           String   @db.VarChar(500)
+  fileType           String?  @db.VarChar(50)
+  verificationStatus String   @default("PENDING") @db.VarChar(20)
+  adminNote          String?  @db.VarChar(500)
   uploadedAt         DateTime @default(now())
-  user               User     @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("UserDocuments")
@@ -108,7 +108,7 @@ model UserDocument {
 
 model ApplicationStatus {
   id           Int           @id @default(autoincrement())
-  statusName   String        @unique @db.NVarChar(50)
+  statusName   String        @unique @db.VarChar(191)
   applications Application[]
 
   @@map("ApplicationStatuses")
@@ -121,11 +121,11 @@ model Application {
   programId      Int
   statusId       Int
   appliedDate    DateTime          @default(now())
-  intakeApplied  String?           @db.NVarChar(50)
-  country        Country           @relation(fields: [countryId], references: [id], onUpdate: NoAction)
-  program        Program           @relation(fields: [programId], references: [id], onUpdate: NoAction)
-  status         ApplicationStatus @relation(fields: [statusId], references: [id], onUpdate: NoAction)
-  user           User              @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  intakeApplied  String?           @db.VarChar(50)
+  country        Country           @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  program        Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  status         ApplicationStatus @relation(fields: [statusId], references: [id], onDelete: Restrict)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   countryRatings CountryRating[]
   visaOutcome    VisaOutcome?
 
@@ -139,11 +139,11 @@ model Application {
 model VisaOutcome {
   id              Int         @id @default(autoincrement())
   applicationId   Int         @unique
-  decision        String      @db.NVarChar(20)
-  reasonTitle     String?     @db.NVarChar(200)
-  notes           String?
+  decision        String      @db.VarChar(20)
+  reasonTitle     String?     @db.VarChar(191)
+  notes           String?     @db.LongText
   destinationDate DateTime?
-  application     Application @relation(fields: [applicationId], references: [id], onUpdate: NoAction)
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@map("VisaOutcomes")
 }
@@ -154,12 +154,12 @@ model CountryRating {
   countryId     Int
   applicationId Int
   ratingValue   Int
-  comments      String?
-  ratingType    String      @default("POST") @db.NVarChar(10)
+  comments      String?     @db.LongText
+  ratingType    String      @default("POST") @db.VarChar(10)
   createdAt     DateTime    @default(now())
-  application   Application @relation(fields: [applicationId], references: [id], onUpdate: NoAction)
-  country       Country     @relation(fields: [countryId], references: [id], onUpdate: NoAction)
-  user          User        @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  country       Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, countryId, ratingType])
   @@index([countryId])
@@ -169,12 +169,12 @@ model CountryRating {
 model Payment {
   id                Int       @id @default(autoincrement())
   userId            Int
-  stripeSessionId   String    @db.NVarChar(255)
-  stripePaymentId   String?   @db.NVarChar(255)
-  amount            Int       // Amount in cents (e.g., 9999 = $99.99)
-  currency          String    @default("USD") @db.NVarChar(10)
-  featureType       String    @db.NVarChar(50) // "AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY"
-  status            String    @default("PENDING") @db.NVarChar(20) // "PENDING", "SUCCESS", "FAILED"
+  stripeSessionId   String    @db.VarChar(191)
+  stripePaymentId   String?   @db.VarChar(191)
+  amount            Int
+  currency          String    @default("USD") @db.VarChar(10)
+  featureType       String    @db.VarChar(50)
+  status            String    @default("PENDING") @db.VarChar(20)
   createdAt         DateTime  @default(now())
   completedAt       DateTime?
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -186,14 +186,14 @@ model Payment {
 
 model VisaConsultancy {
   id                Int       @id @default(autoincrement())
-  agencyName        String    @db.NVarChar(200)
-  email             String?   @db.NVarChar(255)
-  phone             String?   @db.NVarChar(20)
-  country           String?   @db.NVarChar(100)
-  city              String?   @db.NVarChar(100)
-  website           String?   @db.NVarChar(500)
-  description       String?   @db.NVarChar(1000)
-  specializations   String?   @db.NVarChar(500) // Comma-separated: "UK,USA,Canada"
+  agencyName        String    @db.VarChar(191)
+  email             String?   @db.VarChar(191)
+  phone             String?   @db.VarChar(20)
+  country           String?   @db.VarChar(100)
+  city              String?   @db.VarChar(100)
+  website           String?   @db.VarChar(500)
+  description       String?   @db.LongText
+  specializations   String?   @db.VarChar(500)
   rating            Float?    @default(0.0)
   isActive          Boolean   @default(true)
   createdAt         DateTime  @default(now())
@@ -205,11 +205,11 @@ model VisaConsultancy {
 model Notification {
   id        Int       @id @default(autoincrement())
   userId    Int
-  type      String    @db.NVarChar(50) // "subscription", "visa", "ai", "admin-update", "recommendation", "application"
-  title     String    @db.NVarChar(200)
-  message   String    @db.NVarChar(500)
+  type      String    @db.VarChar(50)
+  title     String    @db.VarChar(191)
+  message   String    @db.VarChar(500)
   read      Boolean   @default(false)
-  link      String?   @db.NVarChar(500) // Optional link to navigate to
+  link      String?   @db.VarChar(500)
   createdAt DateTime  @default(now())
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
