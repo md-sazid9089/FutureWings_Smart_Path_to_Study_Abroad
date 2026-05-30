@@ -71,6 +71,8 @@ app.get("/", (req, res) => {
 
 // ─── Routes ─────────────────────────────────────────────
 // Using Prisma-integrated routes from src/routes
+app.use("/api/payments", require("./src/routes/payments"));
+app.use("/api/payments", require("./src/routes/inlinePayment"));
 app.use("/api/auth", require("./src/routes/auth"));
 app.use("/api/user", require("./src/routes/user"));
 app.use("/api/notifications", require("./src/routes/notifications"));
