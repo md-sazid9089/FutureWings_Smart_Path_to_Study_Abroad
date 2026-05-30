@@ -126,71 +126,78 @@ router.post("/create-checkout-session", requireAuth, async (req, res) => {
  * Handle Stripe webhook events
  * This should be called with raw body (not JSON parsed)
  */
-router.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+async function webhookHandler(req, res) {
   const sig = req.headers["stripe-signature"];
 
   try {
-    // Ensure raw payload is passed to Stripe for signature verification.
-    // Some environments parse JSON before this route; accept either raw Buffer/string or parsed object.
-    let rawBody = req.body;
-    if (rawBody && typeof rawBody === 'object' && !(rawBody instanceof Buffer)) {
-      try {
-        rawBody = JSON.stringify(rawBody);
-      } catch (err) {
-        console.error('Failed to stringify parsed webhook body:', err);
-      }
-    }
+    // Debug: inspect incoming body and headers to ensure raw Buffer is present
+    console.log('Webhook incoming - content-type:', req.headers['content-type']);
+    console.log('Webhook incoming - isBuffer:', Buffer.isBuffer(req.body), 'type:', typeof req.body);
 
-    console.log('webhook rawBody type:', typeof rawBody, 'isBuffer:', Buffer.isBuffer(rawBody));
-    if (typeof rawBody === 'string') {
-      console.log('rawBody preview:', rawBody.slice(0, 300));
-    }
+    // req.body is expected to be the raw Buffer because server registers express.raw for this path
+    const rawBody = req.body;
 
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    const event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
 
     // Handle checkout.session.completed event
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      console.log('Stripe Session Data (webhook):', session);
+      console.log('Stripe Session Data (webhook):', JSON.stringify(session, null, 2));
 
-      // Defensive checks for required fields
-      if (!session.metadata || !session.amount_total) {
-        console.error('Missing required session data in webhook: metadata or amount_total', session);
+      // Validate metadata exists (userId is required to activate the user)
+      if (!session.metadata || !session.metadata.userId) {
+        console.error('Missing metadata.userId in webhook event — cannot activate premium', session);
         return res.status(200).json({ received: true });
       }
 
-      // Find the payment record
-      const payment = await prisma.payment.findFirst({
+      const featureType = session.metadata.featureType || "PREMIUM_BUNDLE";
+      const features = FEATURE_BUNDLES[featureType] || [featureType];
+      const userId = parseInt(session.metadata.userId, 10);
+
+      if (isNaN(userId)) {
+        console.error('Invalid metadata.userId:', session.metadata.userId);
+        return res.status(200).json({ received: true });
+      }
+
+      // Try to find the existing payment record
+      let payment = await prisma.payment.findFirst({
         where: { stripeSessionId: session.id },
       });
 
       if (!payment) {
-        console.warn(`Payment not found for session: ${session.id}`);
-        return res.status(200).json({ received: true });
+        // No pre-existing payment record (e.g. test/CLI events or race conditions).
+        // Create one so there is an audit trail and proceed to activate the user.
+        console.log(`No payment record for session ${session.id} — creating one and activating user ${userId}`);
+        payment = await prisma.payment.create({
+          data: {
+            userId,
+            stripeSessionId: session.id,
+            stripePaymentId: session.payment_intent || null,
+            amount: session.amount_total || 0,
+            currency: (session.currency || "usd").toUpperCase(),
+            featureType,
+            status: "SUCCESS",
+            completedAt: new Date(),
+          },
+        });
+      } else {
+        // Update existing record to SUCCESS
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: "SUCCESS",
+            stripePaymentId: session.payment_intent || payment.stripePaymentId,
+            completedAt: new Date(),
+          },
+        });
       }
 
-      // Update payment status to SUCCESS
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: {
-          status: "SUCCESS",
-          stripePaymentId: session.payment_intent,
-          completedAt: new Date(),
-        },
-      });
-
-      // Determine purchased feature type and unlock corresponding features
-      const featureType = (session.metadata && session.metadata.featureType) ? session.metadata.featureType : "PREMIUM_BUNDLE";
-      const features = FEATURE_BUNDLES[featureType] || [featureType];
+      // Activate premium features for the user
       const premiumExpiryDate = new Date();
-      premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30); // 30 days subscription
+      premiumExpiryDate.setDate(premiumExpiryDate.getDate() + 30); // 30 days
 
       await prisma.user.update({
-        where: { id: payment.userId },
+        where: { id: userId },
         data: {
           isPremium: true,
           premiumFeatures: features.join(","),
@@ -198,7 +205,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
         },
       });
 
-      console.log(`Payment confirmed for user ${payment.userId}, features: ${features.join(", ")}`);
+      console.log(`✅ Premium activated for user ${userId}, features: ${features.join(", ")}`);
     }
 
     // Handle charge.failed event
@@ -225,7 +232,11 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
     console.error("Webhook error:", error);
     res.status(400).send(`Webhook Error: ${error.message}`);
   }
-});
+}
+
+// expose handler for direct registration when express.raw is applied in server.js
+router.post("/webhook", webhookHandler);
+module.exports = Object.assign(router, { webhookHandler });
 
 /**
  * GET /api/payments/status

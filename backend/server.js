@@ -42,12 +42,12 @@ app.use(cors({
 // This is a workaround: we'll handle it within the payments route with conditional parsing
 // Better approach: use the middleware inside the route
 
-// Register payments routes before the JSON body parser so the webhook
-// route can receive the raw request body for Stripe signature verification.
-app.use("/api/payments", require("./src/routes/payments"));
-app.use("/api/payments", require("./src/routes/inlinePayment"));
+// Stripe webhook — must be raw body, registered BEFORE express.json()
+// Register webhook route with raw parser so the handler gets the original bytes
+const paymentsRoutes = require('./src/routes/payments');
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentsRoutes.webhookHandler);
 
-// Parse JSON and URL-encoded bodies with size limit
+// Parse JSON and URL-encoded bodies with size limit (for all other routes)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
