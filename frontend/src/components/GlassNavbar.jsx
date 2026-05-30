@@ -27,6 +27,7 @@ const userLinks = [
   { to: '/ai-assistant', label: 'AI Assistant' },
   { to: '/sop-rating', label: 'SOP Rating' },
   { to: '/smart-insights', label: 'Smart Insights', badge: 'New' },
+  { to: '/partner-finder', label: 'Partner Finder', badge: 'New', icon: 'ti-users' },
   { to: '/applications', label: 'Applications' },
 ];
 
@@ -76,7 +77,7 @@ export default function GlassNavbar() {
   const navLinks = isLoggedIn ? [...publicLinks, ...userLinks] : publicLinks;
 
   return (
-    <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
+    <header className="sticky top-4 z-50 mx-auto w-full max-w-[1600px] px-2 lg:px-4">
       <nav className="glass-nav rounded-full px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-primary font-extrabold text-lg tracking-tight select-none">
