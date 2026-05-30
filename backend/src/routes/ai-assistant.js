@@ -414,7 +414,7 @@ router.post("/chat", requireAuth, requirePremium, async (req, res) => {
   }
 });
 
-router.post("/sop-review", requireAuth, requirePremium, async (req, res) => {
+router.post("/sop-review", requireAuth, async (req, res) => {
   try {
     const { sopText } = req.body;
 

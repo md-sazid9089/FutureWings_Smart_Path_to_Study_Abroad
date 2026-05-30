@@ -77,19 +77,6 @@ const PremiumCheckout = () => {
       ],
     },
     {
-      id: "SOP_TESTING",
-      name: "SOP Review & Testing",
-      price: 49.99,
-      duration: "30 days",
-      description: "Professional review and testing of your Statement of Purpose",
-      features: [
-        "Expert SOP review",
-        "Detailed feedback",
-        "Multiple versions support",
-        "Interview preparation",
-      ],
-    },
-    {
       id: "VISA_CONSULTANCY",
       name: "Visa Consultancy",
       price: 99.99,
@@ -110,7 +97,6 @@ const PremiumCheckout = () => {
       description: "All premium features combined at a discounted price",
       features: [
         "AI Writing Assistant",
-        "SOP Review & Testing",
         "Visa Consultancy",
         "24/7 Priority support",
       ],

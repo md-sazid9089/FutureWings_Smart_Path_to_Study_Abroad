@@ -78,9 +78,7 @@ export default function Footer() {
           <p className="text-xs text-text-muted">
             © {new Date().getFullYear()} FutureWings. All rights reserved.
           </p>
-          <p className="text-xs text-text-muted flex items-center gap-1">
-            Made with <HiOutlineHeart className="w-3.5 h-3.5 text-primary" /> for students worldwide
-          </p>
+          
         </div>
       </div>
     </footer>

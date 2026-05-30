@@ -17,7 +17,6 @@ import API from '../api/axios';
 import { PageHeader } from '../components/ui/PageHeader';
 import GlassCard from '../components/ui/GlassCard';
 import GlassPanel from '../components/ui/GlassPanel';
-import PremiumFeatureWrapper from '../components/PremiumFeatureWrapper';
 import PrimaryButton from '../components/ui/PrimaryButton';
 
 const sampleSop = `I am applying for a master's degree in data science because I want to build practical systems that help students make better decisions. During my undergraduate studies in computer science, I became interested in the way data can improve education, healthcare, and public services.
@@ -116,8 +115,7 @@ export default function SopReview() {
   const gauge = `conic-gradient(from 0deg, rgba(255,107,61,0.95) ${score * 3.6}deg, rgba(255,255,255,0.4) ${score * 3.6}deg)`;
 
   return (
-    <PremiumFeatureWrapper feature="SOP_TESTING">
-      <div className="space-y-7">
+    <div className="space-y-7">
       <PageHeader
         title="SOP Rating"
         subtitle="Paste your statement of purpose and get a Gemini review with a score, strengths, and fixes"
@@ -207,7 +205,7 @@ export default function SopReview() {
             <button
               type="button"
               onClick={loadSample}
-              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/50 px-5 py-2.5 text-sm font-semibold text-secondary transition hover:bg-white/70"
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/55 px-5 py-2.5 text-sm font-semibold text-secondary transition hover:bg-white/70"
             >
               <HiOutlineClipboardDocument className="h-4 w-4" />
               Load sample
@@ -361,7 +359,6 @@ export default function SopReview() {
           </div>
         </div>
       )}
-      </div>
-    </PremiumFeatureWrapper>
+    </div>
   );
 }

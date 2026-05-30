@@ -19,15 +19,13 @@ const router = express.Router();
 const FEATURE_PRICING = {
   PREMIUM_BUNDLE: 14999, // $149.99
   AI_HELP: 4999,        // $49.99
-  SOP_TESTING: 4999,     // $49.99
   VISA_CONSULTANCY: 9999, // $99.99
 };
 
 // Feature bundles - which features each type unlocks
 const FEATURE_BUNDLES = {
-  PREMIUM_BUNDLE: ["AI_HELP", "SOP_TESTING", "VISA_CONSULTANCY", "SCHOLARSHIPS"],
+  PREMIUM_BUNDLE: ["AI_HELP", "VISA_CONSULTANCY", "SCHOLARSHIPS"],
   AI_HELP: ["AI_HELP"],
-  SOP_TESTING: ["SOP_TESTING"],
   VISA_CONSULTANCY: ["VISA_CONSULTANCY"],
 };
 
