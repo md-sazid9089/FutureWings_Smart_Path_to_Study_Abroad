@@ -11,6 +11,10 @@ import PrimaryButton from "./ui/PrimaryButton";
 import { useAuth } from "../context/AuthContext";
 
 const PremiumFeatureWrapper = ({ children, feature }) => {
+  const FREE_FEATURES = ["SOP_TESTING"];
+  if (FREE_FEATURES.includes(feature)) {
+    return <>{children}</>;
+  }
   const navigate = useNavigate();
   const { user, loading: authLoading, syncPremiumStatus } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
@@ -77,8 +81,7 @@ const PremiumFeatureWrapper = ({ children, feature }) => {
                 This feature is exclusively available to premium members.
               </p>
               <p className="text-slate-500 text-sm mb-8">
-                Upgrade now to unlock {feature === "AI_HELP" && "AI-powered assistance"} 
-                {feature === "SOP_TESTING" && "SOP review and testing"}
+                Upgrade now to unlock {feature === "AI_HELP" && "AI-powered assistance"}
                 {feature === "VISA_CONSULTANCY" && "expert visa consultancy"}
                 {feature === "PREMIUM_BUNDLE" && "all premium features"} and more.
               </p>
