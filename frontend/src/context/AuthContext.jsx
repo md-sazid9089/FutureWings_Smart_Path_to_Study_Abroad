@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }) => {
   const login = (userData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
+    sessionStorage.setItem('justLoggedIn', 'true');
     setUser(userData);
     syncPremiumStatus();
   };
@@ -48,6 +49,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('justLoggedIn');
+    sessionStorage.removeItem('profilePromptShown');
     setUser(null);
   };
 

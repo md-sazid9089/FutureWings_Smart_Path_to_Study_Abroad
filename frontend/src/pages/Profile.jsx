@@ -9,7 +9,7 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const [form, setForm] = useState({ fullName: '', cgpa: '', degreeLevel: '', major: '', fundScore: '' });
+  const [form, setForm] = useState({ fullName: '', cgpa: '', degreeLevel: '', major: '', preferredCountry: '', fundScore: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -24,6 +24,7 @@ export default function Profile() {
         cgpa: u.cgpa?.toString() || '',
         degreeLevel: u.degreeLevel || '',
         major: u.major || '',
+        preferredCountry: u.preferredCountry || '',
         fundScore: u.fundScore?.toString() || '',
       });
     } catch {
@@ -70,6 +71,20 @@ export default function Profile() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <TextField label="Major" id="major" name="major" value={form.major} onChange={handleChange} placeholder="e.g. Computer Science" />
+            <SelectField label="Preferred Country" id="preferredCountry" name="preferredCountry" value={form.preferredCountry} onChange={handleChange}>
+              <option value="">Select country</option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="Germany">Germany</option>
+              <option value="Netherlands">Netherlands</option>
+              <option value="Sweden">Sweden</option>
+              <option value="New Zealand">New Zealand</option>
+            </SelectField>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <TextField label="Fund Score (1-10)" id="fundScore" name="fundScore" type="number" min="1" max="10" value={form.fundScore} onChange={handleChange} placeholder="1-10" />
           </div>
 
