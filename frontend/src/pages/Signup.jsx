@@ -93,7 +93,7 @@ export default function Signup() {
       <GlassPanel className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src={logo} alt="FutureWings Logo" className="w-12 h-12 mx-auto" />
-          <h1 className="text-2xl font-extrabold text-text mt-2">Create Account</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-text mt-2">Create Account</h1>
           <p className="text-text-muted text-sm mt-1">Start your journey with FutureWings</p>
         </div>
 
@@ -101,9 +101,6 @@ export default function Signup() {
           <TextField label="Full Name" id="fullname" name="fullname" value={form.fullname} onChange={handleChange} onBlur={handleBlur} error={errors.fullname} placeholder="John Doe" />
           <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} required placeholder="you@email.com" />
           <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} onBlur={handleBlur} error={errors.password} required placeholder="Min 6 characters" />
-          <PrimaryButton type="submit" loading={loading} className="w-full">
-            {loading ? 'Creating...' : 'Sign Up'}
-          </PrimaryButton>
 
           <div className="pt-6">
             <h3 className="text-sm font-semibold text-text mb-2">Academic Profile (Optional)</h3>
@@ -129,6 +126,10 @@ export default function Signup() {
               <TextField label="Major (optional)" id="major" name="major" value={form.major} onChange={handleChange} placeholder="e.g. Computer Science" />
             </div>
           </div>
+
+          <PrimaryButton type="submit" loading={loading} className="w-full">
+            {loading ? 'Creating...' : 'Sign Up'}
+          </PrimaryButton>
         </form>
 
         <p className="text-center text-sm text-text-muted mt-6">

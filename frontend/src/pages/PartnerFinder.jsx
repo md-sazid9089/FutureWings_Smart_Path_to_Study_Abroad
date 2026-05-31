@@ -786,7 +786,7 @@ export default function PartnerFinder() {
                     <p className="text-xs text-slate-500 font-semibold mb-2 uppercase tracking-wider">Research Interests</p>
                     <div className="flex flex-wrap gap-1.5">
                       {partner.researchInterests.slice(0, 3).map(interest => (
-                        <span key={interest} className="px-2 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
+                        <span key={interest} className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                           {interest}
                         </span>
                       ))}

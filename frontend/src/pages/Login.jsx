@@ -69,7 +69,7 @@ export default function Login() {
       <GlassPanel className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src={logo} alt="FutureWings Logo" className="w-12 h-12 mx-auto" />
-          <h1 className="text-2xl font-extrabold text-text mt-2">Welcome Back</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-text mt-2">Welcome Back</h1>
           <p className="text-text-muted text-sm mt-1">Sign in to FutureWings</p>
         </div>
 

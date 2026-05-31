@@ -12,6 +12,7 @@ import {
   HiOutlineArrowRightOnRectangle,
   HiOutlineSquares2X2,
   HiOutlineUsers,
+  HiOutlineXMark,
 } from 'react-icons/hi2';
 
 const links = [
@@ -27,7 +28,7 @@ const links = [
   { to: '/admin/ratings', label: 'Ratings', icon: HiOutlineStar },
 ];
 
-export default function GlassSidebar() {
+export default function GlassSidebar({ isOpen = true, onClose }) {
   const navigate = useNavigate();
 
   const logout = () => {
@@ -36,13 +37,20 @@ export default function GlassSidebar() {
     navigate('/admin/login');
   };
 
-  return (
+  const sidebarContent = (
     <aside className="glass-sidebar w-64 min-h-screen flex flex-col py-6 px-4">
-      {/* Logo */}
-      <div className="px-3 mb-8">
+      {/* Logo + close button (close only visible on mobile) */}
+      <div className="px-3 mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2 text-primary font-extrabold text-lg tracking-tight select-none">
           <img src={logo} alt="FutureWings Logo" className="w-8 h-8" />Admin
         </div>
+        <button
+          onClick={onClose}
+          className="md:hidden p-1 rounded-full hover:bg-white/40 text-secondary"
+          aria-label="Close sidebar"
+        >
+          <HiOutlineXMark className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Links */}
@@ -51,6 +59,7 @@ export default function GlassSidebar() {
           <NavLink
             key={l.to}
             to={l.to}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -74,5 +83,29 @@ export default function GlassSidebar() {
         Logout
       </button>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop: static sidebar, always visible */}
+      <div className="hidden md:block">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile: fixed overlay, slides in when isOpen=true */}
+      {isOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          {/* Sidebar panel */}
+          <div className="relative">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

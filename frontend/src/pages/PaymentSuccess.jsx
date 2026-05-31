@@ -31,7 +31,7 @@ const PaymentSuccess = () => {
     const redirectMap = {
       AI_HELP: "/ai-assistant",
       SOP_TESTING: "/sop-rating",
-      VISA_CONSULTANCY: "/visa-outcome",
+      VISA_CONSULTANCY: "/ai-assistant",
       PREMIUM_BUNDLE: "/ai-assistant",
     };
     return redirectMap[featureType] || "/dashboard";
@@ -101,7 +101,7 @@ const PaymentSuccess = () => {
   if (status === "error") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-        <GlassCard className="max-w-md w-full p-8">
+        <GlassCard className="max-w-md w-full p-4 sm:p-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">
               Payment Verification Failed
@@ -123,7 +123,7 @@ const PaymentSuccess = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <GlassCard className="max-w-md w-full p-8">
+      <GlassCard className="max-w-md w-full p-4 sm:p-8">
         <div className="text-center">
           {/* Success Icon */}
           <div className="mb-6 flex justify-center">

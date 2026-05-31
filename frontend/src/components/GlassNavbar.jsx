@@ -31,7 +31,7 @@ const userLinks = [
   { to: '/applications', label: 'Applications' },
 ];
 
-export default function GlassNavbar() {
+export default function GlassNavbar({ onMenuClick }) {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
@@ -196,7 +196,10 @@ export default function GlassNavbar() {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-full hover:bg-white/40 text-secondary">
+        <button
+          onClick={() => { setOpen(!open); if (onMenuClick) onMenuClick(); }}
+          className="md:hidden p-2 rounded-full hover:bg-white/40 text-secondary"
+        >
           {open ? <HiOutlineXMark className="w-5 h-5" /> : <HiOutlineBars3 className="w-5 h-5" />}
         </button>
       </nav>
@@ -227,6 +230,28 @@ export default function GlassNavbar() {
           <hr className="border-white/30 my-2" />
           {isLoggedIn ? (
             <>
+              {/* Notification Bell in mobile menu */}
+              <div className="flex items-center gap-2 px-4 py-2.5">
+                <div className="relative" ref={notificationRef}>
+                  <button
+                    onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
+                    className="relative p-2 rounded-full hover:bg-white/40 transition-colors text-secondary"
+                    title="Notifications"
+                  >
+                    <HiOutlineBell className="w-5 h-5" />
+                    <NotificationBadge count={unreadCount} />
+                  </button>
+                  <NotificationDropdown
+                    notifications={notifications}
+                    onMarkAsRead={markAsRead}
+                    onMarkAllAsRead={markAllAsRead}
+                    onDelete={deleteNotification}
+                    isOpen={notificationDropdownOpen}
+                    isLoading={notificationLoading}
+                  />
+                </div>
+                <span className="text-sm font-medium text-secondary">Notifications</span>
+              </div>
               <NavLink to="/profile" onClick={() => setOpen(false)} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-secondary hover:bg-white/40 transition-colors">
                 Profile
               </NavLink>

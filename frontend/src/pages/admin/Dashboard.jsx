@@ -63,7 +63,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-bold text-text mb-3">Application Status Breakdown</h3>
           <div className="flex flex-wrap gap-3">
             {data.statusBreakdown.map((s) => (
-              <div key={s.status} className="glass rounded-xl px-5 py-3 text-center min-w-30">
+              <div key={s.status} className="glass rounded-xl px-5 py-3 text-center min-w-[7.5rem]">
                 <p className="text-xl font-extrabold text-text">{s.count}</p>
                 <StatusPill status={s.status} />
               </div>
@@ -76,21 +76,23 @@ export default function Dashboard() {
       <div className="mb-8">
         <h3 className="text-lg font-bold text-text mb-3">Recent Applications</h3>
         {data?.recentApplications?.length > 0 ? (
-          <GlassTable headers={['User', 'Country', 'Program', 'Status', 'Date']}>
-            {data.recentApplications.map((app) => (
-              <tr
-                key={app.id}
-                className="hover:bg-white/30 cursor-pointer transition-colors"
-                onClick={() => navigate('/admin/applications')}
-              >
-                <Td>{app.user?.fullName || app.user?.email}</Td>
-                <Td>{app.country?.countryName}</Td>
-                <Td>{app.program?.programName}</Td>
-                <Td><StatusPill status={app.status?.statusName} /></Td>
-                <Td>{new Date(app.appliedDate).toLocaleDateString()}</Td>
-              </tr>
-            ))}
-          </GlassTable>
+          <div className="overflow-x-auto w-full">
+            <GlassTable headers={['User', 'Country', 'Program', 'Status', 'Date']}>
+              {data.recentApplications.map((app) => (
+                <tr
+                  key={app.id}
+                  className="hover:bg-white/30 cursor-pointer transition-colors"
+                  onClick={() => navigate('/admin/applications')}
+                >
+                  <Td>{app.user?.fullName || app.user?.email}</Td>
+                  <Td>{app.country?.countryName}</Td>
+                  <Td>{app.program?.programName}</Td>
+                  <Td><StatusPill status={app.status?.statusName} /></Td>
+                  <Td>{new Date(app.appliedDate).toLocaleDateString()}</Td>
+                </tr>
+              ))}
+            </GlassTable>
+          </div>
         ) : (
           <EmptyState title="No applications yet" />
         )}
@@ -100,20 +102,22 @@ export default function Dashboard() {
       <div>
         <h3 className="text-lg font-bold text-text mb-3">Pending Document Verifications</h3>
         {data?.recentDocuments?.length > 0 ? (
-          <GlassTable headers={['User', 'File', 'Type', 'Uploaded']}>
-            {data.recentDocuments.map((doc) => (
-              <tr
-                key={doc.id}
-                className="hover:bg-white/30 cursor-pointer transition-colors"
-                onClick={() => navigate('/admin/documents')}
-              >
-                <Td>{doc.user?.fullName || doc.user?.email}</Td>
-                <Td className="max-w-50 truncate">{doc.filePath}</Td>
-                <Td>{doc.fileType || '-'}</Td>
-                <Td>{new Date(doc.uploadedAt).toLocaleDateString()}</Td>
-              </tr>
-            ))}
-          </GlassTable>
+          <div className="overflow-x-auto w-full">
+            <GlassTable headers={['User', 'File', 'Type', 'Uploaded']}>
+              {data.recentDocuments.map((doc) => (
+                <tr
+                  key={doc.id}
+                  className="hover:bg-white/30 cursor-pointer transition-colors"
+                  onClick={() => navigate('/admin/documents')}
+                >
+                  <Td>{doc.user?.fullName || doc.user?.email}</Td>
+                  <Td className="max-w-50 truncate">{doc.filePath}</Td>
+                  <Td>{doc.fileType || '-'}</Td>
+                  <Td>{new Date(doc.uploadedAt).toLocaleDateString()}</Td>
+                </tr>
+              ))}
+            </GlassTable>
+          </div>
         ) : (
           <EmptyState title="No pending documents" message="All documents have been reviewed" />
         )}

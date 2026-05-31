@@ -31,7 +31,7 @@ export default function ProfileCompletionModal({ user, onClose, onComplete }) {
       }`}
     >
       <div 
-        className={`bg-white rounded-3xl shadow-2xl max-w-[480px] w-full p-8 transition-transform duration-300 ${
+        className={`bg-white rounded-3xl shadow-2xl max-w-[480px] w-full p-4 sm:p-8 transition-transform duration-300 ${
           show ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'
         }`}
       >

@@ -153,7 +153,7 @@ const PremiumCheckout = () => {
               {/* Price */}
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-slate-900">
+                  <span className="text-3xl sm:text-4xl font-bold text-slate-900">
                     ${plan.price}
                   </span>
                   <span className="text-slate-600 text-sm">/ {plan.duration}</span>

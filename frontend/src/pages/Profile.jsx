@@ -69,7 +69,7 @@ export default function Profile() {
     <>
       <PageHeader title="My Profile" subtitle="Keep your academic info up-to-date for better recommendations" />
 
-      <GlassPanel className="max-w-2xl">
+      <GlassPanel className="w-full max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-5">
           <TextField label="Full Name" id="fullName" name="fullName" value={form.fullName} onChange={handleChange} placeholder="John Doe" />
 

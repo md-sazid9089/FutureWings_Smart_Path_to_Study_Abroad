@@ -227,7 +227,7 @@ export default function SmartInsights() {
       {/* -- SECTION 2 - Country Bar Chart ------------------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
-          <SkeletonBlock className="h-8 w-72 mb-6" />
+          <SkeletonBlock className="h-8 w-full max-w-sm mb-6" />
           <SkeletonBlock className="h-64 w-full" />
         </GlassPanel>
       ) : (
@@ -243,7 +243,7 @@ export default function SmartInsights() {
       {/* -- SECTION 3 - Yearly Trend Line Chart ------------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
-          <SkeletonBlock className="h-8 w-80 mb-6" />
+          <SkeletonBlock className="h-8 w-full max-w-sm mb-6" />
           <SkeletonBlock className="h-64 w-full" />
         </GlassPanel>
       ) : (
@@ -306,7 +306,7 @@ export default function SmartInsights() {
       {/* -- SECTION 5 - Scholarship Comparison Chart --------------- */}
       {!loaded ? (
         <GlassPanel className="border border-white/25 p-8">
-          <SkeletonBlock className="h-8 w-96 mb-6" />
+          <SkeletonBlock className="h-8 w-full max-w-sm mb-6" />
           <SkeletonBlock className="h-64 w-full" />
         </GlassPanel>
       ) : (

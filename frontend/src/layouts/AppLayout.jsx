@@ -34,9 +34,11 @@ export default function AppLayout() {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen">
-      <GlassNavbar />
+      <GlassNavbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <Outlet />
       </main>
