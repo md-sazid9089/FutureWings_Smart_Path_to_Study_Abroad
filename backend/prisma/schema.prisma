@@ -18,6 +18,7 @@ model User {
   degreeLevel         String?         @db.VarChar(50)
   major               String?         @db.VarChar(100)
   fundScore           Int?
+  preferredCountry    String?         @db.VarChar(191)
   createdAt           DateTime        @default(now())
   profileHeadline     String?         @db.VarChar(120)
   isPremium           Boolean         @default(false)

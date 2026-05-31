@@ -9,6 +9,7 @@ const bcrypt = require("bcrypt");
 const prisma = require("../prisma/client");
 const { signToken } = require("../middleware/auth");
 const { successResponse, errorResponse } = require("../utils/response");
+const { isValidEmail, validatePassword, validateName, isValidGPA } = require("../utils/validation");
 
 const router = express.Router();
 
@@ -19,11 +20,37 @@ const router = express.Router();
  */
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password, fullName } = req.body;
+    const { email, password, fullName, cgpa, degreeLevel, major, fundScore, preferredCountry } = req.body;
 
     // Validation
     if (!email || !password) {
       return errorResponse(res, "Email and password are required", 400);
+    }
+    if (!isValidEmail(email)) {
+      return errorResponse(res, "Invalid email format", 400);
+    }
+    const pwdValidation = validatePassword(password);
+    if (!pwdValidation.isValid) {
+      return errorResponse(res, pwdValidation.errors[0], 400);
+    }
+    if (fullName && !validateName(fullName)) {
+      return errorResponse(res, "Name must not exceed 15 words", 400);
+    }
+
+    // Validate optional academic fields if provided
+    if (cgpa !== undefined && cgpa !== null && cgpa !== '') {
+      if (!isValidGPA(cgpa)) return errorResponse(res, 'CGPA must be a number between 0 and 4.0', 400);
+    }
+    if (fundScore !== undefined && fundScore !== null && fundScore !== '') {
+      const n = Number(fundScore);
+      if (isNaN(n) || n < 0 || n > 10) return errorResponse(res, 'Fund score must be a number between 0 and 10', 400);
+    }
+    // sanitize preferredCountry
+    const preferredCountryClean = typeof preferredCountry === 'string' ? preferredCountry.trim() : null;
+    // degreeLevel validation (if provided) - must match allowed options
+    const allowedDegreeLevels = ['Bachelors', 'Masters', 'PhD'];
+    if (degreeLevel && !allowedDegreeLevels.includes(degreeLevel)) {
+      return errorResponse(res, 'Invalid degree level', 400);
     }
 
     const normalizedEmail = email.trim().toLowerCase();
@@ -47,6 +74,11 @@ router.post("/signup", async (req, res) => {
         passwordHash,
         fullName: fullName || null,
         role: "USER",
+        cgpa: cgpa !== undefined && cgpa !== null && cgpa !== '' ? parseFloat(cgpa) : null,
+        degreeLevel: degreeLevel || null,
+        major: major || null,
+        fundScore: fundScore !== undefined && fundScore !== null && fundScore !== '' ? parseInt(fundScore) : null,
+        preferredCountry: preferredCountryClean || null,
       },
     });
 
@@ -62,11 +94,17 @@ router.post("/signup", async (req, res) => {
           email: user.email,
           role: user.role,
           fullName: user.fullName,
+          cgpa: user.cgpa,
+          degreeLevel: user.degreeLevel,
+          major: user.major,
+          fundScore: user.fundScore,
+          preferredCountry: user.preferredCountry,
           isPremium: false,
           premiumFeatures: [],
           premiumExpiryDate: null,
         },
       },
+      "User registered successfully",
       201
     );
   } catch (error) {
@@ -87,6 +125,9 @@ router.post("/login", async (req, res) => {
     // Validation
     if (!email || !password) {
       return errorResponse(res, "Email and password are required", 400);
+    }
+    if (!isValidEmail(email)) {
+      return errorResponse(res, "Invalid email format", 400);
     }
 
     const normalizedEmail = email.trim().toLowerCase();

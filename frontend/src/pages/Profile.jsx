@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
 import GlassPanel from '../components/ui/GlassPanel';
 import TextField from '../components/ui/TextField';
@@ -9,7 +10,8 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const [form, setForm] = useState({ fullName: '', cgpa: '', degreeLevel: '', major: '', preferredCountry: '', fundScore: '' });
+  const { login } = useAuth();
+  const [form, setForm] = useState({ fullName: '', cgpa: '', degreeLevel: '', major: '', fundScore: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -24,7 +26,6 @@ export default function Profile() {
         cgpa: u.cgpa?.toString() || '',
         degreeLevel: u.degreeLevel || '',
         major: u.major || '',
-        preferredCountry: u.preferredCountry || '',
         fundScore: u.fundScore?.toString() || '',
       });
     } catch {
@@ -40,7 +41,20 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true);
     try {
-      await API.put('/api/user/me', form);
+      const res = await API.put('/api/user/me', form);
+      const updatedUser = res.data?.data || null;
+      if (updatedUser) {
+        // update localStorage and app context so completion modal reads fresh data
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        try {
+          const token = localStorage.getItem('token');
+          // Use existing login handler to update context (preserves existing behavior)
+          if (typeof login === 'function') login(updatedUser, token);
+        } catch (err) {
+          // swallow errors updating context to avoid blocking user flow
+          console.error('Failed to update auth context after profile save', err);
+        }
+      }
       toast.success('Profile updated!');
     } catch (err) {
       toast.error(err.response?.data?.error?.message || 'Update failed');
@@ -69,19 +83,8 @@ export default function Profile() {
             </SelectField>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5">
             <TextField label="Major" id="major" name="major" value={form.major} onChange={handleChange} placeholder="e.g. Computer Science" />
-            <SelectField label="Preferred Country" id="preferredCountry" name="preferredCountry" value={form.preferredCountry} onChange={handleChange}>
-              <option value="">Select country</option>
-              <option value="USA">USA</option>
-              <option value="UK">UK</option>
-              <option value="Canada">Canada</option>
-              <option value="Australia">Australia</option>
-              <option value="Germany">Germany</option>
-              <option value="Netherlands">Netherlands</option>
-              <option value="Sweden">Sweden</option>
-              <option value="New Zealand">New Zealand</option>
-            </SelectField>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
