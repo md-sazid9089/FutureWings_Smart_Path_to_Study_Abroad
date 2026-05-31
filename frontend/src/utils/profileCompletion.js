@@ -7,7 +7,7 @@ export const getProfileCompletion = (user) => {
     { key: 'cgpa', label: 'CGPA / Academic Score', value: user.cgpa },
     { key: 'degreeLevel', label: 'Degree Level', value: user.degreeLevel },
     { key: 'major', label: 'Field of Study / Major', value: user.major },
-    { key: 'preferredCountry', label: 'Preferred Country', value: user.preferredCountry },
+    { key: 'fundScore', label: 'Fund Score', value: user.fundScore },
   ];
 
   const completedFields = fields.filter(f => f.value && String(f.value).trim() !== '');

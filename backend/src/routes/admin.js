@@ -73,7 +73,7 @@ router.post("/countries", requireAdmin, asyncHandler(async (req, res) => {
     },
   });
 
-  return successResponse(res, country, 201);
+  return successResponse(res, country, "Country created", 201);
 }));
 
 /**
@@ -204,7 +204,7 @@ router.post("/universities", requireAdmin, async (req, res) => {
       },
     });
 
-    return successResponse(res, university, 201);
+    return successResponse(res, university, "University created", 201);
   } catch (error) {
     console.error("Create university error:", error);
     return errorResponse(res, "Internal server error", 500);
@@ -355,7 +355,7 @@ router.post("/programs", requireAdmin, async (req, res) => {
       },
     });
 
-    return successResponse(res, program, 201);
+    return successResponse(res, program, "Program created", 201);
   } catch (error) {
     console.error("Create program error:", error);
     return errorResponse(res, "Internal server error", 500);
@@ -512,7 +512,7 @@ router.post("/scholarships", requireAdmin, async (req, res) => {
       },
     });
 
-    return successResponse(res, scholarship, 201);
+    return successResponse(res, scholarship, "Scholarship created", 201);
   } catch (error) {
     console.error("Create scholarship error:", error);
     return errorResponse(res, "Internal server error", 500);
@@ -798,7 +798,7 @@ router.post("/applications/:id/visa-outcome", requireAdmin, async (req, res) => 
       });
     }
 
-    return successResponse(res, visaOutcome, existingOutcome ? 200 : 201);
+    return successResponse(res, visaOutcome, existingOutcome ? "Visa outcome updated" : "Visa outcome created", existingOutcome ? 200 : 201);
   } catch (error) {
     if (error.code === "P2025") {
       return errorResponse(res, "Application not found", 404);

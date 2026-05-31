@@ -643,7 +643,7 @@ export default function PartnerFinder() {
     return 'text-slate-700 bg-slate-100 border-slate-200';
   };
 
-  const isProfileIncomplete = !user?.degreeLevel || !user?.major || !user?.cgpa || !user?.preferredCountry;
+  const isProfileIncomplete = !user?.degreeLevel || !user?.major || !user?.cgpa || !user?.fundScore;
 
   // Check if a partner has any portfolio content at all
   const hasAnyPortfolio = (portfolio) => {
@@ -875,8 +875,8 @@ export default function PartnerFinder() {
                 <span className="font-semibold text-slate-800">{user?.cgpa || 'Not set'}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Target</span>
-                <span className="font-semibold text-slate-800">{user?.preferredCountry || 'Not set'}</span>
+                <span className="text-slate-500">Fund Score</span>
+                <span className="font-semibold text-slate-800">{user?.fundScore || 'Not set'}</span>
               </div>
             </div>
 

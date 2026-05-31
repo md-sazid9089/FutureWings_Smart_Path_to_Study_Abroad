@@ -14,10 +14,10 @@ export const fetchUnreadNotifications = async (limit = 10, offset = 0) => {
       params: {
         limit,
         offset,
-        read: false,
+        read: "unread",
       },
     });
-    return response.data.data || [];
+    return response.data.data?.notifications || [];
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return [];
@@ -36,9 +36,10 @@ export const fetchAllNotifications = async (limit = 20, offset = 0) => {
       params: {
         limit,
         offset,
+        read: "all",
       },
     });
-    return response.data.data || [];
+    return response.data.data?.notifications || [];
   } catch (error) {
     console.error("Error fetching all notifications:", error);
     return [];
@@ -52,7 +53,7 @@ export const fetchAllNotifications = async (limit = 20, offset = 0) => {
 export const getUnreadCount = async () => {
   try {
     const response = await axios.get(`${API_BASE}/count`);
-    return response.data.data?.count || 0;
+    return response.data.data?.unreadCount || 0;
   } catch (error) {
     console.error("Error fetching unread count:", error);
     return 0;

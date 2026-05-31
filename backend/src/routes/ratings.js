@@ -114,7 +114,7 @@ router.post("/", requireAuth, async (req, res) => {
       },
     });
 
-    return successResponse(res, rating, 201);
+    return successResponse(res, rating, "Rating created", 201);
   } catch (error) {
     console.error("Create rating error:", error);
     return errorResponse(res, "Internal server error", 500);

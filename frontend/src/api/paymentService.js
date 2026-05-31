@@ -2,10 +2,7 @@
  * Payment Service - API calls for payment operations
  */
 
-import axios from "axios";
-import { apiClient } from "./axios";
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import API from "./axios";
 
 const paymentService = {
   /**
@@ -13,13 +10,9 @@ const paymentService = {
    */
   createCheckoutSession: async (featureType) => {
     try {
-      const token = localStorage.getItem("auth_token");
-      const response = await apiClient.post(
-        `${API_BASE}/payments/create-checkout-session`,
-        { featureType },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await API.post(
+        "/api/payments/create-checkout-session",
+        { featureType }
       );
       return response.data;
     } catch (error) {
@@ -32,13 +25,7 @@ const paymentService = {
    */
   getSubscriptionStatus: async () => {
     try {
-      const token = localStorage.getItem("auth_token");
-      const response = await apiClient.get(
-        `${API_BASE}/payments/status`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await API.get("/api/payments/status");
       return response.data.data;
     } catch (error) {
       throw error.response?.data || error;
@@ -50,13 +37,7 @@ const paymentService = {
    */
   getPaymentHistory: async () => {
     try {
-      const token = localStorage.getItem("auth_token");
-      const response = await apiClient.get(
-        `${API_BASE}/payments/history`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await API.get("/api/payments/history");
       return response.data.data;
     } catch (error) {
       throw error.response?.data || error;
@@ -68,13 +49,7 @@ const paymentService = {
    */
   verifySession: async (sessionId) => {
     try {
-      const token = localStorage.getItem("auth_token");
-      const response = await apiClient.get(
-        `${API_BASE}/payments/verify-session/${sessionId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await API.get(`/api/payments/verify-session/${sessionId}`);
       return response.data.data;
     } catch (error) {
       throw error.response?.data || error;

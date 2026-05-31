@@ -66,7 +66,7 @@ router.post("/", requireAuth, async (req, res) => {
       },
     });
 
-    return successResponse(res, document, 201);
+    return successResponse(res, document, "Document created", 201);
   } catch (error) {
     console.error("Create document error:", error);
     return errorResponse(res, "Internal server error", 500);

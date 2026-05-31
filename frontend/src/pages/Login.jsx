@@ -12,12 +12,44 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const validateField = (name, value) => {
+    let error = '';
+    if (name === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!value) error = 'Email is required';
+      else if (!emailRegex.test(value)) error = 'Invalid email format';
+    } else if (name === 'password') {
+      if (!value) error = 'Password is required';
+    }
+    return error;
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: '' });
+    }
+  };
+
+  const handleBlur = (e) => {
+    const error = validateField(e.target.name, e.target.value);
+    setErrors({ ...errors, [e.target.name]: error });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    Object.keys(form).forEach(key => {
+      const err = validateField(key, form[key]);
+      if (err) newErrors[key] = err;
+    });
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     setLoading(true);
     try {
       const res = await API.post('/api/auth/login', form);
@@ -42,8 +74,8 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="you@email.com" />
-          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} required placeholder="" />
+          <TextField label="Email" id="email" name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} required placeholder="you@email.com" />
+          <TextField label="Password" id="password" name="password" type="password" value={form.password} onChange={handleChange} onBlur={handleBlur} error={errors.password} required placeholder="" />
           <PrimaryButton type="submit" loading={loading} className="w-full">
             {loading ? 'Signing in...' : 'Sign In'}
           </PrimaryButton>

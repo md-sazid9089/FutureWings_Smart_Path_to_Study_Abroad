@@ -25,7 +25,7 @@ function validatePassword(password) {
   const errors = [];
 
   if (!password) errors.push('Password is required');
-  else if (password.length < 8) errors.push('Password must be at least 8 characters');
+  else if (password.length < 6) errors.push('Password must be at least 6 characters');
   if (!/[A-Z]/.test(password)) errors.push('Password must contain uppercase letter');
   if (!/[a-z]/.test(password)) errors.push('Password must contain lowercase letter');
   if (!/\d/.test(password)) errors.push('Password must contain number');
@@ -45,6 +45,17 @@ function validatePassword(password) {
 function isValidPhone(phone) {
   const phoneRegex = /^\+?[1-9]\d{6,14}$/;
   return phoneRegex.test(phone.replace(/\D/g, ''));
+}
+
+/**
+ * Validate name
+ * @param {string} name
+ * @returns {boolean}
+ */
+function validateName(name) {
+  if (!name || typeof name !== 'string') return false;
+  const words = name.trim().split(/\s+/);
+  return words.length <= 15;
 }
 
 /**
@@ -255,4 +266,5 @@ module.exports = {
   validatePagination,
   parseJSON,
   validateRequiredFields,
+  validateName,
 };

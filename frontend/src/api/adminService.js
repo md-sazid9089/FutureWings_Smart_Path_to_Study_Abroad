@@ -55,3 +55,31 @@ export const getVisaOutcomes = () => API.get('/api/admin/visa-outcomes');
 // --- Ratings ---------------------------------------------
 export const getRatings = (params) =>
   API.get('/api/admin/ratings', { params });
+
+export default {
+  getStats,
+  getUsers,
+  getCountries,
+  createCountry,
+  updateCountry,
+  deleteCountry,
+  getUniversities,
+  createUniversity,
+  updateUniversity,
+  deleteUniversity,
+  getPrograms,
+  createProgram,
+  updateProgram,
+  deleteProgram,
+  getScholarships,
+  createScholarship,
+  updateScholarship,
+  deleteScholarship,
+  getDocuments,
+  verifyDocument,
+  getApplications,
+  updateApplicationStatus,
+  createVisaOutcome,
+  getVisaOutcomes,
+  getRatings,
+};

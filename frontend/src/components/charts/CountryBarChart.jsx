@@ -17,9 +17,9 @@ const TREND_COLORS = {
 };
 
 const TREND_LABELS = {
-  up: '<i className="ti ti-trending-up text-green-500"></i> Rising acceptance',
-  down: '<i className="ti ti-trending-down text-red-500"></i> Declining acceptance',
-  stable: '<i className="ti ti-minus text-gray-500"></i> Stable acceptance',
+  up: ' Rising acceptance',
+  down: ' Declining acceptance',
+  stable: ' Stable acceptance',
 };
 
 function CustomTooltip({ active, payload, label }) {

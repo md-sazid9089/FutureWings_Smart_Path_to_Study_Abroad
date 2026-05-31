@@ -73,7 +73,7 @@ const trendReasonCards = [
   {
     country: 'Australia',
     flag: '',
-    trendLabel: 'Declining (12% since 2019)',
+    trendLabel: ' Declining (12% since 2019)',
     trendType: 'down',
     reasons: [
       'Stricter post-study work visa rules introduced in 2023',
@@ -453,3 +453,4 @@ export default function SmartInsights() {
     </div>
   );
 }
+

@@ -88,6 +88,10 @@ export default function Recommendations() {
         )}
       </PageHeader>
 
+      <div className="mb-6 max-w-3xl mx-auto rounded-lg border border-primary/25 bg-primary/10 p-3 text-sm text-primary font-serif font-semibold shadow-sm fw-custom-font">
+        Update your profile to reflect your actual tier — this improves recommendation accuracy below based on your profile.
+      </div>
+
       {data.countries.length === 0 ? (
         <EmptyState icon={HiOutlineGlobeAlt} title="No recommendations" message="Complete your profile with CGPA to get personalized recommendations" />
       ) : (

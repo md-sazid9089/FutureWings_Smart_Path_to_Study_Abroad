@@ -99,7 +99,7 @@ router.post("/", requireAuth, async (req, res) => {
       },
     });
 
-    return successResponse(res, application, 201);
+    return successResponse(res, application, "Application created", 201);
   } catch (error) {
     console.error("Create application error:", error);
     return errorResponse(res, "Internal server error", 500);

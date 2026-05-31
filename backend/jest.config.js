@@ -17,6 +17,7 @@ module.exports = {
   ],
   testMatch: [
     '**/tests/**/*.test.js',
+    '**/test/**/*.test.js',
     '**/__tests__/**/*.js',
   ],
   coverageThreshold: {
