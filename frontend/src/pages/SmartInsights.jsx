@@ -73,7 +73,7 @@ const trendReasonCards = [
   {
     country: 'Australia',
     flag: '',
-    trendLabel: '<i className="ti ti-trending-down text-red-500"></i> Declining (12% since 2019)',
+    trendLabel: 'Declining (12% since 2019)',
     trendType: 'down',
     reasons: [
       'Stricter post-study work visa rules introduced in 2023',
@@ -86,7 +86,7 @@ const trendReasonCards = [
   {
     country: 'UK',
     flag: '',
-    trendLabel: '<i className="ti ti-trending-down text-red-500"></i> Declining (4% since 2019)',
+    trendLabel: 'Declining (4% since 2019)',
     trendType: 'down',
     reasons: [
       'Post-Brexit visa complexity for EU students',
@@ -99,7 +99,7 @@ const trendReasonCards = [
   {
     country: 'Netherlands',
     flag: '',
-    trendLabel: '<i className="ti ti-trending-up text-green-500"></i> Rising (+12% since 2019)',
+    trendLabel: 'Rising (+12% since 2019)',
     trendType: 'up',
     reasons: [
       'Most programs taught in English',
